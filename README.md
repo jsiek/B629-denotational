@@ -1,5 +1,3 @@
-\pagenumbering{gobble}
-
 # B629 Topics in PL: Denotational Semantics
 
 Indiana University, Spring 2018
