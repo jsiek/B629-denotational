@@ -361,9 +361,10 @@ of a variable $x$ is the associated number in the store $s$.
 \]
 %
 A program takes a number as input and it may produce a number or it
-might diverge. \citet{Schmidt:1986vn} models this behavior with a
-partial function $\mathit{Nat}\to\mathit{Nat}_{\bot}$. Here we shall
-use the alternate, but equivalent, approach of using a relation
+might diverge. Traditional denotational semantics model this behavior
+with a partial function
+$\mathit{Nat}\rightharpoonup\mathit{Nat}$. Here we shall use the
+alternate, but equivalent, approach of using a relation
 $\mathit{Nat}\times\mathit{Nat}$.
 
 We define the \texttt{while} loop using an auxiliary relation named
@@ -576,10 +577,10 @@ Exercises: & 6.2 a, 6.6, 8
 We shall revisit the semantics of the imperative language, this time
 taking the traditional but more complex approach of defining
 \texttt{while} with a recursive equation and using least fixed points
-to solve it. Recall that in \citet{Schmidt:1986vn}, the meaning of a
-command is a function from stores to stores, or more precisely,
+to solve it. Recall that the meaning of a command is a partial
+function from stores to stores, or more precisely,
 \[
-C(c) : \mathit{Store}_\bot \to \mathit{Store}_\bot
+C(c) : \mathit{Store} \rightharpoonup \mathit{Store}
 \]
 The meaning of a loop $(\WHILE{b}{c})$ is a solution to the
 equation
@@ -638,12 +639,12 @@ incomparable elements.
 \end{align*}
 }
 %
-For example, consider the ordered set $(\NAT{\to}\NAT_\bot,
-\subseteq)$ of partial functions. A partial function $f$ is a better
-approximation than another partial function $g$ if it is defined on
-more inputs, that is, if the graph of $f$ is a subset of the graph of
-$g$.  Two partial functions are incomparable if neither is a subset of
-the other.
+For example, consider the poset $(A{\rightharpoonup}B, \subseteq)$ of
+partial functions. A partial function $f$ is a better approximation
+than another partial function $g$ if it is defined on more inputs,
+that is, if the graph of $f$ is a subset of the graph of $g$.  Two
+partial functions are incomparable if neither is a subset of the
+other.
 
 The sequence of approximations will start with the worst
 approximation, a bottom element, written $\bot$, that contains no
@@ -848,13 +849,13 @@ $\mathrm{fix}\,F \sqsubseteq e$.
 Returning to the semantics of the \texttt{while} loop, to apply
 Theorem~\ref{thm:fixed-point}, we need to show that
 \begin{enumerate}
-\item $(\mathit{Store}_\bot{\to}\mathit{Store}_\bot,\subseteq)$ is a dcpo and
+\item $(\mathit{Store}{\rightharpoonup}\mathit{Store},\subseteq)$ is a dcpo and
 \item the $F$ of Equation~\ref{eq:while} is continuous.
 \end{enumerate}
 %Recall that $\mathit{Store} = \mathit{Id} \to \mathit{Nat}$.
-
 %Also, we have the following facts about building
 %dcpos~\citep{Amadio:1998fk}.
+Regarding the first point, we have the following proposition.
 
 \begin{proposition}[Partial functions are dcpos]
   Given any two sets $A$ and $B$, the partial order $(A \rightharpoonup
@@ -871,6 +872,8 @@ Theorem~\ref{thm:fixed-point}, we need to show that
 %%   So $(x,y) \in f$ because $g \subseteq f$.
 %%   Therefore $\botcup S$ is the least of all the upper bounds of $S$.
 %% \end{proof}
+
+Regarding the second point, UNDER CONSTRUCTION
 
 
 %% \begin{proposition}[Constructing dcpos]\ \\
