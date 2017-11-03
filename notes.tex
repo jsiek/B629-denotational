@@ -8,6 +8,7 @@
 \usepackage{natbib}
 \usepackage{semantic}
 \usepackage{wrapfig}
+\usepackage{xypic}
 %\usepackage[noanswer]{exercise}
 \usepackage[answerdelayed]{exercise}
 
@@ -723,11 +724,16 @@ in $S$ is the approximation of a common element, i.e.  there is a $y
 \in L$ such that for all $x \in S$, $x \sqsubseteq y$. In other words,
 $S$ is consistent if it is bounded above.
 %
-A partial order in which all consistent subsets have a least upper
-bound is \textbf{\emph{consistently complete}}~\citep{Plotkin:1978aa}.
+In the poset of partial functions $(A \rightharpoonup B, \subseteq)$,
+every consistent subset has a lub.
 
-However, a slightly different property, directed completeness, is used
-in Kleene's Fixed Point Theorem, for reasons that I do not yet know. A
+%
+%% A partial order in which all consistent subsets have a least upper
+%% bound is \textbf{\emph{consistently complete}}~\citep{Plotkin:1978aa}
+%% (aka. \emph{bounded complete}~\citep{Gunter:1992aa}).
+
+However, a slightly different property, directedness, is used in
+Kleene's Fixed Point Theorem, for reasons that I do not yet know. A
 directed set is similar to a consistent set, but we only require an
 upper bound for each pair in $S$ and the bound must itself be in $S$.
 
@@ -741,6 +747,16 @@ The sequence of approximations $\bot \sqsubseteq F(\bot) \sqsubseteq
 F^2(\bot) \sqsubseteq \cdots$ is directed, any totally ordered subset
 is, because the upper bound of two elements is just the larger
 element.
+
+\marginnote{
+\hspace{20pt}\xymatrix{
+ a \ar@{-}[d]\ar@{-}[drr] &          & b \ar@{-}[d] \ar@{-}[dll]\\
+ c \ar@{-}[dr]&          & d \ar@{-}[dl]\\
+         & e 
+}  \\[2ex]
+This poset is a dcpo but the consistent set $\{c,d,e\}$ has no
+lub~\citep{Plotkin:1978aa}.
+}
 
 Generalizing from the poset of partial functions, one might think that
 there is always a least upper bound of consistent or directed sets.
