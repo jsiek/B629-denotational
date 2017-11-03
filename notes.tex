@@ -838,30 +838,21 @@ Theorem~\ref{thm:fixed-point}, we need to show that
 %Also, we have the following facts about building
 %dcpos~\citep{Amadio:1998fk}.
 
-
-
 \begin{proposition}[Partial functions are dcpos]
-  Given any two sets $A$ and $B$, the partial order $(A \to B_\bot,
-  \preceq)$, where the ordering is defined as subset inclusion on
-  their graphs, is a dcpo.
+  Given any two sets $A$ and $B$, the partial order $(A \rightharpoonup
+  B, \subseteq)$, is a dcpo.
 \end{proposition}
-\begin{proof}
-  Let $S$ be a directed subset of $A \to B_\bot$.
-  Let $r$ be the the union of the graphs of $S$.
-  \[
-    r = \bigcup \{ \mathrm{graph}(f) \mid f \in S\}
-  \]
-  Then least upper bound of $S$ is defined as follows
-  \[
-  (\bigsqcup S)(x) = 
-    \begin{cases}
-      y & \text{if } (x,y) \in r \\
-      \bot & \text{otherwise}
-    \end{cases}
-  \]
-
-  UNDER CONSTRUCTION  
-\end{proof}
+%% \begin{proof}
+%%   Let $S$ be a directed subset of $A \to B_\bot$.
+%%   The union of the elements of $S$ is the least upper bound of $S$.
+%%   Suppose $h \in S$. Then $h \subseteq \bigcup S$, so $\bigcup S$ is an upper bound of $S$.
+%%   Let $f$ be an arbitrary upper bound of $S$.
+%%   We need to show that $\bigcup S \subseteq f$.
+%%   Suppose $(x,y) \in \bigcup S$.
+%%   Then $(x,y) \in g$ for some $g \in S$.
+%%   So $(x,y) \in f$ because $g \subseteq f$.
+%%   Therefore $\botcup S$ is the least of all the upper bounds of $S$.
+%% \end{proof}
 
 
 %% \begin{proposition}[Constructing dcpos]\ \\
