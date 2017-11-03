@@ -1,0 +1,193 @@
+
+
+B629 Topics in Programming Languages 
+Indiana University
+Spring 2018
+
+Denotational semantics via domains, graphs, and types.
+
+Description
+-----------
+
+In this course we shall study the denotational semantics of
+programming languages, including the classic lattic-theoretic models
+as well as elementary models based on functions-as-graphs and
+intersection types. The course assignments will include readings from
+selected chapters and papers from the literature, presentations,
+written homework, and some programming.
+
+Readings
+-----------
+
+Denotational semantics: a methodology for language development,
+  David Schmidt, 1986. (pdf available online)
+  Ch. 4 Binary arithmetic and a calculator
+  Ch. 5 Imperative Languages
+  Ch. 6 domain theory (for loops and recursive functions)
+  Ch. 7 lambda calculus
+  Ch. 9 continuations
+  Ch. 11 inverse limit construction
+
+The denotational semantics of programming languages,
+  Tennent, CACM 1976.
+  LOOP language: natural numbers, loops, input/output, continuations
+  AEXP
+  GEDANKEN
+
+?? Denotational Semantics. P. Mosses, 1989.
+
+?? Semantics domains. Gunter and Scott, 1989.
+
+?? Semantics of Programming Languages: Structures and Techniques
+  Gunter, 1992.
+
+?? Denotational Semantics: The Scott-Strachey Approach to PL Theory.
+  Joseph Stoy, 1977.
+
+?? A Theory of Programming Language Semantics, Milne and Strachey.
+
+?? Domains and Lambda Calculi, Amadio and Curien, 1998.
+
+Outline of a Mathematical Theory of Computation, Dana Scott 1970
+  D∞
+
+Data Types as Lattices, Dana Scott 1976
+  Pω
+
+?? Notes on a lattice-theoretical approach to the theory of computation
+  John Reynolds, 1972.
+
+The Lambda Calculus: its Syntax and Semantics. Barendregt 1984.
+  Def. of λ-model?
+
+?? What is a Model of the Lambda Calculus? 
+  Albert Meyer, Inf. and Control, 1982.
+
+?? The category-theoretic solution of recursive domain equations
+  Smyth and Plotkin, Siam Journal on Computing, 1982.
+
+Set-theoretical and other elementary models of the λ-calculus,
+  Plotkin 1993.
+
+Algebras and combinators, Engeler, 1981.
+
+Functional characterization of some semantic equalities
+  inside λ-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
+
+Functional Characters of Solvable Terms
+  Coppo, Dezani-Ciancaglini, Venneri, Math. Logic Quart. 1981.
+
+A filter lambda model and the completeness of type assignment,
+  Barendregt, Coppo, Dezani-Ciancaglini, 1983.
+  (BCD)
+
+?? Extended Type Structures and Filter Lambda Models,
+  Coppo, Dezani-Ciancaglini, Honsell, Longo, 1984.
+
+Intersection Types and Lambda Models
+  Alessi, Barbanera, Dezani-Ciancaglini, TCS 2006.
+
+Recursive Domain Equations of Filter Models,
+  Alessi, Severi, SOFSEM 2008.
+
+Revisiting Elementary Denotational Semantics,
+  Siek, draft 2017.
+
+Lambda Calculus with Types, Barendregt, Dekkers, Statman, 2013.
+
+Notions of computation and monads, Moggi, 1991.
+
+?? An Abstract View of Programming Languages, Moggi, 1989.
+  (Monads, Category Theory)
+
+Something about PCF and full abstraction
+  
+  ??A fully abstract semantics for concurrent graph reduction.
+    Alan Jeffrey 1993.
+
+  Full abstraction in the lazy lambda calculus, 
+    Abramsky and Ong, Inf. and Comp., 1993.
+
+Observable sequentiality and full abstraction,
+  Cartwright and Felleisen, POPL 1992.
+
+Towards Compatible and Interderivable Semantic Specifications for the
+  Scheme Programming Language, Part I: Denotational Semantics, Natural
+  Semantics, and Abstract Machines
+  Olivier Danvy, 2009.
+
+Languages to consider
+---------------------
+
+  Binary numerals and arithmetic (Schmidt)
+  Regular expressions
+  IMP (or While)
+  λ-calculus (Full, CBN, Lazy, CBV)
+  Scheme
+  PCF
+  SPCF
+
+  loops
+  input/output
+  recursive functions
+  errors
+  exceptions
+  continuations
+  recursive types
+
+
+Notes
+-----
+
+domain theory in logical form
+ω-algebraic complete lattices
+types are compact elements of Plotkin's λ-structures
+Stone duality
+  Topology via Logic
+
+
+
+* The Lambda Calculus: its Syntax and Semantics. Barendregt 1984.
+  Chapter 5
+  retract
+  cartesian closed category?
+
+  λ-algebra: satisfy equations of the λ-calculus,
+     form an equational class axiomatized by kxy=x, sxyz=xz(yz),
+     and five combinatory axioms of Curry
+  λ-model: satisfy equations of the λ-calculus and also
+     weak extensionality: ∀x(M=N) ⇒ λx.M = λx.N
+
+  5.4 Models in Cartesian Closed Categories
+
+  "we will describe the models D_A introduced by Engeler [1981]
+   as a simplification of the graph model Pω introduced in §18.1."
+
+   Let A be an arbitrary set.
+   B = A + P_f(B) × B
+   D_A = P(B)
+
+   For x,y ∈ D_A, f ∈ [D_A → D_A]
+   x ⋅ y = { b | ∃β. β ⊆ y and (β,b) ∈ x }
+   λG x. f(x) = { (β,b) | β ∈ P_f(B) and b ∈ f(β) }
+
+   5.4.6 Theorem D_A is a reflexive cpo by definining
+       F(x)(y) = x ⋅ y
+       G(f) = λG x. f(x).
+   Therefore D_A is a λ-model.
+
+   See exercises 5.77, 18.5.29, 18.4.31 for more information about D_A.
+
+   Chapter 18
+
+   e(n) = {k_0,...,k_m-1} such that n = sum 2^{k_i}
+
+   [x]ρ = ρ(x)
+   [M N]ρ = {m | ∃n. e(n) ⊆ [N]ρ and (n,m) ∈ [M]ρ }
+   [λx.M]ρ = { (n,m) | m ∈ [M]ρ(x:=e(n)) }
+
+   So yes, Pω is just an encoding of D_A into natural numbers!
+    
+
+* Koymans [1982] history of lambda models
+

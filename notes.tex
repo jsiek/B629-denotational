@@ -1,0 +1,988 @@
+\documentclass{tufte-handout}
+%\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{natbib}
+\usepackage{semantic}
+\usepackage{wrapfig}
+%\usepackage[noanswer]{exercise}
+\usepackage[answerdelayed]{exercise}
+
+\renewcommand{\ExerciseHeader}{\textbf{
+                \ExerciseName\;\ExerciseHeaderNB\ExerciseHeaderTitle
+                \ExerciseHeaderOrigin\medskip}}
+
+\renewcommand{\AnswerHeader}{\medskip{\noindent\textbf{Answer of \ExerciseName\ \ExerciseHeaderNB \\[1ex]}\smallskip}}
+
+%\newcommand{\BR}[1]{\llbracket #1 \rrbracket}
+\newcommand{\BR}[1]{(#1)}
+\newcommand{\LAM}[1]{\lambda #1.\,}
+\newcommand{\APP}[0]{\,}
+\newcommand{\ASSIGN}[2]{#1 \mathrel{:=} #2}
+\newcommand{\SEQ}[2]{#1 \mathrel{;} #2}
+\newcommand{\OUTPUT}[1]{\mathtt{put}(#1)\texttt{;}}
+\newcommand{\SKIP}[0]{\mathtt{skip}}
+\newcommand{\INPUT}[0]{\mathtt{get}()}
+\newcommand{\IF}[3]{\mathtt{if}\,#1\,\mathtt{then}\,#2\,\mathtt{else}\,#3}
+\newcommand{\WHILE}[2]{\mathtt{while}\,#1\,\mathtt{do}\,#2}
+\newcommand{\TRUE}[0]{\mathtt{true}}
+\newcommand{\FALSE}[0]{\mathtt{false}}
+\newcommand{\of}[0]{\!:\!}
+\newcommand{\NAT}[0]{\ensuremath{\mathit{Nat}}}
+\newcommand{\COND}[3]{#1\,\texttt{?}\,#2\,\texttt{:}\,#3}
+
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}%[section]
+\newtheorem{conjecture}{Conjecture}%[section]
+\newtheorem{example}{Example}%[section]
+\newtheorem{remark}{Remark}
+
+\title{Lecture Notes on Denotational Semantics}
+\author{Jeremy G. Siek}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\clearpage
+
+
+\section{Binary Arithmetic}
+
+\marginnote{
+\begin{tabular}{ll}
+Reading: & \citet{Schmidt:1986vn} Chapter 4 \\
+Exercises: & 4.2, 4.6
+\end{tabular}
+}
+
+Borrowing and combining elements from Chapter 4 of
+\citet{Schmidt:1986vn}, we consider the language of binary arithmetic
+specified in Figure~\ref{fig:binary-arithmetic}.  The Syntax defines
+the form of the programs and the Semantics specifies the behavior of
+running the program. In this case, the behavior is simply to output a
+number (in decimal).  Our grammar for binary numerals departs slightly
+from \citet{Schmidt:1986vn}, with $\epsilon$ representing the empty
+string of digits.
+
+The main purpose of a semantics is communicate in a precise way with
+other people, primarily language implementers and programmers.  Thus,
+it is incredibly important for the semantics to be written in a way
+that will make it most easily understood, while still being completely
+precise.  Here we have chosen to give the semantics of binary
+arithmetic in terms of decimal numbers because people are generally
+much more familiar with decimal numbers. 
+
+\begin{marginfigure}
+\noindent Syntax
+\[
+\begin{array}{lrl}
+ \text{digit}& d ::=& 0 \mid 1 \\
+ \text{binary numeral}& n ::=& \epsilon \mid nd  \\
+ \text{expression}& e ::=& n \mid e + e \mid e \times e
+\end{array}
+\]
+Semantics
+\begin{align*}
+ N\BR{ \epsilon } &= 0 \\
+ N\BR{ n d } &= 2 N\BR{ n } + d\\[1ex]
+ E\BR{ n } &= N\BR{ n } \\
+ E\BR{ e_1 + e_2 } &= 
+    E\BR{ e_1 } + E\BR{ e_2 } \\
+ E\BR{ e_1 \times e_2 } &= 
+    E\BR{ e_1 } E\BR{ e_2 }
+\end{align*}
+\caption{Language of binary arithmetic}
+\label{fig:binary-arithmetic}
+\end{marginfigure}
+%
+When writing down a semantics, one is often tempted to consider the
+efficiency of a semantics, as if it were an implementation. Indeed, it
+would be straightforward to transcribe the definitions of $E$ and $N$
+in Figure~\ref{fig:binary-arithmetic} into your favorite programming
+language and thereby obtain an interpreter. All other things being
+equal, it is fine to prefer a semantics that is suggestive of an
+implementation, but one should prioritize ease of understanding first.
+As a result, some semantics that we study may be more declarative in
+nature. This is not to say that one should not consider the efficiency
+of implementations when designing a language.  Indeed, the semantics
+should be co-designed with implementations to avoid accidental designs
+that preclude the desired level of efficiency.  Thus, a recurring
+theme of these notes will be to consider implementations of languages
+alongside their semantics.
+
+
+
+Figure~\ref{fig:interp-binary} presents an interpreter for binary
+arithmetic. This interpreter, in a way reminiscent of real computers,
+operates on the binary numbers directly. The auxiliary functions
+$\mathit{add}$ and $\mathit{mult}$ implement the algorithms you
+learned in grade school, but for binary instead of decimals.
+
+\begin{figure}
+\noindent Interpreter 
+\begin{align*}
+I\BR{ n } &= n \\
+I\BR{ e_1 + e_2 } &=
+  \mathit{add}(I\BR{ e_1 }, I\BR{ e_2 },0) \\
+I\BR{ e_1 \times e_2 } &=
+  \mathit{mult}(I\BR{ e_1 }, I\BR{ e_2 })
+\end{align*}
+%% Convert natural number to binary
+%% \begin{align*}
+%%  \mathit{binary}(n) &=
+%%   \begin{cases}
+%%      n & \text{if } n < 2 \\
+%%      \mathit{binary}(n/2)\, (n \mathrel{\mathrm{mod}} 2)   &  \text{otherwise}
+%%   \end{cases}
+%% \end{align*}
+Auxiliary Functions
+\begin{align*}
+  \mathit{add3}(d_1, d_2, d_3) &= 
+  \begin{cases}
+     00 &  \text{if } n = 0 \\
+     01 &  \text{if } n = 1 \\
+     10 &  \text{if } n = 2 \\
+     11 &  \text{if } n = 3
+  \end{cases}
+\quad \text{where } n = d_1 + d_2 + d_3 \\[1ex]
+ \mathit{add}(\epsilon, \epsilon, c) &= 
+   \begin{cases}
+      \epsilon  & \text{if } c = 0 \\
+      \epsilon 1  & \text{otherwise}
+   \end{cases}
+   \\
+  \mathit{add}(n_1 d_1 , n_2 d_2, c) &= 
+   \mathit{add}(n_1, n_2, c')\,d_3
+  \qquad \text{if } \mathit{add3}(d_1, d_2, c) = c' d_3 \\
+\mathit{add}(n_1 d_1 , \epsilon, c) &= 
+  \mathit{add}(n_1 d_1 , \epsilon 0, c) \\
+\mathit{add}(\epsilon, n_2 d_2, c) &= 
+  \mathit{add}( \epsilon 0, n_2 d_2,c) \\[1ex]
+ \mathit{mult}(n_1, \epsilon) &= \epsilon \\
+ \mathit{mult}(n_1, n_2 0) &= \mathit{mult}(n_1,n_2) 0 \\
+ \mathit{mult}(n_1, n_2 1) &= 
+  \mathit{add}(n_1, \mathit{mult}(n_1,n_2)0, 0) 
+\end{align*}
+\caption{Binary arithmetic interpreter.}
+\label{fig:interp-binary}
+\end{figure}
+
+
+\begin{Exercise}
+\label{ex:bit-add}
+Prove that 
+$N (\mathit{add3}(d_1, d_2, d_3)) = d_1 + d_2 + d_3$.
+\end{Exercise}
+\begin{Answer}
+\begin{tabular}{l|c|c} 
+    $d_1, d_2, d_3$ & $\mathit{add3}(d_1, d_2, d_3)$ 
+  & $d_1 + d_2 + d_3$ \\ \hline
+  $0,0,0$ & $00$ & $0$ \\
+  $0,0,1$ & $01$ & $1$\\
+  $0,1,0$ & $01$ & $1$ \\
+  $0,1,1$ & $10$ & $2$ \\
+  $1,0,0$ & $01$ & $1$ \\
+  $1,0,1$ & $10$ & $2$ \\
+  $1,1,0$ & $10$ & $2$\\
+  $1,1,1$ & $11$ & $3$
+\end{tabular} 
+\end{Answer}
+
+\begin{Exercise}
+  \label{ex:add}
+  Prove that $N(\mathit{add}(n_1,n_2,c)) = N(n_1) + N(n_2) + c$.
+\end{Exercise}
+\begin{Answer}
+The proof is by induction on $\mathit{add}$.
+\begin{itemize}
+\item Case $N(\mathit{add}(\epsilon, \epsilon, 0)) = N\BR{\epsilon} = 0
+       = N\BR{ \epsilon} + N\BR{ \epsilon} + 0$
+\item Case $N(\mathit{add}(\epsilon, \epsilon, 1)) = N\BR{\epsilon 1} = 1
+       = N\BR{\epsilon} + N\BR{\epsilon} + 1$
+\item Case $\mathit{add}(n'_1 d_1 , n'_2  d_2, c) 
+    = \mathit{add}(n_1, n_2, c')d_3$ \\
+  where $\mathit{add3}(d_1, d_2, c) = c'd_3$. 
+    \begin{align*}
+    N(\mathit{add}(n'_1 d_1 , n'_2  d_2, c)) 
+      &= N(\mathit{add}(n'_1, n'_2, c')d_3) \\
+      &= N(\mathit{add}(n'_1, n'_2, c')) \times 2 + d_3 \\
+      &= (N(n'_1) + N(n'_2) + c') \times 2 + d_3\\
+      &= 2 N(n'_1) + 2 N(n'_2) + c' \times 2 + d_3 \\
+      &= 2 N(n'_1) + 2 N(n'_2) + N\BR{c' d_3} \\
+      &= 2 N(n'_1) +  d_1 + 2 N(n'_2) +  d_2 + c 
+         & \text{by Ex.~\ref{ex:bit-add}}\\
+      &= N \BR{n'_1 d_1} + N \BR{n'_2 d_2} + c
+    \end{align*}
+
+\item Case $\mathit{add}(n_1 d_1 , \epsilon, c) = 
+  \mathit{add}(n_1 d_1 , \epsilon 0, c)$
+  \begin{align*}
+    N(\mathit{add}(n_1 d_1 , \epsilon, c))
+    & = N\mathit{add}(n_1 d_1 , \epsilon 0, c) \\
+    & = N \BR{n_1d_1} + N \BR{\epsilon 0} + c & \text{by I.H.}\\
+    & = N \BR{n_1 d_1} + N\BR{\epsilon} + c
+  \end{align*}
+
+\item Case $\mathit{add}(\epsilon, n_2 d_2, c) = 
+  \mathit{add}( \epsilon 0, n_2 d_2,c)$
+  \begin{align*}
+    N(\mathit{add}(\epsilon, n_2 d_2, c))
+    &= N(\mathit{add}( \epsilon 0, n_2 d_2,c)) \\
+    &= N\BR{\epsilon 0} + N\BR{n_2 d_2} + c \\
+    &= N\BR{\epsilon} + N\BR{n_2 d_2} + c
+  \end{align*}
+
+\end{itemize}
+\end{Answer}
+
+\begin{Exercise}
+\label{ex:mult}
+Prove that $N(\mathit{mult}(n_1,n_2)) = N(n_1) N(n_2)$.
+\end{Exercise}
+\begin{Answer}
+By induction on $\mathit{mult}$.
+\begin{itemize}
+\item Case $\mathit{mult}(n_1,\epsilon) = \epsilon$:\\
+  \[
+  N(\mathit{mult}(n_1,\epsilon)) = N(\epsilon) = 0 
+  = N(n_1) N(\epsilon)
+  \]
+
+\item Case $\mathit{mult}(n_1, n'_2 0) = \mathit{mult}(n_1,n'_2) 0$:
+  \begin{align*}
+    N(\mathit{mult}(n_1, n'_2 0)) &= N(\mathit{mult}(n_1,n'_2) 0) \\
+     & = 2 N(\mathit{mult}(n_1,n'_2)) \\
+     & = 2 N(n_1) N(n'_2) & \text{by I.H.}\\
+     & = N(n_1) N (n'_2 0)
+  \end{align*}
+
+\item Case $\mathit{mult}(n_1, n'_2 1) = 
+  \mathit{add}(n_1, \mathit{mult}(n_1,n'_2)0)$:
+  \begin{align*}
+    N(\mathit{mult}(n_1, n'_2 1)) &= 
+    N(\mathit{add}(n_1, \mathit{mult}(n_1,n'_2)0, 0)) \\
+    &= N(n_1) + N(\mathit{mult}(n_1,n'_2)0) + 0 & \text{by Ex.~\ref{ex:add}}\\
+    &= N(n_1) + 2 N(\mathit{mult}(n_1,n'_2)) \\
+    &= N(n_1) + 2 N(n_1) N(n'_2) & \text{by I.H.}\\
+    &= N(n_1) (2 N(n'_2) + 1) \\
+    &= N(n_1) N(n'_2 1)
+  \end{align*}
+\end{itemize}
+\end{Answer}
+
+\begin{Exercise}
+\label{binary-interp-correct}
+ Prove that the interpreter is correct.
+ That is
+ \[
+ N(I\BR{ e }) = E\BR{ e }
+ \]
+\end{Exercise}
+\begin{Answer}
+The proof is by induction on $e$.
+\begin{itemize}
+\item Case $e=n$: 
+  $N(I\BR{ n }) = N\BR{ n } = E\BR{ n }$. 
+\item Case $e = e_1 + e_2$: 
+  \begin{align*}
+    N(I\BR{e_1 + e_2}) &= N(\mathit{add}(I\BR{e_1}, I\BR{e_2}, 0)) \\
+     & = N(I\BR{e_1}) + N(I\BR{e_2}) & \text{by Ex.~\ref{ex:add}}\\
+     & = E\BR{e_1} + E\BR{e_2} & \text{by the I.H.}\\
+     & = E\BR{e_1 + e_2}
+  \end{align*}
+
+\item Case $e = e_1 \times e_2$: 
+  \begin{align*}
+    N(I\BR{e_1 + e_2}) &= N(\mathit{mult}(I\BR{e_1}, I\BR{e_2})) \\
+     & = N(I\BR{e_1}) \times N(I\BR{e_2}) & \text{by Ex.~\ref{ex:mult}}\\
+     & = E\BR{e_1} \times E\BR{e_2} & \text{by the I.H.}\\
+     & = E\BR{e_1 \times e_2}
+  \end{align*}
+
+\end{itemize}
+\end{Answer}
+
+
+%% \section{Booleans and Conditionals}
+
+%% \[
+%% \begin{array}{lrcl}
+%% \text{expressions} & e & ::= & \ldots \mid \TRUE{} \mid \FALSE{} \mid \COND{e}{e}{e}
+%% \end{array}
+%% \]
+
+%% local, immutable variables??
+
+\section{An Imperative Language}
+
+\marginnote{
+\begin{tabular}{ll}
+Reading: & \citet{Schmidt:1986vn} Chapter 5 \\ 
+Exercises: & 5.4, 5.5 a, 5.9
+\end{tabular}
+}
+
+% IMP/WHILE
+% arithmetic, booleans, mutable variables, 
+% commands: assignment, sequence, if, while, skip, read, write.
+
+Figure~\ref{fig:imperative} defines a language with mutable variables,
+a variant of the
+IMP~\citep{Plotkin:1983aa,Winskel:1993uq,Amadio:1998fk} and
+WHILE~\citep{Hoare:1969kw} languages that often appear in textbooks on
+programming languages. As a bonus, we include the \texttt{while} loop,
+even though \citet{Schmidt:1986vn} does not cover loops until Chapter
+6. The reason for his delayed treatment of \texttt{while} loops is
+that their semantics is typically expressed in terms of fixed points
+of continuous functions, which takes some time to explain. However, it
+turns out that the semantics of \texttt{while} loops can be defined
+more simply.
+
+To give meaning to mutable variables, we use a $\mathit{Store}$ which
+is function from variables (identifiers) to numbers.
+\[
+  \mathit{Store} = \mathit{Id} \to \mathit{Nat}
+\]
+The syntax of expressions is extended to include variables, so the
+meaning of expressions must be parameterized on the store. The meaning
+of a variable $x$ is the associated number in the store $s$.
+\[
+  E(x)(s) = s(x)
+\]
+%
+A program takes a number as input and it may produce a number or it
+might diverge. \citet{Schmidt:1986vn} models this behavior with a
+partial function $\mathit{Nat}\to\mathit{Nat}_{\bot}$. Here we shall
+use the alternate, but equivalent, approach of using a relation
+$\mathit{Nat}\times\mathit{Nat}$.
+
+We define the \texttt{while} loop using an auxiliary relation named
+$\mathit{loop}$, which we define inductively in
+Figure~\ref{fig:imperative}. Its two parameters are for the meaning of
+the condition $b$ and the body $c$ of the loop.  If the meaning of the
+condition $m_b$ is $\FALSE$, then the loop is already finished so the
+starting and finishing stores are the same. If the condition $m_b$ is
+$\TRUE$, then the loop executes the body, relating the starting store
+$s_1$ to an intermediate store $s_2$, and then the loop continues,
+relating $s_2$ to the finishing store $s_3$.
+
+%% Function update:
+%% \[
+%%    [x\mapsto n]s(y) =
+%%  \begin{cases} n & \text{if } y = x \\
+%%    s(y) & \text{if } y \neq x
+%%  \end{cases} 
+%% \]
+
+\begin{marginfigure}
+\noindent Syntax
+\[
+\begin{array}{ll}
+  \text{variables} & x \in \mathbb{X}  \\
+ \text{expressions} & e ::= \ldots \mid x \\
+ \text{conditions} & b  ::= \TRUE \mid \FALSE \mid e = e \mid \\
+  &   \qquad \neg b \mid b \lor b \mid b \land b \\
+ \text{commands}& c ::= \SKIP \mid \ASSIGN{x}{e} \mid \SEQ{c}{c} \mid\\
+  &      \qquad \IF{b}{c}{c} \mid \\
+  &      \qquad \WHILE{b}{c} 
+\end{array}
+\]
+Semantics 
+\[
+P\,c = \{ (n,s'\,Z) \mid ([A{\mapsto} n]\mathit{newstore},s') \in C\,c \}
+\]
+\begin{align*}
+C\,\SKIP &= \mathit{id} \\ %\{(s,s) \mid s \in \mathit{Store} \}\\
+C(\ASSIGN{x}{e}) &= \{ (s,[x\mapsto E\,e\,s]s) \mid s {\in} \mathit{Store} \}\\
+C(\SEQ{c_1}{c_2}) &=  C\,c_2 \circ C\,c_1 \\
+C\left(\!\!\begin{array}{l}
+  \mathtt{if}\,b\,\mathtt{then}\,c_1\\
+  \mathtt{else}\,c_2
+  \end{array}\!\!\right)
+  &= 
+ \begin{cases}
+  C\,c_1 & \text{if } B\,b\,s = \TRUE \\
+  C\,c_2 & \text{if } B\,b\,s = \FALSE
+ \end{cases} \\
+C(\WHILE{b}{c}) &= \mathit{loop}(B\,b, C\,c)
+\end{align*}
+\begin{gather*}
+  \inference{m_b\,s = \FALSE}
+            {(s,s) \in \mathit{loop}(m_b, m_c)}
+\\[1ex]
+  \inference{m_b\,s_1 = \TRUE & 
+             (s_1,s_2) \in m_c \\
+             (s_2, s_3) \in \mathit{loop}(m_b, m_c)}
+            {(s_1, s_3) \in \mathit{loop}(m_b, m_c)}
+\end{gather*}
+\caption{An Imperative Language}
+\label{fig:imperative}
+\end{marginfigure}
+
+
+We define an implementation of the imperative language, in terms of an
+abstract machine, in Figure~\ref{fig:imp-impl}. The machine executes
+one command at a time, similar to how a debugger such as \texttt{gdb}
+can be used to view the execution of a C program one statement at a
+time. Each command causes the machine to transition from one state to
+the next, where a state is represented by a control component and the
+store. The control component is the sequence of commands that need to
+be executed, which is convenient to represent as a command of the
+following form.
+\[
+\begin{array}{lrcl}
+  \text{control} & k & ::= & \SKIP \mid \SEQ{c}{k}
+\end{array}
+\]
+The partial function $\mathit{eval}$, also defined in
+Figure~\ref{fig:imp-impl} in the main entry point for the abstract
+machine.
+
+
+\begin{figure*}
+
+\hfill \fbox{$k, s \longrightarrow k', s'$}
+\begin{align*}
+  \SEQ{\SKIP}{k},\; s & \longrightarrow k,\; s \\
+  \SEQ{(\ASSIGN{x}{e})}{k},\; s & \longrightarrow k,\; [x\mapsto E(e)(s)]s\\
+  \SEQ{(\SEQ{c_1}{c_2})}{k},\; s & \longrightarrow
+      \SEQ{c_1}{(\SEQ{c_2}{k})},\; s \\
+  \SEQ{(\IF{b}{c_1}{c_2})}{k},\; s & \longrightarrow \SEQ{c_1}{k},\; s
+     & \text{if } B\,b\,s = \TRUE \\
+  \SEQ{(\IF{b}{c_1}{c_2})}{k},\; s & \longrightarrow \SEQ{c_2}{k},\; s
+     & \text{if } B\,b\,s = \FALSE \\
+  \SEQ{(\WHILE{b}{c})}{k},\; s & \longrightarrow
+      \SEQ{c}{(\SEQ{(\WHILE{b}{c})}{k})},\; s
+    & \text{if } B\,b\,s = \TRUE \\
+  \SEQ{(\WHILE{b}{c})}{k},\; s & \longrightarrow k,\; s
+    & \text{if } B\,b\,s = \FALSE 
+\end{align*}
+\[
+  \mathit{eval}(c) = \{ (n,n') \mid
+     (\SEQ{c}{\SKIP}), [A\mapsto n]\mathit{newstore}
+     \longrightarrow^{*} \SKIP, s'
+     \text{ and } n' = s'(Z) \}
+\]
+\caption{An Abstract Machine for an Imperative Language}
+\label{fig:imp-impl}
+\end{figure*}
+
+Notation: given a relation $R$, we write $R(a)$ for the image of
+$\{a\}$ under $R$. For example, if $R=\{ (0,4), (1,2), (1,3), (2,5)
+\}$, then $R(1) = \{2,3\}$ and $R(0) = \{4\}$.
+
+\begin{Exercise}
+  Prove that if $k,s \longrightarrow k',s'$,
+  then $C(k)(s) = C(k')(s')$.
+\end{Exercise}
+\begin{Answer}
+The proof is by cases on $k,s \longrightarrow k',s'$.
+\begin{itemize}
+\item Case \fbox{$\SEQ{\SKIP}{k},\; s \longrightarrow k,\; s$}
+  \[
+  C(\SEQ{\SKIP}{k})(s) = (C(k) \circ C(\SKIP)) (s)
+    = (C(k) \circ \mathit{id}) (s) = C(k)(s)
+  \]
+
+\item Case \fbox{$\SEQ{(\ASSIGN{x}{e})}{k},\; s \longrightarrow k,\; [x\mapsto E(e)(s)]s$}
+\begin{align*}
+ C(\SEQ{(\ASSIGN{x}{e})}{k})(s)
+ &= 
+ (C(k) \circ C(\ASSIGN{x}{e}))(s)\\
+ &= 
+ C(k)(C(\ASSIGN{x}{e})(s))\\
+ &= 
+ C(k)([x\mapsto E(e)(s)]s)
+\end{align*}
+
+\item Case \fbox{$\SEQ{(\SEQ{c_1}{c_2})}{k},\; s  \longrightarrow
+      \SEQ{c_1}{(\SEQ{c_2}{k})},\; s$}
+  \begin{align*}
+    C(\SEQ{(\SEQ{c_1}{c_2})}{k})(s) 
+    &=
+    ( C(k) \circ (C(c_2) \circ C(c_1)) )(s) \\
+    &= 
+    ( (C(k) \circ C(c_2)) \circ C(c_1) )(s)\\
+    &=
+    C(\SEQ{c_1}{(\SEQ{c_2}{k})})(s)
+  \end{align*}
+
+\item Case \fbox{$\SEQ{(\IF{b}{c_1}{c_2})}{k},\; s 
+        \longrightarrow \SEQ{c_1}{k},\; s$ and $B\,b\,s = \TRUE$}
+  \begin{align*}
+  C(\SEQ{(\IF{b}{c_1}{c_2})}{k})(s)
+  &= (C(k) \circ C(\IF{b}{c_1}{c_2}))(s)\\
+  &= (C(k) \circ C(c_1))(s)\\
+  &= C(\SEQ{c_1}{k})(s)
+  \end{align*}
+
+\item Case \fbox{$\SEQ{(\IF{b}{c_1}{c_2})}{k},\; s 
+        \longrightarrow \SEQ{c_2}{k},\; s$ and $B\,b\,s = \FALSE$}
+  \begin{align*}
+  C(\SEQ{(\IF{b}{c_1}{c_2})}{k})(s)
+  &= (C(k) \circ C(\IF{b}{c_1}{c_2}))(s)\\
+  &= (C(k) \circ C(c_2))(s)\\
+  &= C(\SEQ{c_2}{k})(s)
+  \end{align*}
+
+\item Case \fbox{$\SEQ{(\WHILE{b}{c})}{k},\; s \longrightarrow
+      \SEQ{c}{(\SEQ{(\WHILE{b}{c})}{k})},\; s$ and $B\,b\,s = \TRUE$}
+  \begin{align*}
+    C(\SEQ{(\WHILE{b}{c})}{k})(s)
+    &= (C(k) \circ C(\WHILE{b}{c})) (s)\\
+    &= (C(k) \circ (C(\WHILE{b}{c}) \circ C(c))) (s)\\
+    &= ((C(k) \circ C(\WHILE{b}{c})) \circ C(c)) (s)\\
+    &= C(\SEQ{c}{(\SEQ{(\WHILE{b}{c})}{k})})(s)
+  \end{align*}
+
+\item Case \fbox{$\SEQ{(\WHILE{b}{c})}{k},\; s \longrightarrow k,\; s$ 
+  and $B\,b\,s = \FALSE$}
+  \begin{align*}
+    C(\SEQ{(\WHILE{b}{c})}{k})(s) 
+    &= (C(k) \circ C(\WHILE{b}{c}))(s)\\
+    &= (C(k) \circ \mathit{id})(s)\\
+    &= C(k)(s)
+  \end{align*}
+\end{itemize}
+\end{Answer}
+
+\begin{Exercise}
+  Prove that $P(c) = \mathit{eval}(c)$.
+\end{Exercise}
+\begin{Answer}
+TODO
+\end{Answer}
+
+
+\section{Recursive Definitions via Least Fixed Points}
+
+\marginnote{
+\begin{tabular}{ll}
+Reading: & \citet{Schmidt:1986vn} Chapter 6 \\
+Exercises: & 6.2 a, 6.6, 8
+\end{tabular}
+}
+
+We shall revisit the semantics of the imperative language, this time
+taking the traditional but more complex approach of defining
+\texttt{while} with a recursive equation and using least fixed points
+to solve it. Recall that in \citet{Schmidt:1986vn}, the meaning of a
+command is a function from stores to stores, or more precisely,
+\[
+C(c) : \mathit{Store}_\bot \to \mathit{Store}_\bot
+\]
+The meaning of a loop $(\WHILE{b}{c})$ is a solution to the
+equation
+\begin{equation}
+\label{eq:w}
+w = \LAM{s}\mathit{if}\, B\,b\,s \,\mathit{then}\, w(c\,s)\,\mathit{else}\,s
+\end{equation}
+In general, one can write down recursive equations that do not have
+solutions, so how do we know whether this one does?  When is there a
+unique solution? The theory of least fixed points provides answers to
+these questions.
+
+A \emph{fixed point of a function} is an element that gets mapped to
+itself, e.g. $x = F(x)$. In this case, the element that we're
+interested in is $w$, which is itself a function, so our $F$ will be
+higher-order function. We reformulate Equation~\ref{eq:w} as a fixed
+point equation by abstracting away the recursion into a parameter $r$.
+\begin{equation} \label{eq:while}
+  w = F(w)
+  \qquad
+  \text{where }
+  F\,r\,s = \mathit{if}\, B\,b\,s \,\mathit{then}\, r(c\,s)\,\mathit{else}\,s
+\end{equation}
+
+There are quite a few theorems in the literature that guarantee the
+existence of fixed points, but with different assumptions about the
+function and its domain. For our purposes, the Kleene Fixed Point
+Theorem will do the job\footnote{\citet{Kleene:1952aa} did not state
+  or prove this theorem but it can be seen as a corollary of his
+  recursion theorem~\citep{Amadio:1998fk}. This fixed point theorem is
+  a ``folk'' theorem with murky origins~\citep{Lassez:1982aa}.}. The
+idea of this theorem is to construct an infinite sequence that
+provides increasingly better approximations of the least fixed
+point. The union of this sequence will turn out to be the least fixed
+point.
+
+The Kleene Fixed Point Theorem is quite general; it is stated in terms
+of a function $F$ over an arbitrary ordered set, where the ordering
+corresponds to ``better approximation'' (more information), that is,
+we write $x \sqsubseteq y$ if $x$ is a better approximation than
+$y$. The ordering may be just a partial order, as there can be
+incomparable elements.
+
+\begin{definition}
+  A \textbf{\emph{partially ordered set}} (poset) is a pair
+  $(L,\sqsubseteq)$ that consists of a set $L$ and a partial order
+  $\sqsubseteq$ on $L$.
+\end{definition}
+
+\marginnote{
+\begin{align*}
+\emptyset & \subseteq \{2\mapsto 4\}\\
+\{2\mapsto 4\}& \subseteq \{2\mapsto 4,3 \mapsto 9\}\\
+\{3\mapsto 9\}& \subseteq \{2\mapsto 4, 3 \mapsto 9\}\\
+\{2\mapsto 4\}& \not\subseteq \{3\mapsto 9\}
+\end{align*}
+}
+%
+For example, consider the ordered set $(\NAT{\to}\NAT_\bot,
+\subseteq)$ of partial functions. A partial function $f$ is a better
+approximation than another partial function $g$ if it is defined on
+more inputs, that is, if the graph of $f$ is a subset of the graph of
+$g$.  Two partial functions are incomparable if neither is a subset of
+the other.
+
+The sequence of approximations will start with the worst
+approximation, a bottom element, written $\bot$, that contains no
+information. (For example, $\emptyset$ is the $\bot$ for the poset of
+partial functions.)
+%% \begin{wrapfigure}{r}{0.33\textwidth}
+%% \small \textbf{Example} For \texttt{while}, each $g_i$ corresponds to
+%% iterating the loop up to $i$ times.
+%% \end{wrapfigure}
+The sequence proceeds to by applying $F$ over and over again, that is,
+\[
+  \bot \quad F(\bot)\quad F(F(\bot))\quad F(F(F(\bot)))\quad \cdots\quad F^i(\bot)\quad \cdots
+\]
+
+But how do we know that this sequence will produce increasingly better
+approximations?  How do we know that
+\[
+F^i(\bot) \sqsubseteq F^{i+1}(\bot)
+\]
+We can ensure this by requiring the output of $F$ to improve when the
+input improves, that is, require $F$ to be monotonic.
+
+\begin{definition}
+  Given two partial orders $(A,\sqsubseteq)$ and
+  $(B,\sqsubseteq)$, $F : A {\to} B$ is \textbf{\emph{monotonic}} iff
+  for any $x,y\in A$, $x \sqsubseteq y$ implies $F(x) \sqsubseteq F(x)$.
+\end{definition}
+
+\begin{marginfigure}
+\[
+  \bot \sqsubseteq F(\bot) \sqsubseteq F^2(\bot) 
+    \sqsubseteq F^3(\bot) \sqsubseteq \cdots
+\]
+\caption{Ascending Kleene chain of $F$.}
+\label{fig:kleene-chain}
+\end{marginfigure}
+%
+We have $\bot \sqsubseteq F(\bot)$ because $\bot$ is less or equal to
+everything. Then we apply monotonicity to obtain $F(\bot) \sqsubseteq
+F(F(\bot))$.  Continuing in this way we obtain the sequence of
+increasingly better approximations in Figure~\ref{fig:kleene-chain}.
+If at some point the approximation stops improving, but instead $F$
+produces an element that is merely equal to the last one, then we have
+found a fixed point. However, because we are interested in elements
+that are partial functions, which are infinite, the sequences of
+approximations will also be infinite. So we'll need some other way to
+go from the sequences of approximations to the actual fixed point.
+
+The solution is to take the union of all the approximations. The
+analogue of union for an arbitrary partial order is least upper bound.
+%
+\marginnote{
+$\bigsqcup \left\{\!\! \begin{array}{l}
+              \{ 2 \mapsto 4, 3 \mapsto 9 \}, \\
+              \{ 3 \mapsto 9, 4 \mapsto 16 \} 
+                 \end{array}\!\! \right\}
+= \left\{\!\! \begin{array}{l}
+        2 \mapsto 4, \\ 3 \mapsto 9, \\ 4 \mapsto 16 
+    \end{array}\!\! \right\}$
+}
+%
+\begin{definition}
+Given a subset $S$, an \textbf{\emph{upper bound}} of $S$ is an element
+$y$ such that for all $x \in S$ we have $x \sqsubseteq y$.  The
+\textbf{\emph{least upper bound (lub)}} of $S$, written $\bigsqcup S$,
+is the least of all the upper bounds of $S$, that is, given any upper
+bound $z$ of $S$, we have $\bigsqcup S \sqsubseteq z$.
+\end{definition}
+
+A lub for a set $S$ can only exist of all the elements in $S$ are
+consistent with one another.
+%
+\marginnote{$\{3\mapsto 8\}$ and $\{3 \mapsto 9\}$ are inconsistent.}
+%
+Consistency can be characterized purely in terms of the ordering
+relation: a subset $S$ is \textbf{\emph{consistent}} if every element
+in $S$ is the approximation of a common element, i.e.  there is a $y
+\in L$ such that for all $x \in S$, $x \sqsubseteq y$. In other words,
+$S$ is consistent if it is bounded above.
+%
+A partial order in which all consistent subsets have a least upper
+bound is \textbf{\emph{consistently complete}}~\citep{Plotkin:1978aa}.
+
+However, a slightly different property, directed completeness, is used
+in Kleene's Fixed Point Theorem, for reasons that I do not yet know. A
+directed set is similar to a consistent set, but we only require an
+upper bound for each pair in $S$ and the bound must itself be in $S$.
+
+\begin{definition}
+  Given a poset $(L,\sqsubseteq)$, a subset $S$ of $L$ is
+  \textbf{\emph{directed}} if every pair of elements in $S$ has an
+  upper bound in $S$.
+\end{definition}
+
+The sequence of approximations $\bot \sqsubseteq F(\bot) \sqsubseteq
+F^2(\bot) \sqsubseteq \cdots$ is directed, any totally ordered subset
+is, because the upper bound of two elements is just the larger
+element.
+
+Generalizing from the poset of partial functions, one might think that
+there is always a least upper bound of consistent or directed sets.
+However, this is not always the case because their may not be enough
+elements within the poset. For example, consider the poset
+$(\mathit{Nat},\leq)$. The sequence
+\[
+  0 \leq 1 \leq 2 \leq 3 \leq \cdots
+\]
+does not have a lub in $(\mathit{Nat},\leq)$ because there is no one
+natural number that is greater than all the rest. Of course, if we
+move to the poset $(\mathit{Nat} \cup \{\infty\},\leq)$, where $n \leq
+\infty$ for any $n \in \mathit{Nat}$, then $\infty$ is the lub of the
+above sequence. So in the abstract setting of partial orders, one must
+separately add the requirement that there exists a lub for any
+directed subset.
+
+\begin{definition}
+  A \textbf{\emph{directed-complete partial order (dcpo)}} has a least
+  upper bound for every directed subset.
+\end{definition}
+
+In the literature there are two schools of thought regarding how to
+define complete partial orders. There is the one presented above,
+based on the notion of directed set, which gives us
+dcpos~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk,Berger:2007aa}. The
+other school of thought is based on the notion of a chain, i.e. a
+totally ordered subset, and requires lubs to exists for all
+chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  I like
+dcpos because they are quite close to consistently complete partial
+orders and it seems quite natural to say that lubs should exist for
+sets of consistent elements. On the other hand, the chain-based
+definition gives just what is needed for Kleene's Fixed Point Theorem.
+%% The two schools of thought yield definitions that are
+%% equivalent~\citep{Mitchell:1996nn} (page 312).
+
+The last ingredient required in the proof of the fixed point theorem
+is that the output of $F$ should only depend on a finite amount of
+information from the input, that is, it should be continuous. For
+example, if the input to $F$ is itself a function $g$, $F$ should only
+need to apply $g$ to a finite number of different values.  This
+requirement is at the core of what it means for a function to be
+computable~\citep{Gunter:1990aa}.  So applying $F$ to the lub of a
+directed set $X$ (an infinite thing) should be the same as taking the
+lub of the set obtained by mapping $F$ over the elements of $X$
+(finite things).
+
+\begin{definition}
+  A monotonic function $F : A {\to} B$ on dcpos is
+  \textbf{\emph{continuous}} iff for all directed subsets $X$ of $A$
+  \[
+  F(\bigsqcup X) = \bigsqcup \{ F(x) \mid x \in X \}
+  \]
+\end{definition}
+
+We now state Kleene's Fixed Point Theorem.
+
+\begin{theorem}[Kleene Fixed Point Theorem]\label{thm:fixed-point}
+Suppose $(L,\sqsubseteq)$ is a dcpo with a least element $\bot$, and
+let $F:L\to L$ be a continuous function. Then $F$ has a least fixed
+point, written $\mathrm{fix}\,F$, which is the least upper bound of
+the ascending Kleene chain of $F$:
+\[
+  \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
+\]
+\end{theorem}
+\begin{proof}
+We first prove that $\mathrm{fix}\,F$ is a fixed point of $F$.
+\begin{align*}
+  F(\mathrm{fix}\,F) &= F(\bigsqcup \{ F^n(\bot) \mid n \in \NAT \})\\
+  &= \bigsqcup\{ F(F^n(\bot)) \mid n \in \NAT \} & \text{by continuity}\\
+  &= \bigsqcup\{ F^{n+1}(\bot)) \mid n \in \NAT \} \\
+  %% &= \bigsqcup \{ F^1(\bot), F^2(\bot), F^3(\bot), \ldots\} \\
+  %% &= \bigsqcup \{ F^0(\bot), F^1(\bot), F^2(\bot), F^3(\bot), \ldots\} \\
+  &= \bigsqcup\{ F^n(\bot)) \mid n \in \NAT \} 
+  & \text{because } F^0(\bot) = \bot \sqsubseteq F^1(\bot)  \\
+  &= \mathrm{fix}\,F
+\end{align*}
+Next we prove that $\mathrm{fix}\,F$ is the least of the fixed points
+of $F$. Suppose $e$ is an arbitrary fixed point of $F$. By the
+monotonicity of $F$ we have $F^i(\bot) \sqsubseteq F^i(e)$ for all
+$i$.  And because $e$ is a fixed point, we also have $F^i(e) = e$, so
+$e$ is an upper bound of the ascending Kleene chain, and therefore
+$\mathrm{fix}\,F \sqsubseteq e$.
+\end{proof}
+
+Returning to the semantics of the \texttt{while} loop, to apply
+Theorem~\ref{thm:fixed-point}, we need to show that
+\begin{enumerate}
+\item $(\mathit{Store}_\bot{\to}\mathit{Store}_\bot,\subseteq)$ is a dcpo and
+\item the $F$ of Equation~\ref{eq:while} is continuous.
+\end{enumerate}
+%Recall that $\mathit{Store} = \mathit{Id} \to \mathit{Nat}$.
+
+%Also, we have the following facts about building
+%dcpos~\citep{Amadio:1998fk}.
+
+
+
+\begin{proposition}[Partial functions are dcpos]
+  Given any two sets $A$ and $B$, the partial order $(A \to B_\bot,
+  \preceq)$, where the ordering is defined as subset inclusion on
+  their graphs, is a dcpo.
+\end{proposition}
+\begin{proof}
+  Let $S$ be a directed subset of $A \to B_\bot$.
+  Let $r$ be the the union of the graphs of $S$.
+  \[
+    r = \bigcup \{ \mathrm{graph}(f) \mid f \in S\}
+  \]
+  Then least upper bound of $S$ is defined as follows
+  \[
+  (\bigsqcup S)(x) = 
+    \begin{cases}
+      y & \text{if } (x,y) \in r \\
+      \bot & \text{otherwise}
+    \end{cases}
+  \]
+
+  UNDER CONSTRUCTION  
+\end{proof}
+
+
+%% \begin{proposition}[Constructing dcpos]\ \\
+%%   \begin{enumerate}
+%%   \item Any discrete partial ordering $(A,=)$ is a
+%%     dcpo. \label{prop:discrete-dcpo}
+%%   \item Given a dcpo $(A,\sqsubseteq)$, its lifting $A_\bot = A \cup
+%%     \{ \bot \}$ is dcpo. \label{prop:pointed-dcpo}
+%%   \item If $A$ and $B$ are dcpos, then $A \times B$ with lexicographic
+%%     ordering is a dcpo. $(\bot,\bot)$ is the least
+%%     element. \label{prop:pair-dcpo}
+%%   \item If $A$ and $B$ are dcpos, then the set of continuous functions
+%%     from $A$ to $B$ with the pointwise ordering is a
+%%     dcpo.\label{prop:fun-dcpo}
+%%   \end{enumerate}
+%% \end{proposition}
+%% Applying these facts to our situation, $\mathit{Id}$ and
+%% $\mathit{Nat}$ are discrete partial orders, so they are dcpos
+%% \eqref{prop:discrete-dcpo}. Therefore $\mathit{Store}$ is also a dcpo
+%% \eqref{prop:fun-dcpo}, and so is $\mathit{Store}_\bot$
+%% \eqref{prop:pointed-dcpo}. Then the final step is that
+%% $\mathit{Store}_\bot{\to}\mathit{Store}_\bot$ is a dcpo
+%% \eqref{prop:fun-dcpo}.
+
+%% Next we need to show that the functional $F$ for $\mathtt{while}$ is
+%% continuous
+%% \begin{align*}
+%%   F &: (\mathit{Store}_\bot{\to}\mathit{Store}_\bot) \to (\mathit{Store}_\bot \to \mathit{Store}_\bot) \\
+%%   F\,r\,s &= \mathit{if}\, B\,b\,s \,\mathit{then}\, r(c\,s)\,\mathit{else}\,s
+%% \end{align*}
+
+%% \begin{proposition}\ \\
+%%   \begin{enumerate}
+%%   \item Any function $f : A \to B$ is continuous if $A$ is a discrete
+%%     partial order. \label{prop:discrete-continuous}
+%%   \item ...
+%%   \end{enumerate}
+%% \end{proposition}
+
+%% Because $\mathit{Id}$ is a discrete partial order, every $s \in
+%% \mathit{Store}$ is continuous.
+
+%% A partial function $f$ is an approximation of another partial function
+%% $g$ (less defined), written $f \sqsubseteq g$ and defined as follows.
+%% \[
+%%   f \sqsubseteq g \;\overset{\mathrm{def}}{=}\;
+%%       \forall x \in \mathrm{dom}(f).\, f(x) \sqsubseteq g(x).
+%% \]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+\pagebreak
+
+\section*{Answers to Exercises}
+
+\shipoutAnswer
+
+\clearpage
+\pagebreak
+
+\bibliographystyle{plainnat}
+\bibliography{all}
+
+\end{document}
+
+
+\section{Records and Variants}
+
+\section{Functions}
+
+% STLC
+
+Syntax
+\[
+\begin{array}{lrcl}
+\text{expressions} & e & ::= & \ldots \mid x \mid \LAM{x\of T} e \mid e \APP e
+\end{array}
+\]
+
+
+evaluation orders (specification)
+\begin{itemize}
+\item full $\beta$
+\item CBV
+\item CBN
+\end{itemize}
+
+\section{Recursive Functions}
+
+% PCF
+% statically typed, lambda, fix, nat, bool, if, primitives
+
+
+\section{Dynamic Typing}
+
+
+\section{The $\lambda$-calculus}
+
+Syntax
+\[
+\begin{array}{lrcl}
+\text{expressions} & e & ::= & \ldots \mid x \mid \LAM{x} e \mid e \APP e
+\end{array}
+\]
+
+
+
+\section{Pointers}
+
+
+
+%%  LocalWords:  implementers
