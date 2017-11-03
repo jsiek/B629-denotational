@@ -1,4 +1,6 @@
-# B629 Topics in Programming Languages: Denotational Semantics
+\pagenumbering{gobble}
+
+# B629 Topics in PL: Denotational Semantics
 
 Indiana University, Spring 2018
 
@@ -17,67 +19,29 @@ some programming.
 
 9:30-10:45am MW in BH 305
 
-
-## Lecture Notes
-
 The lecture notes are in progress at:
 
 [https://github.com/jsiek/B629-denotational/notes.pdf](notes.pdf).
 
+## Representative Readings
 
-## Readings
-
-TBD
-
-## Possible Sources for Readings
-
-- Denotational semantics: a methodology for language development,
-  David Schmidt, 1986. (pdf available online)
-
-- The denotational semantics of programming languages,
-  Tennent, CACM 1976.
-
-- Semantics of Programming Languages: Structures and Techniques
-  Gunter, 1992.
-
-- Domains and Lambda Calculi, Amadio and Curien, 1998.
-
-- Outline of a Mathematical Theory of Computation, Dana Scott 1970.
-
-- Data Types as Lattices, Dana Scott 1976.
-
-- The Lambda Calculus: its Syntax and Semantics. Barendregt 1984.
-
-- The category-theoretic solution of recursive domain equations
-  Smyth and Plotkin, Siam Journal on Computing, 1982.
-
-- Set-theoretical and other elementary models of the λ-calculus,
+- Denotational semantics: a methodology for language development, Schmidt 1986.
+- Outline of a Mathematical Theory of Computation, Scott 1970.
+- Data Types as Lattices, Scott 1976.
+- The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
+- The category-theoretic solution of recursive domain equations,
+  Smyth and Plotkin, 1982.
+- Set-theoretical and other elementary models of the lambda-calculus,
   Plotkin 1993.
-
-- Algebras and combinators, Engeler, 1981.
-
+- Algebras and combinators, Engeler 1981.
 - Functional characterization of some semantic equalities
-  inside λ-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
-
-- Functional Characters of Solvable Terms
-  Coppo, Dezani-Ciancaglini, Venneri, Math. Logic Quart. 1981.
-
+  inside lambda-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
 - A filter lambda model and the completeness of type assignment,
-  Barendregt, Coppo, Dezani-Ciancaglini, 1983.
-
+  Barendregt, Coppo, Dezani-Ciancaglini 1983.
 - Intersection Types and Lambda Models
-  Alessi, Barbanera, Dezani-Ciancaglini, TCS 2006.
-
-- Recursive Domain Equations of Filter Models,
-  Alessi, Severi, SOFSEM 2008.
-
-- Revisiting Elementary Denotational Semantics,
-  Siek, draft 2017.
-
-- Lambda Calculus with Types, Barendregt, Dekkers, Statman, 2013.
-
-- Notions of computation and monads, Moggi, 1991.
-
+  Alessi, Barbanera, Dezani-Ciancaglini 2006.
+- Revisiting Elementary Denotational Semantics, Siek 2017.
+- Notions of computation and monads, Moggi 1991.
 - Observable sequentiality and full abstraction,
-  Cartwright and Felleisen, POPL 1992.
+  Cartwright, Felleisen 1992.
 
