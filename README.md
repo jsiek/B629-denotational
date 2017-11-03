@@ -1,8 +1,6 @@
 # B629 Topics in Programming Languages: Denotational Semantics
 
-Spring 2018
-
-Indiana University
+Indiana University, Spring 2018
 
 In this course we shall study the denotational semantics of
 programming languages, including the classic domain-theoretic models
@@ -22,7 +20,9 @@ some programming.
 
 ## Lecture Notes
 
-The lecture notes are in progress [here](notes.pdf)
+The lecture notes are in progress at:
+
+[https://github.com/jsiek/B629-denotational/notes.pdf](notes.pdf).
 
 
 ## Readings
