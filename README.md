@@ -1,6 +1,7 @@
 # B629 Topics in Programming Languages: Denotational Semantics
 
 Spring 2018
+
 Indiana University
 
 In this course we shall study the denotational semantics of
