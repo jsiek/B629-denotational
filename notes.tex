@@ -607,22 +607,16 @@ point equation by abstracting away the recursion into a parameter $r$.
 
 There are quite a few theorems in the literature that guarantee the
 existence of fixed points, but with different assumptions about the
-function and its domain. For our purposes, the Kleene Fixed Point
-Theorem will do the job\footnote{\citet{Kleene:1952aa} did not state
-  or prove this theorem but it can be seen as a corollary of his
-  recursion theorem~\citep{Amadio:1998fk}. This fixed point theorem is
-  a ``folk'' theorem with murky origins~\citep{Lassez:1982aa}.}. The
-idea of this theorem is to construct an infinite sequence that
-provides increasingly better approximations of the least fixed
-point. The union of this sequence will turn out to be the least fixed
-point.
+function and its domain. For our purposes, the CPO Fixed-Point Theorem
+will do the job~\citep{Lassez:1982aa}. The idea of this theorem is to
+construct an infinite sequence that provides increasingly better
+approximations of the least fixed point. The union of this sequence
+will turn out to be the least fixed point.
 
-The Kleene Fixed Point Theorem is quite general; it is stated in terms
-of a function $F$ over an arbitrary ordered set, where the ordering
-corresponds to ``better approximation'' (more information), that is,
-we write $x \sqsubseteq y$ if $x$ is a better approximation than
-$y$. The ordering may be just a partial order, as there can be
-incomparable elements.
+The CPO Fixed-Point Theorem is quite general; it is stated in terms of
+a function $F$ over partially ordered sets with a few mild conditions.
+The ordering captures the notion of approximation, that is, we write
+$x \sqsubseteq y$ if $x$ approximates $y$.
 
 \begin{definition}
   A \textbf{\emph{partially ordered set}} (poset) is a pair
@@ -630,21 +624,32 @@ incomparable elements.
   $\sqsubseteq$ on $L$.
 \end{definition}
 
-\marginnote{
-\begin{align*}
-\emptyset & \subseteq \{2\mapsto 4\}\\
-\{2\mapsto 4\}& \subseteq \{2\mapsto 4,3 \mapsto 9\}\\
-\{3\mapsto 9\}& \subseteq \{2\mapsto 4, 3 \mapsto 9\}\\
-\{2\mapsto 4\}& \not\subseteq \{3\mapsto 9\}
-\end{align*}
+\begin{marginfigure}
+\centering\large
+\xymatrix@=10pt{
+ & \left\{
+   \substack{2\mapsto 4, \\ 3\mapsto 9, \\4\mapsto 16}
+  \right\} \ar@{-}[dl]\ar@{-}[d] \ar@{-}[dr]& \\
+ \left\{ \substack{2\mapsto 4,\\ 3\mapsto 9} \right\} \ar@{-}[d]\ar@{-}[dr] 
+  & 
+ \left\{ \substack{2\mapsto 4,\\ 4\mapsto 16} \right\} \ar@{-}[dl]\ar@{-}[dr] 
+  &
+\left\{ \substack{3\mapsto 9,\\ 4 \mapsto 16} \right\} \ar@{-}[d]\ar@{-}[dl]
+  \\
+\{\substack{2\mapsto 4}\} \ar@{-}[dr] &  \{\substack{3\mapsto 9}\} \ar@{-}[d]& \{\substack{4\mapsto 16}\} \ar@{-}[dl]\\
+  & \emptyset
 }
+\caption{A poset of partial functions.}
+\label{fig:poset-of-partial-functions}
+\end{marginfigure}
 %
-For example, consider the poset $(A{\rightharpoonup}B, \subseteq)$ of
-partial functions. A partial function $f$ is a better approximation
-than another partial function $g$ if it is defined on more inputs,
-that is, if the graph of $f$ is a subset of the graph of $g$.  Two
-partial functions are incomparable if neither is a subset of the
-other.
+For example, consider the poset
+$(\mathbb{N}{\rightharpoonup}\mathbb{N}, \subseteq)$ of partial
+functions on natural numbers. Some partial function $f$ is a better
+approximation than another partial function $g$ if it is defined on
+more inputs, that is, if the graph of $f$ is a subset of the graph of
+$g$.  Two partial functions are incomparable if neither is a subset of
+the other.
 
 The sequence of approximations will start with the worst
 approximation, a bottom element, written $\bot$, that contains no
@@ -678,7 +683,7 @@ input improves, that is, require $F$ to be monotonic.
   \bot \sqsubseteq F(\bot) \sqsubseteq F^2(\bot) 
     \sqsubseteq F^3(\bot) \sqsubseteq \cdots
 \]
-\caption{Ascending Kleene chain of $F$.}
+\caption{Ascending chain of $F$.}
 \label{fig:kleene-chain}
 \end{marginfigure}
 %
@@ -695,8 +700,8 @@ go from the sequences of approximations to the actual fixed point.
 
 The solution is to take the union of all the approximations. The
 analogue of union for an arbitrary partial order is least upper bound.
-%
-\marginnote{
+
+\begin{marginfigure}
 $\bigsqcup \left\{\!\! \begin{array}{l}
               \{ 2 \mapsto 4, 3 \mapsto 9 \}, \\
               \{ 3 \mapsto 9, 4 \mapsto 16 \} 
@@ -704,90 +709,45 @@ $\bigsqcup \left\{\!\! \begin{array}{l}
 = \left\{\!\! \begin{array}{l}
         2 \mapsto 4, \\ 3 \mapsto 9, \\ 4 \mapsto 16 
     \end{array}\!\! \right\}$
-}
-%
-\begin{definition}
-Given a subset $S$, an \textbf{\emph{upper bound}} of $S$ is an element
-$y$ such that for all $x \in S$ we have $x \sqsubseteq y$.  The
-\textbf{\emph{least upper bound (lub)}} of $S$, written $\bigsqcup S$,
-is the least of all the upper bounds of $S$, that is, given any upper
-bound $z$ of $S$, we have $\bigsqcup S \sqsubseteq z$.
-\end{definition}
-
-A lub for a set $S$ can only exist of all the elements in $S$ are
-consistent with one another.
-%
-\marginnote{$\{3\mapsto 8\}$ and $\{3 \mapsto 9\}$ are inconsistent.}
-%
-Consistency can be characterized purely in terms of the ordering
-relation: a subset $S$ is \textbf{\emph{consistent}} if every element
-in $S$ is the approximation of a common element, i.e.  there is a $y
-\in L$ such that for all $x \in S$, $x \sqsubseteq y$. In other words,
-$S$ is consistent if it is bounded above.
-%
-In the poset of partial functions $(A \rightharpoonup B, \subseteq)$,
-every consistent subset has a lub.
-
-%
-%% A partial order in which all consistent subsets have a least upper
-%% bound is \textbf{\emph{consistently complete}}~\citep{Plotkin:1978aa}
-%% (aka. \emph{bounded complete}~\citep{Gunter:1992aa}).
-
-However, a slightly different property, directedness, is used in
-Kleene's Fixed Point Theorem. (I do not yet know why.) A directed set
-is similar to a consistent set, but we only require an upper bound for
-each pair in $S$ and the bound must itself be in $S$.
+\caption{The lub of partial functions.}
+\end{marginfigure}
 
 \begin{definition}
-  Given a poset $(L,\sqsubseteq)$, a subset $S$ of $L$ is
-  \textbf{\emph{directed}} if every pair of elements in $S$ has an
-  upper bound in $S$.
+Given a subset $S$ of a partial order $(L,\sqsubseteq)$, an
+\textbf{\emph{upper bound}} of $S$ is an element $y$ such that for all
+$x \in S$ we have $x \sqsubseteq y$.  The \textbf{\emph{least upper
+    bound (lub)}} of $S$, written $\bigsqcup S$, is the least of all
+the upper bounds of $S$, that is, given any upper bound $z$ of $S$, we
+have $\bigsqcup S \sqsubseteq z$.
 \end{definition}
 
-The sequence of approximations $\bot \sqsubseteq F(\bot) \sqsubseteq
-F^2(\bot) \sqsubseteq \cdots$ is directed, any totally ordered subset
-is, because the upper bound of two elements is just the larger
-element.
-
-Generalizing from the poset of partial functions, one might think that
-there is always a least upper bound of consistent or directed sets.
-However, this is not always the case because their may not be enough
-elements within the poset. For example, consider the poset
-$(\mathit{Nat},\leq)$. The sequence
-\[
-  0 \leq 1 \leq 2 \leq 3 \leq \cdots
-\]
-does not have a lub in $(\mathit{Nat},\leq)$ because there is no one
-natural number that is greater than all the rest. Of course, if we
-move to the poset $(\mathit{Nat} \cup \{\infty\},\leq)$, where $n \leq
-\infty$ for any $n \in \mathit{Nat}$, then $\infty$ is the lub of the
-above sequence. So in the abstract setting of partial orders, one must
-separately add the requirement that there exists a lub for any
-directed subset.
+In arbitrary posets, a least upper bound may not exist for an
+arbitrary subset. In particular, for the poset
+$(\mathbb{N}{\rightharpoonup}\mathbb{N}, \subseteq)$, two partial
+functions do not have a lub if they are inconsistent, that is, if they
+map the same input to different outputs, such as $\{3\mapsto 8\}$ and
+$\{3 \mapsto 9\}$. However, the CPO Fixed-Point Theorem will only need to
+consider totally ordered subsets, i.e., chains, and all the elements
+in a chain are consistent.
 
 \begin{definition}
-  A \textbf{\emph{directed-complete partial order (dcpo)}} has a least
-  upper bound for every directed subset.
+  A \textbf{\emph{chain}} is a totally ordered subset of a poset.  A
+  \textbf{\emph{chain-complete partial order (cpo)}} has a least upper
+  bound for every chain.
 \end{definition}
 
-\marginnote{
-\hspace{20pt}\xymatrix{
- a \ar@{-}[d]\ar@{-}[drr] &          & b \ar@{-}[d] \ar@{-}[dll]\\
- c \ar@{-}[dr]&          & d \ar@{-}[dl]\\
-         & e 
-}  \\[2ex]
-\noindent This poset is a dcpo but the consistent set $\{c,d,e\}$ has no
-lub~\citep{Plotkin:1978aa}.
-}
 
-In the literature there are two schools of thought regarding how to
-define complete partial orders. There is the one presented above,
-based on the notion of directed set, which gives us
-dcpos~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk,Berger:2007aa}. The
-other school of thought is based on the notion of a chain, i.e. a
-totally ordered subset, and requires lubs to exists for all
-chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  
-
+%% \begin{proof}
+%%   Let $S$ be a directed subset of $A \to B_\bot$.
+%%   The union of the elements of $S$ is the least upper bound of $S$.
+%%   Suppose $h \in S$. Then $h \subseteq \bigcup S$, so $\bigcup S$ is an upper bound of $S$.
+%%   Let $f$ be an arbitrary upper bound of $S$.
+%%   We need to show that $\bigcup S \subseteq f$.
+%%   Suppose $(x,y) \in \bigcup S$.
+%%   Then $(x,y) \in g$ for some $g \in S$.
+%%   So $(x,y) \in f$ because $g \subseteq f$.
+%%   Therefore $\botcup S$ is the least of all the upper bounds of $S$.
+%% \end{proof}
 
 %% I like dcpos because it seems quite natural to say that lubs should
 %% exist for sets of consistent elements. On the other hand, the
@@ -808,26 +768,27 @@ lub of the set obtained by mapping $F$ over the elements of $X$
 (finite things).
 
 \begin{definition}
-  A monotonic function $F : A {\to} B$ on dcpos is
-  \textbf{\emph{continuous}} iff for all directed subsets $X$ of $A$
+  A monotonic function $F : A {\to} B$ on a cpo is
+  \textbf{\emph{continuous}} iff for all chains $X$ of $A$
   \[
   F(\bigsqcup X) = \bigsqcup \{ F(x) \mid x \in X \}
   \]
 \end{definition}
 
-We now state Kleene's Fixed Point Theorem.
+We now state the fixed point theorem for cpos.
 
-\begin{theorem}[Kleene Fixed Point Theorem]\label{thm:fixed-point}
-Suppose $(L,\sqsubseteq)$ is a dcpo with a least element $\bot$, and
-let $F:L\to L$ be a continuous function. Then $F$ has a least fixed
-point, written $\mathrm{fix}\,F$, which is the least upper bound of
-the ascending Kleene chain of $F$:
+\begin{theorem}[CPO Fixed-Point Theorem]\label{thm:fixed-point}
+Suppose $(L,\sqsubseteq)$ is a cpo and let $F:L\to L$ be a continuous
+function. Then $F$ has a least fixed point, written $\mathrm{fix}\,F$,
+which is the least upper bound of the ascending chain of $F$:
 \[
   \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
 \]
 \end{theorem}
 \begin{proof}
-We first prove that $\mathrm{fix}\,F$ is a fixed point of $F$.
+Note that $\bot$ is an element of $L$ because it is the lub of the
+empty chain.  We first prove that $\mathrm{fix}\,F$ is a fixed point
+of $F$.
 \begin{align*}
   F(\mathrm{fix}\,F) &= F(\bigsqcup \{ F^n(\bot) \mid n \in \NAT \})\\
   &= \bigsqcup\{ F(F^n(\bot)) \mid n \in \NAT \} & \text{by continuity}\\
@@ -842,38 +803,35 @@ Next we prove that $\mathrm{fix}\,F$ is the least of the fixed points
 of $F$. Suppose $e$ is an arbitrary fixed point of $F$. By the
 monotonicity of $F$ we have $F^i(\bot) \sqsubseteq F^i(e)$ for all
 $i$.  And because $e$ is a fixed point, we also have $F^i(e) = e$, so
-$e$ is an upper bound of the ascending Kleene chain, and therefore
+$e$ is an upper bound of the ascending chain, and therefore
 $\mathrm{fix}\,F \sqsubseteq e$.
 \end{proof}
+
+
+In the literature there are two schools of thought regarding how to
+define complete partial orders. There is the one presented above, that
+requires lubs to exists for all
+chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  The
+other requires that the poset be directed complete, that is, lubs
+exists for all directed
+sets~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk,Berger:2007aa}.
+The two schools of thought are equivalent, i.e., a poset $P$ with a
+least element is directed-complete iff every chain in $P$ has a
+lub~\citep{Davey:2002fj} (Theorem 8.11).
+
 
 Returning to the semantics of the \texttt{while} loop, to apply
 Theorem~\ref{thm:fixed-point}, we need to show that
 \begin{enumerate}
-\item $(\mathit{Store}{\rightharpoonup}\mathit{Store},\subseteq)$ is a dcpo and
+\item $(\mathit{Store}{\rightharpoonup}\mathit{Store},\subseteq)$ is a
+  cpo and
 \item the $F$ of Equation~\ref{eq:while} is continuous.
 \end{enumerate}
 %Recall that $\mathit{Store} = \mathit{Id} \to \mathit{Nat}$.
 %Also, we have the following facts about building
 %dcpos~\citep{Amadio:1998fk}.
-Regarding the first point, we have the following proposition.
-
-\begin{proposition}[Partial functions are dcpos]
-  Given any two sets $A$ and $B$, the partial order $(A \rightharpoonup
-  B, \subseteq)$, is a dcpo.
-\end{proposition}
-%% \begin{proof}
-%%   Let $S$ be a directed subset of $A \to B_\bot$.
-%%   The union of the elements of $S$ is the least upper bound of $S$.
-%%   Suppose $h \in S$. Then $h \subseteq \bigcup S$, so $\bigcup S$ is an upper bound of $S$.
-%%   Let $f$ be an arbitrary upper bound of $S$.
-%%   We need to show that $\bigcup S \subseteq f$.
-%%   Suppose $(x,y) \in \bigcup S$.
-%%   Then $(x,y) \in g$ for some $g \in S$.
-%%   So $(x,y) \in f$ because $g \subseteq f$.
-%%   Therefore $\botcup S$ is the least of all the upper bounds of $S$.
-%% \end{proof}
-
-Regarding the second point, UNDER CONSTRUCTION
+%% Regarding the first point, we have the following proposition.
+%% Regarding the second point, UNDER CONSTRUCTION
 
 
 %% \begin{proposition}[Constructing dcpos]\ \\
@@ -995,6 +953,155 @@ Syntax
 
 \section{Pointers}
 
+\section{Miscellaneous}
+
+A lub for a set $S$ can only exist of all the elements in $S$ are
+consistent with one another.
+%
+\marginnote{$\{3\mapsto 8\}$ and $\{3 \mapsto 9\}$ are inconsistent.}
+%
+Consistency can be characterized purely in terms of the ordering
+relation.
+
+\begin{definition}
+A subset $S$ of a partial order $(L,\sqsubseteq)$ is
+\textbf{\emph{consistent}} if every pair of elements $x$ and $y$ in
+$S$ has a common upper bound, i.e.  there exists $z \in L$ such $x
+\sqsubseteq z$ and $y \sqsubseteq z$.
+\end{definition}
+
+In the poset of partial functions $(A \rightharpoonup B, \subseteq)$,
+every consistent subset $S$ has a lub, the function whose graph is the
+union of all the graphs in $S$.
+
+%
+%% A partial order in which all consistent subsets have a least upper
+%% bound is \textbf{\emph{consistently complete}}~\citep{Plotkin:1978aa}
+%% (aka. \emph{bounded complete}~\citep{Gunter:1992aa}).
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+ & \{ 1,2,3\} \ar@{-}[ddl]\ar@{-}[dr]\\
+ & & \{ 2,3 \} \ar@{-}[dl]\ar@{-}[d]\\
+\{1\}\ar@{-}[dr] & \{ 2 \} \ar@{-}[d]& \{ 3 \}\ar@{-}[dl]\\
+   & \emptyset & 
+} 
+\caption{A directed subset of $(\mathcal{\mathbb{N}},\subseteq)$.}
+\end{marginfigure}
+
+However, a slightly different property, directedness, is used in the
+fixed point theorem. (I am trying to find out why.) A directed set is
+similar to a consistent set, but we only require an upper bound for
+each pair in $S$ and the bound must itself be in $S$.
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+ & & \{ 2,3 \} \ar@{-}[dl]\ar@{-}[d]\\
+\{1\}\ar@{-}[dr] & \{ 2 \} \ar@{-}[d]& \{ 3 \}\ar@{-}[dl]\\
+   & \emptyset & 
+}
+\caption{A subset of $(\mathcal{\mathbb{N}},\subseteq)$ that is
+not directed.}
+\end{marginfigure}
+
+
+\begin{definition}
+  Given a poset $(L,\sqsubseteq)$, a subset $S$ of $L$ is
+  \textbf{\emph{directed}} if every pair of elements in $S$ has an
+  upper bound in $S$.
+\end{definition}
+
+The sequence of approximations $\bot \sqsubseteq F(\bot) \sqsubseteq
+F^2(\bot) \sqsubseteq \cdots$ is directed, any totally ordered subset
+is, because the upper bound of two elements is just the larger
+element.
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+    & a \ar@{-}[dl]\ar@{-}[dr]& \\
+  b &   & c
+}
+\caption{The subset $\{b,c\}$ is consistent but not directed.
+  The subset $\{a,b,c\}$ is both consistent and directed.}
+\end{marginfigure}
+
+\begin{proposition}
+  A finite directed set $S$ is also consistent.
+\end{proposition}
+\begin{proof}
+  By induction on $S$. If $S=\emptyset$, then it vacuously consistent.
+  Otherwise, remove a minimal element $x$ from $S$.  Then $S'=S -
+  \{x\}$ is still directed, so $S'$ is consistent by the induction
+  hypothesis, say with bound $z$. Then because $S$ is directed, for
+  every $y \in S'$, the pair $x$ and $y$ have a bound $w$ in $S'$ (the
+  bound couldn't be $x$), and $w \sqsubseteq z$ (because $S'$ is
+  consistent) so $x \sqsubseteq z$.  Thus, $S$ is consistent.
+\end{proof}
+
+Generalizing from the poset of partial functions, one might think that
+there is always a least upper bound of consistent or directed sets.
+However, this is not always the case because their may not be enough
+elements within the poset. For example, consider the poset
+$(\mathit{Nat},\leq)$. The sequence
+\[
+  0 \leq 1 \leq 2 \leq 3 \leq \cdots
+\]
+does not have a lub in $(\mathit{Nat},\leq)$ because there is no one
+natural number that is greater than all the rest. Of course, if we
+move to the poset $(\mathit{Nat} \cup \{\infty\},\leq)$, where $n \leq
+\infty$ for any $n \in \mathit{Nat}$, then $\infty$ is the lub of the
+above sequence. So in the abstract setting of partial orders, one must
+separately add the requirement that there exists a lub for any
+directed subset.
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+ a \ar@{-}[d]\ar@{-}[drr] &          & b \ar@{-}[d] \ar@{-}[dll]\\
+ c \ar@{-}[dr]&          & d \ar@{-}[dl]\\
+         & e 
+}  \\[2ex]
+\caption{A dcpo with a consistent set $\{c,d\}$ that has no
+  lub~\citep{Plotkin:1978aa}.}
+\end{marginfigure}
+
+\begin{definition}
+  A \textbf{\emph{directed-complete partial order (dcpo)}} has a least
+  upper bound for every directed subset.
+\end{definition}
+
+\begin{proposition}[Partial functions are dcpos]
+  Given any two sets $A$ and $B$, the partial order $(A \rightharpoonup
+  B, \subseteq)$, is a dcpo.
+\end{proposition}
+
+\begin{theorem}[Fixed Point Theorem for Dcpos]\label{thm:fixed-point}
+Suppose $(L,\sqsubseteq)$ is a dcpo with a least element $\bot$, and
+let $F:L\to L$ be a continuous function. Then $F$ has a least fixed
+point, written $\mathrm{fix}\,F$, which is the least upper bound of
+the ascending chain of $F$:
+\[
+  \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
+\]
+\end{theorem}
+\begin{proof}
+We first prove that $\mathrm{fix}\,F$ is a fixed point of $F$.
+\begin{align*}
+  F(\mathrm{fix}\,F) &= F(\bigsqcup \{ F^n(\bot) \mid n \in \NAT \})\\
+  &= \bigsqcup\{ F(F^n(\bot)) \mid n \in \NAT \} & \text{by continuity}\\
+  &= \bigsqcup\{ F^{n+1}(\bot)) \mid n \in \NAT \} \\
+  %% &= \bigsqcup \{ F^1(\bot), F^2(\bot), F^3(\bot), \ldots\} \\
+  %% &= \bigsqcup \{ F^0(\bot), F^1(\bot), F^2(\bot), F^3(\bot), \ldots\} \\
+  &= \bigsqcup\{ F^n(\bot)) \mid n \in \NAT \} 
+  & \text{because } F^0(\bot) = \bot \sqsubseteq F^1(\bot)  \\
+  &= \mathrm{fix}\,F
+\end{align*}
+Next we prove that $\mathrm{fix}\,F$ is the least of the fixed points
+of $F$. Suppose $e$ is an arbitrary fixed point of $F$. By the
+monotonicity of $F$ we have $F^i(\bot) \sqsubseteq F^i(e)$ for all
+$i$.  And because $e$ is a fixed point, we also have $F^i(e) = e$, so
+$e$ is an upper bound of the ascending chain, and therefore
+$\mathrm{fix}\,F \sqsubseteq e$.
+\end{proof}
 
 
 %%  LocalWords:  implementers
