@@ -1038,10 +1038,10 @@ Semantics
 \]
 \begin{align*}
   E\, n \, \rho & = \{ N(n) \} \\
-  E\, (e_1 + e_2) \, \rho & = \{ n_1 + n_2 \mid n_1 \in E\,e_1\,\rho, 
-                                    n_2 \in E\,e_2\,\rho \} \\
-  E\, (e_1 \times e_2) \, \rho & = \{ n_1 n_2 \mid n_1 \in E\,e_1\,\rho, 
-                                    n_2 \in E\,e_2\,\rho \} \\
+  E\, (e_1 + e_2) \, \rho & = \{ i_1 + i_2 \mid i_1 \in E\,e_1\,\rho, 
+                                    i_2 \in E\,e_2\,\rho \} \\
+  E\, (e_1 \times e_2) \, \rho & = \{ i_1 i_2 \mid i_1 \in E\,e_1\,\rho, 
+                                    i_2 \in E\,e_2\,\rho \} \\
   E\, x \,\rho &= \{ d \mid d = \rho\,x \} \\
   E\, (\LAM{x}e)\,\rho &= \{ t \mid
    \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]\rho \} \\
@@ -1050,8 +1050,8 @@ Semantics
 \[
   D_1 \cdot D_2 \overset{\mathrm{def}}{=}
   \left\{ d' \middle|
-  \begin{array}{l}\exists t d d_2.\, t \in D_1, d_2 \in D_2, \\
-    (d,d') \in t, d \sqsubseteq d_2
+  \begin{array}{l}\exists t d d_2.\, t \in D_1 \text{ and }  d_2 \in D_2, \\
+    (d,d') \in t \text{ and } d \sqsubseteq d_2
   \end{array}
   \right\}
 \]
