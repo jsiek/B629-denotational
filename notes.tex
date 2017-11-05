@@ -949,6 +949,49 @@ element is directed-complete iff every chain in $P$ has a
 lub~\citep{Davey:2002fj} (Theorem 8.11).
 
 
+\section{A Functional Language}
+
+Figure~\ref{fig:lambda}
+
+\begin{marginfigure}
+\noindent Syntax
+\[
+\begin{array}{lrl}
+ \text{variables} & x \in \mathbb{X}\\
+ \text{expression}& e ::=& \ldots \mid x \mid \LAM{x} e \mid e \, e
+\end{array}
+\]
+Domain
+\[
+\begin{array}{lrl}
+  \text{elements} & d ::= &n \mid \{ (d_1,d'_1), \ldots, (d_n,d'_n) \}
+\end{array}
+\]
+Ordering
+\[
+   n \sqsubseteq n \qquad 
+   \inference{t \subseteq t'}{t \sqsubseteq t'}
+\]
+Semantics
+\begin{align*}
+  E\, x \,s &= \{ s\,x \} \\
+  E\, (\LAM{x}e)\,s &= \{ t \mid
+   \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]s \} \\
+  E\, (e_1\,e_2)\,s &= (E\,e_1\,s) \cdot (E\,e_2\,s)
+\end{align*}
+\[
+  D_1 \cdot D_2 \overset{\mathrm{def}}{=}
+  \left\{ d' \middle|
+  \begin{array}{l}\exists t d d' d_2.\, t \in D_1, d_2 \in D_2, \\
+    (d,d') \in t, d \sqsubseteq d_2
+  \end{array}
+  \right\}
+\]
+
+\caption{A Functional Language}
+\label{fig:lambda}
+\end{marginfigure}
+
 \clearpage
 \pagebreak
 
