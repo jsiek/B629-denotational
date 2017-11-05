@@ -12,9 +12,9 @@
 %\usepackage[noanswer]{exercise}
 \usepackage[answerdelayed]{exercise}
 
-\renewcommand{\ExerciseHeader}{\textbf{
+\renewcommand{\ExerciseHeader}{\noindent \textbf{
                 \ExerciseName\;\ExerciseHeaderNB\ExerciseHeaderTitle
-                \ExerciseHeaderOrigin\medskip}}
+                \ExerciseHeaderOrigin}}
 
 \renewcommand{\AnswerHeader}{\medskip{\noindent\textbf{Answer of \ExerciseName\ \ExerciseHeaderNB \\[1ex]}\smallskip}}
 
@@ -349,15 +349,18 @@ turns out that the semantics of \texttt{while} loops can be defined
 more simply.
 
 To give meaning to mutable variables, we use a $\mathit{Store}$ which
-is function from variables (identifiers) to numbers.
+is partial function from variables (identifiers) to numbers.
 \[
-  \mathit{Store} = \mathit{Id} \to \mathit{Nat}
+  \mathit{Store} = \mathit{Id} \rightharpoonup \mathit{Nat}
 \]
+We write $[x\mapsto n]s$ for $\{x\mapsto n\} \cup
+(s|_{\mathrm{dom}(s)-\{x\}})$.
+
 The syntax of expressions is extended to include variables, so the
 meaning of expressions must be parameterized on the store. The meaning
 of a variable $x$ is the associated number in the store $s$.
 \[
-  E(x)(s) = s(x)
+  E\,x\,s = s\,x
 \]
 %
 A program takes a number as input and it may produce a number or it
@@ -400,7 +403,7 @@ relating $s_2$ to the finishing store $s_3$.
 \]
 Semantics 
 \[
-P\,c = \{ (n,s'\,Z) \mid ([A{\mapsto} n]\mathit{newstore},s') \in C\,c \}
+P\,c = \{ (n,s'\,Z) \mid (\{A{\mapsto} n\},s') \in C\,c \}
 \]
 \begin{align*}
 C\,\SKIP &= \mathit{id} \\ %\{(s,s) \mid s \in \mathit{Store} \}\\
@@ -470,7 +473,7 @@ machine.
 \end{align*}
 \[
   \mathit{eval}(c) = \{ (n,n') \mid
-     (\SEQ{c}{\SKIP}), [A\mapsto n]\mathit{newstore}
+     (\SEQ{c}{\SKIP}), \{A\mapsto n\}
      \longrightarrow^{*} \SKIP, s'
      \text{ and } n' = s'(Z) \}
 \]
@@ -484,7 +487,7 @@ $\{a\}$ under $R$. For example, if $R=\{ (0,4), (1,2), (1,3), (2,5)
 
 \begin{Exercise}
   Prove that if $k,s \longrightarrow k',s'$,
-  then $C(k)(s) = C(k')(s')$.
+  then $C\,k\,s = C\,k'\,s'$.
 \end{Exercise}
 \begin{Answer}
 The proof is by cases on $k,s \longrightarrow k',s'$.
@@ -586,32 +589,36 @@ The meaning of a loop $(\WHILE{b}{c})$ is a solution to the
 equation
 \begin{equation}
 \label{eq:w}
-w = \LAM{s}\mathit{if}\, B\,b\,s \,\mathit{then}\, w(c\,s)\,\mathit{else}\,s
+w = \LAM{s}\mathit{if}\, B\,b\,s \,\mathit{then}\, w(C\,c\,s)\,\mathit{else}\,s
 \end{equation}
 In general, one can write down recursive equations that do not have
 solutions, so how do we know whether this one does?  When is there a
 unique solution? The theory of least fixed points provides answers to
 these questions.
 
+\begin{definition}
 A \emph{fixed point of a function} is an element that gets mapped to
-itself, e.g. $x = F(x)$. In this case, the element that we're
-interested in is $w$, which is itself a function, so our $F$ will be
-higher-order function. We reformulate Equation~\ref{eq:w} as a fixed
-point equation by abstracting away the recursion into a parameter $r$.
+itself, e.g. $x = f(x)$. 
+\end{definition}
+
+In this case, the element that we're interested in is $w$, which is
+itself a function, so our $f$ will be higher-order function. We
+reformulate Equation~\ref{eq:w} as a fixed point equation by
+abstracting away the recursion into a parameter $r$.
 \begin{equation} \label{eq:while}
-  w = F(w)
+  w = F_{b,c}(w)
   \qquad
   \text{where }
-  F\,r\,s = \mathit{if}\, B\,b\,s \,\mathit{then}\, r(c\,s)\,\mathit{else}\,s
+  F_{b,c}\,r\,s = \mathit{if}\, B\,b\,s \,\mathit{then}\, r(C\,c\,s)\,\mathit{else}\,s
 \end{equation}
 
 There are quite a few theorems in the literature that guarantee the
 existence of fixed points, but with different assumptions about the
 function and its domain. For our purposes, the CPO Fixed-Point Theorem
-will do the job~\citep{Lassez:1982aa}. The idea of this theorem is to
-construct an infinite sequence that provides increasingly better
-approximations of the least fixed point. The union of this sequence
-will turn out to be the least fixed point.
+will do the job. The idea of this theorem is to construct an infinite
+sequence that provides increasingly better approximations of the least
+fixed point. The union of this sequence will turn out to be the least
+fixed point.
 
 The CPO Fixed-Point Theorem is quite general; it is stated in terms of
 a function $F$ over partially ordered sets with a few mild conditions.
@@ -677,6 +684,30 @@ input improves, that is, require $F$ to be monotonic.
   $(B,\sqsubseteq)$, $F : A {\to} B$ is \textbf{\emph{monotonic}} iff
   for any $x,y\in A$, $x \sqsubseteq y$ implies $F(x) \sqsubseteq F(x)$.
 \end{definition}
+
+\begin{proposition}
+  The functional $F_{b,c}$ for \texttt{while} loops \eqref{eq:while}
+  is monotonic.
+\end{proposition}
+\begin{proof}
+  Let $f, g : \mathit{Store} \rightharpoonup \mathit{Store}$ such that
+  $f \subseteq g$. We need to show that $F_{b,c}(f) \subseteq
+  F_{b,c}(g)$. 
+  Let $s$ be an arbitrary state. Suppose $B\,b\,s = \TRUE$.
+  \[
+  F_{b,c}\,f\,s = f(C\,c\,s) \subseteq g(C\,c\,s) = g(C\,c\,s) = F_{b,c}\,g\,s 
+  \]
+  So we have $F_{b,c}(f) \subseteq F_{b,c}(g)$.
+  Next suppose $B\,b\,s = \FALSE$.
+  \[
+  F_{b,c}\,f\,s = s
+               = F_{b,c}\,g\,s 
+  \]
+  So again we have $F_{b,c}(f) \subseteq F_{b,c}(g)$.  Having
+  completed both cases, we conclude that $F_{b,c}(f) \subseteq
+  F_{b,c}(g)$.
+\end{proof}
+
 
 \begin{marginfigure}
 \[
@@ -756,6 +787,27 @@ in a chain are consistent.
 %% The two schools of thought yield definitions that are
 %% equivalent~\citep{Mitchell:1996nn} (page 312).
 
+\begin{proposition}
+  The poset of partial functions $(A\rightharpoonup B,\subseteq)$ is a
+  cpo.
+\end{proposition}
+\begin{proof}
+  Let $S$ be a chain in $(A\rightharpoonup B,\subseteq)$.  We claim
+  that the lub of $S$ is just the union of all the elements of $S$,
+  that is $\bigcup S$. Recall that $\forall x y, (x,y) \in \bigcup S$
+  iff $\exists f \in S, (x,y) \in f$.
+%
+  We first need to show that $\bigcup S$ is an upper bound of $S$.
+  Suppose $f \in S$. We need to show that $f \subseteq \bigcup S$.
+  Consider $(x,y) \in f$. Then $(x,y) \in \bigcup S$. So indeed,
+  $\bigcup S$ is an upper bound of $S$.  Second, consider another
+  upper bound $g$ of $S$.  We need to show that $\bigcup S \subseteq
+  g$. Suppose $(x,y) \in \bigcup S$.  Then $(x,y) \in h$ for some $h
+  \in S$. Because $g$ is an upper bounf of $S$, we have $h \subseteq
+  g$ and therefore $(x,y) \in g$. So we conclude that $\bigcup S
+  \subseteq g$.
+\end{proof}
+
 The last ingredient required in the proof of the fixed point theorem
 is that the output of $F$ should only depend on a finite amount of
 information from the input, that is, it should be continuous. For
@@ -774,6 +826,38 @@ lub of the set obtained by mapping $F$ over the elements of $X$
   F(\bigsqcup X) = \bigsqcup \{ F(x) \mid x \in X \}
   \]
 \end{definition}
+
+\begin{proposition}
+  The functional $F_{b,c}$ for \texttt{while} loops \eqref{eq:while}
+  is continuous.
+\end{proposition}
+\begin{proof}
+  Let $S$ be a chain in $(A\rightharpoonup B,\subseteq)$. 
+  We need to show that
+  \[
+  F_{b,c}(\bigcup S) = \bigcup \{ F_{b,c}(f) \mid f \in S\}
+  \]
+  We shall prove this equality by showing that each graph is a subset
+  of the other.  We assume $(s,s'') \in F_{b,c}\,(\bigcup S)$.
+  Suppose $B\,b\,s = \TRUE$.  Then $(s,s'') \in (\bigcup S) \circ (C
+  \, c)$, so $(s,s') \in C\,c$ and $(s',s'') \in g$ for some $s'$ and
+  $g \in S$. So $(s,s'') \in g \circ (C\, c)$.  Therefore $(s,s'') \in
+  \bigcup \{ F_{b,c}(f) \mid f \in S \}$.  So we have shown that
+  $F_{b,c}\,(\bigcup S) \subseteq \bigcup \{ F_{b,c}(f) \mid f \in S
+  \}$. Next suppose $B\,b\,s = \FALSE$.  Then
+  $
+  F_{b,c}(\bigcup S) = \mathit{id} = \bigcup \{ F_{b,c}(f) \mid f \in S\}
+  $.
+
+  For the other direction, we assume $(s,s'') \in \bigcup \{
+  F_{b,c}(f) \mid f \in S\}$. So $(s,s'') \in F_{b,c}(g)$ for some $g
+  \in S$.  Suppose $B\,b\,s = \TRUE$.  Then $(s,s') \in C\,c$ and
+  $(s',s'') \in g$ for some $s'$. So $(s',s'') \in \bigcup S$ and
+  therefore $(s,s'') \in F_{b,c}(\bigcup S)$.  So we have shown that
+  $\bigcup \{ F_{b,c}(f) \mid f \in S \} \subseteq F_{b,c}\,(\bigcup
+  S)$. Next suppose $B\,b\,s = \FALSE$. Then again we have both graphs
+  equal to the identity relation.
+\end{proof}
 
 We now state the fixed point theorem for cpos.
 
@@ -808,90 +892,61 @@ $\mathrm{fix}\,F \sqsubseteq e$.
 \end{proof}
 
 
+Returning to the semantics of the \texttt{while} loop, we give the
+least fixed-point semantics of an imperative language in
+Figure~\ref{fig:imperative-fixed-point}. We have already seen that the
+poset of partitial functions is a cpo and that $F_{b,c}$ is
+continuous, so $\mathrm{fix}\,(F_{b,c})$ is well defined and is the
+least fixed-point of $F_{b,c}$. Thus, we can define the meaning
+of the \texttt{while} loop as follows.
+\[
+  C(\WHILE{b}{c})\,s = \mathrm{fix}(F_{b,c})\,s
+\]
+
+\begin{marginfigure}
+\[
+P'\,c\,n = (C'\,c\,\{A{\mapsto} n]\})\,Z 
+\]
+\begin{align*}
+C'\,\SKIP\,s &= s \\ 
+C'(\ASSIGN{x}{e})\,s &= [x\mapsto E\,e\,s]s\\
+C'(\SEQ{c_1}{c_2})\,s &=  C'\,c_2(C'\,c_1\,s) \\
+C'\left(\!\!\begin{array}{l}
+  \mathtt{if}\,b\,\mathtt{then}\,c_1\\
+  \mathtt{else}\,c_2
+  \end{array}\!\!\right)\,s
+  &= 
+ \begin{cases}
+  C'\,c_1\,s & \text{if } B\,b\,s = \TRUE \\
+  C'\,c_2\,s & \text{if } B\,b\,s = \FALSE
+ \end{cases} \\
+C'(\WHILE{b}{c})\,s &= \mathrm{fix}(F_{b,c})\,s
+\end{align*}
+\caption{Least Fixed-Point Semantics of an Imperative Language}
+\label{fig:imperative-fixed-point}
+\end{marginfigure}
+
+
+\begin{Exercise}
+  Prove that the semantics in Figure~\ref{fig:imperative} is
+  equivalent to the least fixed-point semantics in
+  Figure~\ref{fig:imperative-fixed-point}, i.e., $(n,n') \in P\,c$ iff
+  $P\,c\,n = n'$.
+\end{Exercise}
+\begin{Answer}
+TODO
+\end{Answer}
+
 In the literature there are two schools of thought regarding how to
 define complete partial orders. There is the one presented above, that
 requires lubs to exists for all
 chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  The
 other requires that the poset be directed complete, that is, lubs
 exists for all directed
-sets~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk,Berger:2007aa}.
-The two schools of thought are equivalent, i.e., a poset $P$ with a
-least element is directed-complete iff every chain in $P$ has a
+sets~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk}.  The two
+schools of thought are equivalent, i.e., a poset $P$ with a least
+element is directed-complete iff every chain in $P$ has a
 lub~\citep{Davey:2002fj} (Theorem 8.11).
-
-
-Returning to the semantics of the \texttt{while} loop, to apply
-Theorem~\ref{thm:fixed-point}, we need to show that
-\begin{enumerate}
-\item $(\mathit{Store}{\rightharpoonup}\mathit{Store},\subseteq)$ is a
-  cpo and
-\item the $F$ of Equation~\ref{eq:while} is continuous.
-\end{enumerate}
-%Recall that $\mathit{Store} = \mathit{Id} \to \mathit{Nat}$.
-%Also, we have the following facts about building
-%dcpos~\citep{Amadio:1998fk}.
-%% Regarding the first point, we have the following proposition.
-%% Regarding the second point, UNDER CONSTRUCTION
-
-
-%% \begin{proposition}[Constructing dcpos]\ \\
-%%   \begin{enumerate}
-%%   \item Any discrete partial ordering $(A,=)$ is a
-%%     dcpo. \label{prop:discrete-dcpo}
-%%   \item Given a dcpo $(A,\sqsubseteq)$, its lifting $A_\bot = A \cup
-%%     \{ \bot \}$ is dcpo. \label{prop:pointed-dcpo}
-%%   \item If $A$ and $B$ are dcpos, then $A \times B$ with lexicographic
-%%     ordering is a dcpo. $(\bot,\bot)$ is the least
-%%     element. \label{prop:pair-dcpo}
-%%   \item If $A$ and $B$ are dcpos, then the set of continuous functions
-%%     from $A$ to $B$ with the pointwise ordering is a
-%%     dcpo.\label{prop:fun-dcpo}
-%%   \end{enumerate}
-%% \end{proposition}
-%% Applying these facts to our situation, $\mathit{Id}$ and
-%% $\mathit{Nat}$ are discrete partial orders, so they are dcpos
-%% \eqref{prop:discrete-dcpo}. Therefore $\mathit{Store}$ is also a dcpo
-%% \eqref{prop:fun-dcpo}, and so is $\mathit{Store}_\bot$
-%% \eqref{prop:pointed-dcpo}. Then the final step is that
-%% $\mathit{Store}_\bot{\to}\mathit{Store}_\bot$ is a dcpo
-%% \eqref{prop:fun-dcpo}.
-
-%% Next we need to show that the functional $F$ for $\mathtt{while}$ is
-%% continuous
-%% \begin{align*}
-%%   F &: (\mathit{Store}_\bot{\to}\mathit{Store}_\bot) \to (\mathit{Store}_\bot \to \mathit{Store}_\bot) \\
-%%   F\,r\,s &= \mathit{if}\, B\,b\,s \,\mathit{then}\, r(c\,s)\,\mathit{else}\,s
-%% \end{align*}
-
-%% \begin{proposition}\ \\
-%%   \begin{enumerate}
-%%   \item Any function $f : A \to B$ is continuous if $A$ is a discrete
-%%     partial order. \label{prop:discrete-continuous}
-%%   \item ...
-%%   \end{enumerate}
-%% \end{proposition}
-
-%% Because $\mathit{Id}$ is a discrete partial order, every $s \in
-%% \mathit{Store}$ is continuous.
-
-%% A partial function $f$ is an approximation of another partial function
-%% $g$ (less defined), written $f \sqsubseteq g$ and defined as follows.
-%% \[
-%%   f \sqsubseteq g \;\overset{\mathrm{def}}{=}\;
-%%       \forall x \in \mathrm{dom}(f).\, f(x) \sqsubseteq g(x).
-%% \]
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \clearpage
