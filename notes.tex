@@ -32,6 +32,7 @@
 \newcommand{\TRUE}[0]{\mathtt{true}}
 \newcommand{\FALSE}[0]{\mathtt{false}}
 \newcommand{\of}[0]{\!:\!}
+\newcommand{\pto}[0]{\rightharpoonup}
 \newcommand{\NAT}[0]{\ensuremath{\mathit{Nat}}}
 \newcommand{\COND}[3]{#1\,\texttt{?}\,#2\,\texttt{:}\,#3}
 
@@ -57,6 +58,7 @@
 
 
 \section{Binary Arithmetic}
+\label{sec:binary-arithmetic}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -323,7 +325,7 @@ The proof is by induction on $e$.
 
 %% local, immutable variables??
 
-\section{An Imperative Language}
+\section{An Imperative Language: IMP}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -351,7 +353,7 @@ more simply.
 To give meaning to mutable variables, we use a $\mathit{Store}$ which
 is partial function from variables (identifiers) to numbers.
 \[
-  \mathit{Store} = \mathit{Id} \rightharpoonup \mathit{Nat}
+  \mathit{Store} = \mathit{Id} \pto \mathit{Nat}
 \]
 We write $[x\mapsto n]s$ for $\{x\mapsto n\} \cup
 (s|_{\mathrm{dom}(s)-\{x\}})$.
@@ -366,7 +368,7 @@ of a variable $x$ is the associated number in the store $s$.
 A program takes a number as input and it may produce a number or it
 might diverge. Traditional denotational semantics model this behavior
 with a partial function
-$\mathit{Nat}\rightharpoonup\mathit{Nat}$. Here we shall use the
+$\mathit{Nat}\pto\mathit{Nat}$. Here we shall use the
 alternate, but equivalent, approach of using a relation
 $\mathit{Nat}\times\mathit{Nat}$.
 
@@ -388,7 +390,8 @@ relating $s_2$ to the finishing store $s_3$.
 %%  \end{cases} 
 %% \]
 
-\begin{marginfigure}
+\begin{figure*}
+\begin{minipage}{0.5\textwidth}
 \noindent Syntax
 \[
 \begin{array}{ll}
@@ -401,6 +404,18 @@ relating $s_2$ to the finishing store $s_3$.
   &      \qquad \WHILE{b}{c} 
 \end{array}
 \]
+Loops
+\begin{gather*}
+  \inference{m_b\,s = \FALSE}
+            {(s,s) \in \mathit{loop}(m_b, m_c)}
+\\[1ex]
+  \inference{m_b\,s_1 = \TRUE & 
+             (s_1,s_2) \in m_c \\
+             (s_2, s_3) \in \mathit{loop}(m_b, m_c)}
+            {(s_1, s_3) \in \mathit{loop}(m_b, m_c)}
+\end{gather*}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
 Semantics 
 \[
 P\,c = \{ (n,s'\,Z) \mid (\{A{\mapsto} n\},s') \in C\,c \}
@@ -420,18 +435,10 @@ C\left(\!\!\begin{array}{l}
  \end{cases} \\
 C(\WHILE{b}{c}) &= \mathit{loop}(B\,b, C\,c)
 \end{align*}
-\begin{gather*}
-  \inference{m_b\,s = \FALSE}
-            {(s,s) \in \mathit{loop}(m_b, m_c)}
-\\[1ex]
-  \inference{m_b\,s_1 = \TRUE & 
-             (s_1,s_2) \in m_c \\
-             (s_2, s_3) \in \mathit{loop}(m_b, m_c)}
-            {(s_1, s_3) \in \mathit{loop}(m_b, m_c)}
-\end{gather*}
-\caption{An Imperative Language}
+\end{minipage}
+\caption{An Imperative Language: IMP}
 \label{fig:imperative}
-\end{marginfigure}
+\end{figure*}
 
 
 We define an implementation of the imperative language, in terms of an
@@ -477,7 +484,7 @@ machine.
      \longrightarrow^{*} \SKIP, s'
      \text{ and } n' = s'(Z) \}
 \]
-\caption{An Abstract Machine for an Imperative Language}
+\caption{Abstract Machine for IMP}
 \label{fig:imp-impl}
 \end{figure*}
 
@@ -583,7 +590,7 @@ taking the traditional but more complex approach of defining
 to solve it. Recall that the meaning of a command is a partial
 function from stores to stores, or more precisely,
 \[
-C(c) : \mathit{Store} \rightharpoonup \mathit{Store}
+C\,c : \mathit{Store} \pto \mathit{Store}
 \]
 The meaning of a loop $(\WHILE{b}{c})$ is a solution to the
 equation
@@ -597,8 +604,8 @@ unique solution? The theory of least fixed points provides answers to
 these questions.
 
 \begin{definition}
-A \emph{fixed point of a function} is an element that gets mapped to
-itself, e.g. $x = f(x)$. 
+A \textbf{\emph{fixed point}} of a function is an element that gets
+mapped to itself, i.e., $x = f(x)$.
 \end{definition}
 
 In this case, the element that we're interested in is $w$, which is
@@ -626,7 +633,7 @@ The ordering captures the notion of approximation, that is, we write
 $x \sqsubseteq y$ if $x$ approximates $y$.
 
 \begin{definition}
-  A \textbf{\emph{partially ordered set}} (poset) is a pair
+  A \textbf{\emph{partially ordered set (poset)}} is a pair
   $(L,\sqsubseteq)$ that consists of a set $L$ and a partial order
   $\sqsubseteq$ on $L$.
 \end{definition}
@@ -651,7 +658,7 @@ $x \sqsubseteq y$ if $x$ approximates $y$.
 \end{marginfigure}
 %
 For example, consider the poset
-$(\mathbb{N}{\rightharpoonup}\mathbb{N}, \subseteq)$ of partial
+$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$ of partial
 functions on natural numbers. Some partial function $f$ is a better
 approximation than another partial function $g$ if it is defined on
 more inputs, that is, if the graph of $f$ is a subset of the graph of
@@ -690,7 +697,7 @@ input improves, that is, require $F$ to be monotonic.
   is monotonic.
 \end{proposition}
 \begin{proof}
-  Let $f, g : \mathit{Store} \rightharpoonup \mathit{Store}$ such that
+  Let $f, g : \mathit{Store} \pto \mathit{Store}$ such that
   $f \subseteq g$. We need to show that $F_{b,c}(f) \subseteq
   F_{b,c}(g)$. 
   Let $s$ be an arbitrary state. Suppose $B\,b\,s = \TRUE$.
@@ -754,7 +761,7 @@ have $\bigsqcup S \sqsubseteq z$.
 
 In arbitrary posets, a least upper bound may not exist for an
 arbitrary subset. In particular, for the poset
-$(\mathbb{N}{\rightharpoonup}\mathbb{N}, \subseteq)$, two partial
+$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$, two partial
 functions do not have a lub if they are inconsistent, that is, if they
 map the same input to different outputs, such as $\{3\mapsto 8\}$ and
 $\{3 \mapsto 9\}$. However, the CPO Fixed-Point Theorem will only need to
@@ -788,11 +795,11 @@ in a chain are consistent.
 %% equivalent~\citep{Mitchell:1996nn} (page 312).
 
 \begin{proposition}
-  The poset of partial functions $(A\rightharpoonup B,\subseteq)$ is a
+  The poset of partial functions $(A\pto B,\subseteq)$ is a
   cpo.
 \end{proposition}
 \begin{proof}
-  Let $S$ be a chain in $(A\rightharpoonup B,\subseteq)$.  We claim
+  Let $S$ be a chain in $(A\pto B,\subseteq)$.  We claim
   that the lub of $S$ is just the union of all the elements of $S$,
   that is $\bigcup S$. Recall that $\forall x y, (x,y) \in \bigcup S$
   iff $\exists f \in S, (x,y) \in f$.
@@ -832,7 +839,7 @@ lub of the set obtained by mapping $F$ over the elements of $X$
   is continuous.
 \end{proposition}
 \begin{proof}
-  Let $S$ be a chain in $(A\rightharpoonup B,\subseteq)$. 
+  Let $S$ be a chain in $(A\pto B,\subseteq)$. 
   We need to show that
   \[
   F_{b,c}(\bigcup S) = \bigcup \{ F_{b,c}(f) \mid f \in S\}
@@ -949,22 +956,71 @@ element is directed-complete iff every chain in $P$ has a
 lub~\citep{Davey:2002fj} (Theorem 8.11).
 
 
-\section{A Functional Language}
+\section{A Functional Language: the $\lambda$-calculus}
+\label{sec:lambda}
 
-Figure~\ref{fig:lambda}
+\marginnote{
+\begin{tabular}{ll}
+Reading: & \citet{Siek:2017ab} 
+\end{tabular}
+}
 
-\begin{marginfigure}
+We now turn to the prototypical functional language, the
+$\lambda$-calculus. The main feature of this language is a function,
+created by lambda abstractions $\LAM{x}e$. The application expression
+$(e_1\,e_2)$ calls the function produced by $e_1$ with the argument
+produced by $e_2$. We study here the call-by-value (CBV) version of
+the $\lambda$-calculus.  As a secondary feature, we include binary
+arithmetic (Section~\ref{sec:binary-arithmetic}).
+
+In the $\lambda$-calculus, functions are first-class entities, so they
+can be passed to other functions and returned from them. This
+introduces a difficulty in trying to give a semantics in terms of
+regular mathematical sets and functions. It seems that we need a set
+$\mathbb{D}$ that solves the following equation.
+\[
+   \mathbb{D} = \mathbb{N} + (\mathbb{D} \pto \mathbb{D})
+\]
+But such a set cannot exist because the size of $\mathbb{D} \pto
+\mathbb{D}$ is necessarily larger than $\mathbb{D}$!
+
+There are several ways around this problem. One approach is to
+consider only continuous functions, which cuts down the size enough to
+make it possible to solve the equation. The first model of the
+$\lambda$-calculus, $D_\infty$ of \citet{Scott:1970dp}, takes this
+approach. We shall study $D_\infty$ in Section~\ref{sec:D-infinity}.
+
+Another approach does not require solving the above equation, but
+recognizes that when passing a function to another function, one
+doesn't need to pass the entirety of the function (which is infinite),
+but one can instead pass a finite subset of the function's graph.  The
+trouble of deciding which finite subset to pass can be sidestepped by
+trying all possible subsets. This would of course be prohibitive if
+our current goal was to implement the $\lambda$-calculus, but this
+``inefficiency'' does not pose a problem for a semantics, a
+\emph{specification}, of the $\lambda$-calculus. The various semantics
+that take this approach are called \emph{graph models}. This first
+such model was $T^{*}_C$ of \citet{Plotkin:1972aa}. Then came
+$\mathcal{P}(\omega)$ of \citet{Scott:1976lq} and the simpler $D_A$ of
+\citet{Engeler:1981aa}. We shall study these three models in
+Section~\ref{sec:graph-models}. But first, we study perhaps the most
+straightforward of the graph models, that of \citet{Siek:2017ab}.
+
+\begin{figure*}
+\begin{minipage}{0.5\textwidth}
 \noindent Syntax
 \[
 \begin{array}{lrl}
- \text{variables} & x \in \mathbb{X}\\
- \text{expression}& e ::=& \ldots \mid x \mid \LAM{x} e \mid e \, e
+ \text{vars.} & x \in \mathbb{X}\\
+ \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x} e \mid (e \, e)
 \end{array}
 \]
 Domain
 \[
 \begin{array}{lrl}
-  \text{elements} & d ::= &n \mid \{ (d_1,d'_1), \ldots, (d_n,d'_n) \}
+               & i \in \mathbb{N} \\
+  \text{elts.} & d \in \mathbb{D} ::= &i \mid \{ (d_1,d'_1), \ldots, (d_n,d'_n) \} \\
+  \text{env.} & \rho \in  \mathbb{X} \pto \mathbb{D} 
 \end{array}
 \]
 Ordering
@@ -972,25 +1028,174 @@ Ordering
    n \sqsubseteq n \qquad 
    \inference{t \subseteq t'}{t \sqsubseteq t'}
 \]
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
 Semantics
 \begin{align*}
-  E\, x \,s &= \{ s\,x \} \\
-  E\, (\LAM{x}e)\,s &= \{ t \mid
-   \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]s \} \\
-  E\, (e_1\,e_2)\,s &= (E\,e_1\,s) \cdot (E\,e_2\,s)
+  E\, n \, \rho & = \{ N(n) \} \\
+  E\, (e_1 + e_2) \, \rho & = \{ n_1 + n_2 \mid n_1 \in E\,e_1\,\rho, 
+                                    n_2 \in E\,e_2\,\rho \} \\
+  E\, (e_1 \times e_2) \, \rho & = \{ n_1 n_2 \mid n_1 \in E\,e_1\,\rho, 
+                                    n_2 \in E\,e_2\,\rho \} \\
+  E\, x \,\rho &= \{ d \mid d = \rho\,x \} \\
+  E\, (\LAM{x}e)\,\rho &= \{ t \mid
+   \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]\rho \} \\
+  E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
 \end{align*}
 \[
   D_1 \cdot D_2 \overset{\mathrm{def}}{=}
   \left\{ d' \middle|
-  \begin{array}{l}\exists t d d' d_2.\, t \in D_1, d_2 \in D_2, \\
+  \begin{array}{l}\exists t d d_2.\, t \in D_1, d_2 \in D_2, \\
     (d,d') \in t, d \sqsubseteq d_2
   \end{array}
   \right\}
 \]
-
-\caption{A Functional Language}
+\end{minipage}
+\caption{$\lambda$-calculus}
 \label{fig:lambda}
+\end{figure*}
+
+Figure~\ref{fig:lambda} defines the syntax and semantics of a CBV
+$\lambda$-calculus. To enable trying all possible finite subsets of a
+function's graph, the semantics is non-deterministic. That is, the
+semantic function $E$ maps programs to sets of elements, instead of a
+single element. In the case when an expression produces a natural
+number, the set is just a singleton of that number. However, when the
+expression produces a function, the set contains all finite
+approximations of the function.
+
+The domain $\mathcal{D}$ consists of just the natural numbers and
+finite graphs (association tables) of functions.  $\mathcal{D}$ is
+defined inductively, or equivalently, it is the least solution of
+\[
+   \mathbb{D} = \mathbb{N} + \mathcal{P}_f(\mathbb{D} \times \mathbb{D})
+\]
+Let $t$ range over the finite graphs, that is, 
+$t \in \mathcal{P}_f(\mathbb{D} \times \mathbb{D})$.
+
+The semantics in Figure~\ref{fig:lambda} says the meaning of an
+abstraction $(\LAM{x}e)$ is the set of all tables $t$ such that each
+input-output entry $(d,d')$ makes sense for the $\lambda$. That is,
+$d' \in E\,e\,[x\mapsto d]\rho$. The semantics of application is
+defined in terms of the auxilliary application operator $D_1 \cdot
+D_2$, which applies all the tables in $D_1$ to all the elements
+(arguments) in $D_2$. A naive definition of the application operator
+is just table lookup in a non-deterministic setting.
+\begin{align*}
+  D_1 \cdot D_2 &= 
+  \{ d' \mid
+  \exists t d.\, t \in D_1, d \in D_2, 
+    (d,d') \in t
+  \}
+  & \text{(naive)}
+\end{align*}
+The idea is to collect up all the results $d'$ that come from matching
+up an argument $d \in D_2$ with an entry $(d,d')$ from a table $t \in
+D_1$. The problem with this naive version is that it prohibits self
+application, which is an important part of the $\lambda$-calculus.
+For example, it is necessary to define the $Y$ combinator and thereby
+express general recursion. The problem is that in self application,
+one would need a table to be inside itself, that is, $(t,d') \in t$.
+But that can't happen because the domain $\mathbb{D}$ is inductively
+defined. The solution is to allow the argument to be a larger table
+than the input $d$ of the table entry. We define the approximation
+ordering $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for
+argument $d_2 \in D_2$, we require $d \sqsubseteq d_2$ instead of $d =
+d_2$.
+
+We turn to an implementation of the $\lambda$-calculus, the
+interpreter in Figure~\ref{fig:interp-lambda}. The interpreter is
+based on the notion of a closure, which pairs a $\lambda$ abstraction
+with its environment to ensure that the free variables get their
+definitions from the lexical scope.
+
+\begin{marginfigure}
+\[
+\begin{array}{lrl}
+ \text{values} & v \in \mathbb{V} ::= & n \mid \langle \LAM{x}e, \rho \rangle \\
+ \text{env.} & \varrho \in \mathbb{X} \pto \mathbb{V} 
+\end{array}
+\]
+\begin{align*}
+  I\,n\,\varrho &= n \\
+  I\,(e_1 + e_2)\,\varrho &= \mathit{add}(I\,e_1\,\varrho, I\,e_2\,\varrho, 0) \\
+  I\,(e_1 \times e_2)\,\varrho &= \mathit{mult}(I\,e_1\,\varrho, I\,e_2\,\varrho) \\
+  I\,(\LAM{x}e)\,\varrho &= \langle \LAM{x}e, \varrho \rangle \\
+  I\,(e_1\,e_2)\,\varrho &=  I\,e\,[x\mapsto I\,e_2\,\varrho]\varrho'\\
+      & \quad \text{if } I\,e_1\,\varrho = \langle \LAM{x}e,\varrho' \rangle
+\end{align*}
+
+\caption{Interpreter for the $\lambda$-calculus}
+\label{fig:interp-lambda}
 \end{marginfigure}
+
+We prove the correctness of the interpreter in two steps.  First we
+show that if the semantics says the result of a program should be an
+integer $i$, then the interpreter produces a binary numeral $n$ such
+that $N(n) = i$. The second part is to show that if the interpreter
+produces an answer $n$, then the semantics agrees that $N(n)$ should
+be the answer.
+
+For the first part, we need to relate denotations (elements $d$) to
+the values $v$ used by the interpreter.
+\begin{align*}
+  \mathcal{G}(i) &= \{ n \mid N(n) = i \} \\
+  \mathcal{G}(t) &= \left\{ \langle \LAM{x} e, \varrho \rangle \middle|
+     \begin{array}{l}
+       \forall (d,d') \in t, v \in \mathcal{G}(d),\\
+       \exists v'. I\,e\,[x\mapsto v]\varrho = v'
+               \text{ and } v'\in\mathcal{G}(d')
+     \end{array} \right\}
+\end{align*}
+Similarly, we related semantic environments to the
+interpreter's environments.
+\[
+  \inference{}{\mathcal{G}(\emptyset,\emptyset)}
+  \qquad
+  \inference{v \in \mathcal{G}(d) & \mathcal{G}(\rho,\varrho)}
+            {\mathcal{G}([x\mapsto d] \rho, [x\mapsto v] \varrho}
+\]
+
+\noindent Leading up to the first theorem, we establish the following lemmas.
+
+\begin{lemma}[$\mathcal{G}$ is downward closed]
+\label{lem:sub-good}
+If $v \in \mathcal{G}(d)$ and $d' \sqsubseteq d$, then $v \in \mathcal{G}(d')$.
+\end{lemma}
+
+\begin{lemma}
+\label{lem:lookup-good}
+  If $\mathcal{G}(\rho,\varrho)$,
+  then $\varrho(x) \in \mathcal{G}(\rho(x))$
+\end{lemma}
+
+\begin{lemma}
+  If $d \in E\,e\,\rho$ and $\mathcal{G}(\rho,\varrho)$, then
+  $I\,e\,\varrho = v$, $v \in \mathcal{G}(d)$ for some $v$.
+\end{lemma}
+
+\begin{theorem}[Adequacy]
+If $E\,e\,\emptyset = E\,i\,\emptyset$, then $I\,e\,\emptyset = n$
+and $N(n) = i$.
+\end{theorem}
+
+UNDER CONSTRUCTION
+
+
+\section{Graph models of $\lambda$-calculus $(T^{*}_C,D_A,\mathcal{P}(\omega))$ }
+\label{sec:graph-models}
+
+UNDER CONSTRUCTION
+
+\section{Filter models of $\lambda$-calculus}
+\label{sec:filter-models}
+
+UNDER CONSTRUCTION
+
+\section{$D_\infty$ model of $\lambda$-calculus}
+\label{sec:D-infinity}
+
+UNDER CONSTRUCTION
 
 \clearpage
 \pagebreak
@@ -1068,7 +1273,7 @@ $S$ has a common upper bound, i.e.  there exists $z \in L$ such $x
 \sqsubseteq z$ and $y \sqsubseteq z$.
 \end{definition}
 
-In the poset of partial functions $(A \rightharpoonup B, \subseteq)$,
+In the poset of partial functions $(A \pto B, \subseteq)$,
 every consistent subset $S$ has a lub, the function whose graph is the
 union of all the graphs in $S$.
 
@@ -1168,8 +1373,8 @@ directed subset.
 \end{definition}
 
 \begin{proposition}[Partial functions are dcpos]
-  Given any two sets $A$ and $B$, the partial order $(A \rightharpoonup
-  B, \subseteq)$, is a dcpo.
+  Given any two sets $A$ and $B$, the partial order $(A \pto B,
+  \subseteq)$, is a dcpo.
 \end{proposition}
 
 \begin{theorem}[Fixed Point Theorem for Dcpos]\label{thm:fixed-point}

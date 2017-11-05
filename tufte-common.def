@@ -492,7 +492,7 @@
 %%
 % Turn off section numbering
 
-\setcounter{secnumdepth}{-1}
+%\setcounter{secnumdepth}{-1}
 
 %%
 % Tighten up space between displays (e.g., a figure or table) and make symmetric
