@@ -1032,6 +1032,10 @@ Ordering
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 Semantics
+\[
+  P\,e = \{ d \mid \exists d'.\, d \sqsubseteq d' 
+               \text{ and } d' \in E\,e\,\emptyset\}
+\]
 \begin{align*}
   E\, n \, \rho & = \{ N(n) \} \\
   E\, (e_1 + e_2) \, \rho & = \{ n_1 + n_2 \mid n_1 \in E\,e_1\,\rho, 
