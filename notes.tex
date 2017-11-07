@@ -12,9 +12,9 @@
 %\usepackage[noanswer]{exercise}
 \usepackage[answerdelayed]{exercise}
 
-\renewcommand{\ExerciseHeader}{\textbf{
+\renewcommand{\ExerciseHeader}{\noindent \textbf{
                 \ExerciseName\;\ExerciseHeaderNB\ExerciseHeaderTitle
-                \ExerciseHeaderOrigin\medskip}}
+                \ExerciseHeaderOrigin}}
 
 \renewcommand{\AnswerHeader}{\medskip{\noindent\textbf{Answer of \ExerciseName\ \ExerciseHeaderNB \\[1ex]}\smallskip}}
 
@@ -32,6 +32,7 @@
 \newcommand{\TRUE}[0]{\mathtt{true}}
 \newcommand{\FALSE}[0]{\mathtt{false}}
 \newcommand{\of}[0]{\!:\!}
+\newcommand{\pto}[0]{\rightharpoonup}
 \newcommand{\NAT}[0]{\ensuremath{\mathit{Nat}}}
 \newcommand{\COND}[3]{#1\,\texttt{?}\,#2\,\texttt{:}\,#3}
 
@@ -57,6 +58,7 @@
 
 
 \section{Binary Arithmetic}
+\label{sec:binary-arithmetic}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -323,7 +325,7 @@ The proof is by induction on $e$.
 
 %% local, immutable variables??
 
-\section{An Imperative Language}
+\section{An Imperative Language: IMP}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -349,21 +351,24 @@ turns out that the semantics of \texttt{while} loops can be defined
 more simply.
 
 To give meaning to mutable variables, we use a $\mathit{Store}$ which
-is function from variables (identifiers) to numbers.
+is partial function from variables (identifiers) to numbers.
 \[
-  \mathit{Store} = \mathit{Id} \to \mathit{Nat}
+  \mathit{Store} = \mathit{Id} \pto \mathit{Nat}
 \]
+We write $[x\mapsto n]s$ for $\{x\mapsto n\} \cup
+(s|_{\mathrm{dom}(s)-\{x\}})$.
+
 The syntax of expressions is extended to include variables, so the
 meaning of expressions must be parameterized on the store. The meaning
 of a variable $x$ is the associated number in the store $s$.
 \[
-  E(x)(s) = s(x)
+  E\,x\,s = s\,x
 \]
 %
 A program takes a number as input and it may produce a number or it
 might diverge. Traditional denotational semantics model this behavior
 with a partial function
-$\mathit{Nat}\rightharpoonup\mathit{Nat}$. Here we shall use the
+$\mathit{Nat}\pto\mathit{Nat}$. Here we shall use the
 alternate, but equivalent, approach of using a relation
 $\mathit{Nat}\times\mathit{Nat}$.
 
@@ -385,7 +390,8 @@ relating $s_2$ to the finishing store $s_3$.
 %%  \end{cases} 
 %% \]
 
-\begin{marginfigure}
+\begin{figure*}
+\begin{minipage}{0.5\textwidth}
 \noindent Syntax
 \[
 \begin{array}{ll}
@@ -398,9 +404,21 @@ relating $s_2$ to the finishing store $s_3$.
   &      \qquad \WHILE{b}{c} 
 \end{array}
 \]
+Loops
+\begin{gather*}
+  \inference{m_b\,s = \FALSE}
+            {(s,s) \in \mathit{loop}(m_b, m_c)}
+\\[1ex]
+  \inference{m_b\,s_1 = \TRUE & 
+             (s_1,s_2) \in m_c \\
+             (s_2, s_3) \in \mathit{loop}(m_b, m_c)}
+            {(s_1, s_3) \in \mathit{loop}(m_b, m_c)}
+\end{gather*}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
 Semantics 
 \[
-P\,c = \{ (n,s'\,Z) \mid ([A{\mapsto} n]\mathit{newstore},s') \in C\,c \}
+P\,c = \{ (n,s'\,Z) \mid (\{A{\mapsto} n\},s') \in C\,c \}
 \]
 \begin{align*}
 C\,\SKIP &= \mathit{id} \\ %\{(s,s) \mid s \in \mathit{Store} \}\\
@@ -417,18 +435,10 @@ C\left(\!\!\begin{array}{l}
  \end{cases} \\
 C(\WHILE{b}{c}) &= \mathit{loop}(B\,b, C\,c)
 \end{align*}
-\begin{gather*}
-  \inference{m_b\,s = \FALSE}
-            {(s,s) \in \mathit{loop}(m_b, m_c)}
-\\[1ex]
-  \inference{m_b\,s_1 = \TRUE & 
-             (s_1,s_2) \in m_c \\
-             (s_2, s_3) \in \mathit{loop}(m_b, m_c)}
-            {(s_1, s_3) \in \mathit{loop}(m_b, m_c)}
-\end{gather*}
-\caption{An Imperative Language}
+\end{minipage}
+\caption{An Imperative Language: IMP}
 \label{fig:imperative}
-\end{marginfigure}
+\end{figure*}
 
 
 We define an implementation of the imperative language, in terms of an
@@ -470,11 +480,11 @@ machine.
 \end{align*}
 \[
   \mathit{eval}(c) = \{ (n,n') \mid
-     (\SEQ{c}{\SKIP}), [A\mapsto n]\mathit{newstore}
+     (\SEQ{c}{\SKIP}), \{A\mapsto n\}
      \longrightarrow^{*} \SKIP, s'
      \text{ and } n' = s'(Z) \}
 \]
-\caption{An Abstract Machine for an Imperative Language}
+\caption{Abstract Machine for IMP}
 \label{fig:imp-impl}
 \end{figure*}
 
@@ -484,7 +494,7 @@ $\{a\}$ under $R$. For example, if $R=\{ (0,4), (1,2), (1,3), (2,5)
 
 \begin{Exercise}
   Prove that if $k,s \longrightarrow k',s'$,
-  then $C(k)(s) = C(k')(s')$.
+  then $C\,k\,s = C\,k'\,s'$.
 \end{Exercise}
 \begin{Answer}
 The proof is by cases on $k,s \longrightarrow k',s'$.
@@ -580,71 +590,80 @@ taking the traditional but more complex approach of defining
 to solve it. Recall that the meaning of a command is a partial
 function from stores to stores, or more precisely,
 \[
-C(c) : \mathit{Store} \rightharpoonup \mathit{Store}
+C\,c : \mathit{Store} \pto \mathit{Store}
 \]
 The meaning of a loop $(\WHILE{b}{c})$ is a solution to the
 equation
 \begin{equation}
 \label{eq:w}
-w = \LAM{s}\mathit{if}\, B\,b\,s \,\mathit{then}\, w(c\,s)\,\mathit{else}\,s
+w = \LAM{s}\mathit{if}\, B\,b\,s \,\mathit{then}\, w(C\,c\,s)\,\mathit{else}\,s
 \end{equation}
 In general, one can write down recursive equations that do not have
 solutions, so how do we know whether this one does?  When is there a
 unique solution? The theory of least fixed points provides answers to
 these questions.
 
-A \emph{fixed point of a function} is an element that gets mapped to
-itself, e.g. $x = F(x)$. In this case, the element that we're
-interested in is $w$, which is itself a function, so our $F$ will be
-higher-order function. We reformulate Equation~\ref{eq:w} as a fixed
-point equation by abstracting away the recursion into a parameter $r$.
+\begin{definition}
+A \textbf{\emph{fixed point}} of a function is an element that gets
+mapped to itself, i.e., $x = f(x)$.
+\end{definition}
+
+In this case, the element that we're interested in is $w$, which is
+itself a function, so our $f$ will be higher-order function. We
+reformulate Equation~\ref{eq:w} as a fixed point equation by
+abstracting away the recursion into a parameter $r$.
 \begin{equation} \label{eq:while}
-  w = F(w)
+  w = F_{b,c}(w)
   \qquad
   \text{where }
-  F\,r\,s = \mathit{if}\, B\,b\,s \,\mathit{then}\, r(c\,s)\,\mathit{else}\,s
+  F_{b,c}\,r\,s = \mathit{if}\, B\,b\,s \,\mathit{then}\, r(C\,c\,s)\,\mathit{else}\,s
 \end{equation}
 
 There are quite a few theorems in the literature that guarantee the
 existence of fixed points, but with different assumptions about the
-function and its domain. For our purposes, the Kleene Fixed Point
-Theorem will do the job\footnote{\citet{Kleene:1952aa} did not state
-  or prove this theorem but it can be seen as a corollary of his
-  recursion theorem~\citep{Amadio:1998fk}. This fixed point theorem is
-  a ``folk'' theorem with murky origins~\citep{Lassez:1982aa}.}. The
-idea of this theorem is to construct an infinite sequence that
-provides increasingly better approximations of the least fixed
-point. The union of this sequence will turn out to be the least fixed
-point.
+function and its domain. For our purposes, the CPO Fixed-Point Theorem
+will do the job. The idea of this theorem is to construct an infinite
+sequence that provides increasingly better approximations of the least
+fixed point. The union of this sequence will turn out to be the least
+fixed point.
 
-The Kleene Fixed Point Theorem is quite general; it is stated in terms
-of a function $F$ over an arbitrary ordered set, where the ordering
-corresponds to ``better approximation'' (more information), that is,
-we write $x \sqsubseteq y$ if $x$ is a better approximation than
-$y$. The ordering may be just a partial order, as there can be
-incomparable elements.
+The CPO Fixed-Point Theorem is quite general; it is stated in terms of
+a function $F$ over partially ordered sets with a few mild conditions.
+The ordering captures the notion of approximation, that is, we write
+$x \sqsubseteq y$ if $x$ approximates $y$.
 
 \begin{definition}
-  A \textbf{\emph{partially ordered set}} (poset) is a pair
+  A \textbf{\emph{partially ordered set (poset)}} is a pair
   $(L,\sqsubseteq)$ that consists of a set $L$ and a partial order
   $\sqsubseteq$ on $L$.
 \end{definition}
 
-\marginnote{
-\begin{align*}
-\emptyset & \subseteq \{2\mapsto 4\}\\
-\{2\mapsto 4\}& \subseteq \{2\mapsto 4,3 \mapsto 9\}\\
-\{3\mapsto 9\}& \subseteq \{2\mapsto 4, 3 \mapsto 9\}\\
-\{2\mapsto 4\}& \not\subseteq \{3\mapsto 9\}
-\end{align*}
+\begin{marginfigure}
+\centering\large
+\xymatrix@=10pt{
+ & \left\{
+   \substack{2\mapsto 4, \\ 3\mapsto 9, \\4\mapsto 16}
+  \right\} \ar@{-}[dl]\ar@{-}[d] \ar@{-}[dr]& \\
+ \left\{ \substack{2\mapsto 4,\\ 3\mapsto 9} \right\} \ar@{-}[d]\ar@{-}[dr] 
+  & 
+ \left\{ \substack{2\mapsto 4,\\ 4\mapsto 16} \right\} \ar@{-}[dl]\ar@{-}[dr] 
+  &
+\left\{ \substack{3\mapsto 9,\\ 4 \mapsto 16} \right\} \ar@{-}[d]\ar@{-}[dl]
+  \\
+\{\substack{2\mapsto 4}\} \ar@{-}[dr] &  \{\substack{3\mapsto 9}\} \ar@{-}[d]& \{\substack{4\mapsto 16}\} \ar@{-}[dl]\\
+  & \emptyset
 }
+\caption{A poset of partial functions.}
+\label{fig:poset-of-partial-functions}
+\end{marginfigure}
 %
-For example, consider the poset $(A{\rightharpoonup}B, \subseteq)$ of
-partial functions. A partial function $f$ is a better approximation
-than another partial function $g$ if it is defined on more inputs,
-that is, if the graph of $f$ is a subset of the graph of $g$.  Two
-partial functions are incomparable if neither is a subset of the
-other.
+For example, consider the poset
+$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$ of partial
+functions on natural numbers. Some partial function $f$ is a better
+approximation than another partial function $g$ if it is defined on
+more inputs, that is, if the graph of $f$ is a subset of the graph of
+$g$.  Two partial functions are incomparable if neither is a subset of
+the other.
 
 The sequence of approximations will start with the worst
 approximation, a bottom element, written $\bot$, that contains no
@@ -673,12 +692,36 @@ input improves, that is, require $F$ to be monotonic.
   for any $x,y\in A$, $x \sqsubseteq y$ implies $F(x) \sqsubseteq F(x)$.
 \end{definition}
 
+\begin{proposition}
+  The functional $F_{b,c}$ for \texttt{while} loops \eqref{eq:while}
+  is monotonic.
+\end{proposition}
+\begin{proof}
+  Let $f, g : \mathit{Store} \pto \mathit{Store}$ such that
+  $f \subseteq g$. We need to show that $F_{b,c}(f) \subseteq
+  F_{b,c}(g)$. 
+  Let $s$ be an arbitrary state. Suppose $B\,b\,s = \TRUE$.
+  \[
+  F_{b,c}\,f\,s = f(C\,c\,s) \subseteq g(C\,c\,s) = g(C\,c\,s) = F_{b,c}\,g\,s 
+  \]
+  So we have $F_{b,c}(f) \subseteq F_{b,c}(g)$.
+  Next suppose $B\,b\,s = \FALSE$.
+  \[
+  F_{b,c}\,f\,s = s
+               = F_{b,c}\,g\,s 
+  \]
+  So again we have $F_{b,c}(f) \subseteq F_{b,c}(g)$.  Having
+  completed both cases, we conclude that $F_{b,c}(f) \subseteq
+  F_{b,c}(g)$.
+\end{proof}
+
+
 \begin{marginfigure}
 \[
   \bot \sqsubseteq F(\bot) \sqsubseteq F^2(\bot) 
     \sqsubseteq F^3(\bot) \sqsubseteq \cdots
 \]
-\caption{Ascending Kleene chain of $F$.}
+\caption{Ascending chain of $F$.}
 \label{fig:kleene-chain}
 \end{marginfigure}
 %
@@ -695,8 +738,8 @@ go from the sequences of approximations to the actual fixed point.
 
 The solution is to take the union of all the approximations. The
 analogue of union for an arbitrary partial order is least upper bound.
-%
-\marginnote{
+
+\begin{marginfigure}
 $\bigsqcup \left\{\!\! \begin{array}{l}
               \{ 2 \mapsto 4, 3 \mapsto 9 \}, \\
               \{ 3 \mapsto 9, 4 \mapsto 16 \} 
@@ -704,90 +747,45 @@ $\bigsqcup \left\{\!\! \begin{array}{l}
 = \left\{\!\! \begin{array}{l}
         2 \mapsto 4, \\ 3 \mapsto 9, \\ 4 \mapsto 16 
     \end{array}\!\! \right\}$
-}
-%
-\begin{definition}
-Given a subset $S$, an \textbf{\emph{upper bound}} of $S$ is an element
-$y$ such that for all $x \in S$ we have $x \sqsubseteq y$.  The
-\textbf{\emph{least upper bound (lub)}} of $S$, written $\bigsqcup S$,
-is the least of all the upper bounds of $S$, that is, given any upper
-bound $z$ of $S$, we have $\bigsqcup S \sqsubseteq z$.
-\end{definition}
-
-A lub for a set $S$ can only exist of all the elements in $S$ are
-consistent with one another.
-%
-\marginnote{$\{3\mapsto 8\}$ and $\{3 \mapsto 9\}$ are inconsistent.}
-%
-Consistency can be characterized purely in terms of the ordering
-relation: a subset $S$ is \textbf{\emph{consistent}} if every element
-in $S$ is the approximation of a common element, i.e.  there is a $y
-\in L$ such that for all $x \in S$, $x \sqsubseteq y$. In other words,
-$S$ is consistent if it is bounded above.
-%
-In the poset of partial functions $(A \rightharpoonup B, \subseteq)$,
-every consistent subset has a lub.
-
-%
-%% A partial order in which all consistent subsets have a least upper
-%% bound is \textbf{\emph{consistently complete}}~\citep{Plotkin:1978aa}
-%% (aka. \emph{bounded complete}~\citep{Gunter:1992aa}).
-
-However, a slightly different property, directedness, is used in
-Kleene's Fixed Point Theorem. (I do not yet know why.) A directed set
-is similar to a consistent set, but we only require an upper bound for
-each pair in $S$ and the bound must itself be in $S$.
+\caption{The lub of partial functions.}
+\end{marginfigure}
 
 \begin{definition}
-  Given a poset $(L,\sqsubseteq)$, a subset $S$ of $L$ is
-  \textbf{\emph{directed}} if every pair of elements in $S$ has an
-  upper bound in $S$.
+Given a subset $S$ of a partial order $(L,\sqsubseteq)$, an
+\textbf{\emph{upper bound}} of $S$ is an element $y$ such that for all
+$x \in S$ we have $x \sqsubseteq y$.  The \textbf{\emph{least upper
+    bound (lub)}} of $S$, written $\bigsqcup S$, is the least of all
+the upper bounds of $S$, that is, given any upper bound $z$ of $S$, we
+have $\bigsqcup S \sqsubseteq z$.
 \end{definition}
 
-The sequence of approximations $\bot \sqsubseteq F(\bot) \sqsubseteq
-F^2(\bot) \sqsubseteq \cdots$ is directed, any totally ordered subset
-is, because the upper bound of two elements is just the larger
-element.
-
-Generalizing from the poset of partial functions, one might think that
-there is always a least upper bound of consistent or directed sets.
-However, this is not always the case because their may not be enough
-elements within the poset. For example, consider the poset
-$(\mathit{Nat},\leq)$. The sequence
-\[
-  0 \leq 1 \leq 2 \leq 3 \leq \cdots
-\]
-does not have a lub in $(\mathit{Nat},\leq)$ because there is no one
-natural number that is greater than all the rest. Of course, if we
-move to the poset $(\mathit{Nat} \cup \{\infty\},\leq)$, where $n \leq
-\infty$ for any $n \in \mathit{Nat}$, then $\infty$ is the lub of the
-above sequence. So in the abstract setting of partial orders, one must
-separately add the requirement that there exists a lub for any
-directed subset.
+In arbitrary posets, a least upper bound may not exist for an
+arbitrary subset. In particular, for the poset
+$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$, two partial
+functions do not have a lub if they are inconsistent, that is, if they
+map the same input to different outputs, such as $\{3\mapsto 8\}$ and
+$\{3 \mapsto 9\}$. However, the CPO Fixed-Point Theorem will only need to
+consider totally ordered subsets, i.e., chains, and all the elements
+in a chain are consistent.
 
 \begin{definition}
-  A \textbf{\emph{directed-complete partial order (dcpo)}} has a least
-  upper bound for every directed subset.
+  A \textbf{\emph{chain}} is a totally ordered subset of a poset.  A
+  \textbf{\emph{chain-complete partial order (cpo)}} has a least upper
+  bound for every chain.
 \end{definition}
 
-\marginnote{
-\hspace{20pt}\xymatrix{
- a \ar@{-}[d]\ar@{-}[drr] &          & b \ar@{-}[d] \ar@{-}[dll]\\
- c \ar@{-}[dr]&          & d \ar@{-}[dl]\\
-         & e 
-}  \\[2ex]
-\noindent This poset is a dcpo but the consistent set $\{c,d,e\}$ has no
-lub~\citep{Plotkin:1978aa}.
-}
 
-In the literature there are two schools of thought regarding how to
-define complete partial orders. There is the one presented above,
-based on the notion of directed set, which gives us
-dcpos~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk,Berger:2007aa}. The
-other school of thought is based on the notion of a chain, i.e. a
-totally ordered subset, and requires lubs to exists for all
-chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  
-
+%% \begin{proof}
+%%   Let $S$ be a directed subset of $A \to B_\bot$.
+%%   The union of the elements of $S$ is the least upper bound of $S$.
+%%   Suppose $h \in S$. Then $h \subseteq \bigcup S$, so $\bigcup S$ is an upper bound of $S$.
+%%   Let $f$ be an arbitrary upper bound of $S$.
+%%   We need to show that $\bigcup S \subseteq f$.
+%%   Suppose $(x,y) \in \bigcup S$.
+%%   Then $(x,y) \in g$ for some $g \in S$.
+%%   So $(x,y) \in f$ because $g \subseteq f$.
+%%   Therefore $\botcup S$ is the least of all the upper bounds of $S$.
+%% \end{proof}
 
 %% I like dcpos because it seems quite natural to say that lubs should
 %% exist for sets of consistent elements. On the other hand, the
@@ -795,6 +793,27 @@ chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.
 %% Point Theorem.
 %% The two schools of thought yield definitions that are
 %% equivalent~\citep{Mitchell:1996nn} (page 312).
+
+\begin{proposition}
+  The poset of partial functions $(A\pto B,\subseteq)$ is a
+  cpo.
+\end{proposition}
+\begin{proof}
+  Let $S$ be a chain in $(A\pto B,\subseteq)$.  We claim
+  that the lub of $S$ is just the union of all the elements of $S$,
+  that is $\bigcup S$. Recall that $\forall x y, (x,y) \in \bigcup S$
+  iff $\exists f \in S, (x,y) \in f$.
+%
+  We first need to show that $\bigcup S$ is an upper bound of $S$.
+  Suppose $f \in S$. We need to show that $f \subseteq \bigcup S$.
+  Consider $(x,y) \in f$. Then $(x,y) \in \bigcup S$. So indeed,
+  $\bigcup S$ is an upper bound of $S$.  Second, consider another
+  upper bound $g$ of $S$.  We need to show that $\bigcup S \subseteq
+  g$. Suppose $(x,y) \in \bigcup S$.  Then $(x,y) \in h$ for some $h
+  \in S$. Because $g$ is an upper bounf of $S$, we have $h \subseteq
+  g$ and therefore $(x,y) \in g$. So we conclude that $\bigcup S
+  \subseteq g$.
+\end{proof}
 
 The last ingredient required in the proof of the fixed point theorem
 is that the output of $F$ should only depend on a finite amount of
@@ -808,26 +827,59 @@ lub of the set obtained by mapping $F$ over the elements of $X$
 (finite things).
 
 \begin{definition}
-  A monotonic function $F : A {\to} B$ on dcpos is
-  \textbf{\emph{continuous}} iff for all directed subsets $X$ of $A$
+  A monotonic function $F : A {\to} B$ on a cpo is
+  \textbf{\emph{continuous}} iff for all chains $X$ of $A$
   \[
   F(\bigsqcup X) = \bigsqcup \{ F(x) \mid x \in X \}
   \]
 \end{definition}
 
-We now state Kleene's Fixed Point Theorem.
+\begin{proposition}
+  The functional $F_{b,c}$ for \texttt{while} loops \eqref{eq:while}
+  is continuous.
+\end{proposition}
+\begin{proof}
+  Let $S$ be a chain in $(A\pto B,\subseteq)$. 
+  We need to show that
+  \[
+  F_{b,c}(\bigcup S) = \bigcup \{ F_{b,c}(f) \mid f \in S\}
+  \]
+  We shall prove this equality by showing that each graph is a subset
+  of the other.  We assume $(s,s'') \in F_{b,c}\,(\bigcup S)$.
+  Suppose $B\,b\,s = \TRUE$.  Then $(s,s'') \in (\bigcup S) \circ (C
+  \, c)$, so $(s,s') \in C\,c$ and $(s',s'') \in g$ for some $s'$ and
+  $g \in S$. So $(s,s'') \in g \circ (C\, c)$.  Therefore $(s,s'') \in
+  \bigcup \{ F_{b,c}(f) \mid f \in S \}$.  So we have shown that
+  $F_{b,c}\,(\bigcup S) \subseteq \bigcup \{ F_{b,c}(f) \mid f \in S
+  \}$. Next suppose $B\,b\,s = \FALSE$.  Then
+  $
+  F_{b,c}(\bigcup S) = \mathit{id} = \bigcup \{ F_{b,c}(f) \mid f \in S\}
+  $.
 
-\begin{theorem}[Kleene Fixed Point Theorem]\label{thm:fixed-point}
-Suppose $(L,\sqsubseteq)$ is a dcpo with a least element $\bot$, and
-let $F:L\to L$ be a continuous function. Then $F$ has a least fixed
-point, written $\mathrm{fix}\,F$, which is the least upper bound of
-the ascending Kleene chain of $F$:
+  For the other direction, we assume $(s,s'') \in \bigcup \{
+  F_{b,c}(f) \mid f \in S\}$. So $(s,s'') \in F_{b,c}(g)$ for some $g
+  \in S$.  Suppose $B\,b\,s = \TRUE$.  Then $(s,s') \in C\,c$ and
+  $(s',s'') \in g$ for some $s'$. So $(s',s'') \in \bigcup S$ and
+  therefore $(s,s'') \in F_{b,c}(\bigcup S)$.  So we have shown that
+  $\bigcup \{ F_{b,c}(f) \mid f \in S \} \subseteq F_{b,c}\,(\bigcup
+  S)$. Next suppose $B\,b\,s = \FALSE$. Then again we have both graphs
+  equal to the identity relation.
+\end{proof}
+
+We now state the fixed point theorem for cpos.
+
+\begin{theorem}[CPO Fixed-Point Theorem]\label{thm:fixed-point}
+Suppose $(L,\sqsubseteq)$ is a cpo and let $F:L\to L$ be a continuous
+function. Then $F$ has a least fixed point, written $\mathrm{fix}\,F$,
+which is the least upper bound of the ascending chain of $F$:
 \[
   \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
 \]
 \end{theorem}
 \begin{proof}
-We first prove that $\mathrm{fix}\,F$ is a fixed point of $F$.
+Note that $\bot$ is an element of $L$ because it is the lub of the
+empty chain.  We first prove that $\mathrm{fix}\,F$ is a fixed point
+of $F$.
 \begin{align*}
   F(\mathrm{fix}\,F) &= F(\bigsqcup \{ F^n(\bot) \mid n \in \NAT \})\\
   &= \bigsqcup\{ F(F^n(\bot)) \mid n \in \NAT \} & \text{by continuity}\\
@@ -842,99 +894,313 @@ Next we prove that $\mathrm{fix}\,F$ is the least of the fixed points
 of $F$. Suppose $e$ is an arbitrary fixed point of $F$. By the
 monotonicity of $F$ we have $F^i(\bot) \sqsubseteq F^i(e)$ for all
 $i$.  And because $e$ is a fixed point, we also have $F^i(e) = e$, so
-$e$ is an upper bound of the ascending Kleene chain, and therefore
+$e$ is an upper bound of the ascending chain, and therefore
 $\mathrm{fix}\,F \sqsubseteq e$.
 \end{proof}
 
-Returning to the semantics of the \texttt{while} loop, to apply
-Theorem~\ref{thm:fixed-point}, we need to show that
-\begin{enumerate}
-\item $(\mathit{Store}{\rightharpoonup}\mathit{Store},\subseteq)$ is a dcpo and
-\item the $F$ of Equation~\ref{eq:while} is continuous.
-\end{enumerate}
-%Recall that $\mathit{Store} = \mathit{Id} \to \mathit{Nat}$.
-%Also, we have the following facts about building
-%dcpos~\citep{Amadio:1998fk}.
-Regarding the first point, we have the following proposition.
 
-\begin{proposition}[Partial functions are dcpos]
-  Given any two sets $A$ and $B$, the partial order $(A \rightharpoonup
-  B, \subseteq)$, is a dcpo.
-\end{proposition}
-%% \begin{proof}
-%%   Let $S$ be a directed subset of $A \to B_\bot$.
-%%   The union of the elements of $S$ is the least upper bound of $S$.
-%%   Suppose $h \in S$. Then $h \subseteq \bigcup S$, so $\bigcup S$ is an upper bound of $S$.
-%%   Let $f$ be an arbitrary upper bound of $S$.
-%%   We need to show that $\bigcup S \subseteq f$.
-%%   Suppose $(x,y) \in \bigcup S$.
-%%   Then $(x,y) \in g$ for some $g \in S$.
-%%   So $(x,y) \in f$ because $g \subseteq f$.
-%%   Therefore $\botcup S$ is the least of all the upper bounds of $S$.
-%% \end{proof}
+Returning to the semantics of the \texttt{while} loop, we give the
+least fixed-point semantics of an imperative language in
+Figure~\ref{fig:imperative-fixed-point}. We have already seen that the
+poset of partitial functions is a cpo and that $F_{b,c}$ is
+continuous, so $\mathrm{fix}\,(F_{b,c})$ is well defined and is the
+least fixed-point of $F_{b,c}$. Thus, we can define the meaning
+of the \texttt{while} loop as follows.
+\[
+  C(\WHILE{b}{c})\,s = \mathrm{fix}(F_{b,c})\,s
+\]
 
-Regarding the second point, UNDER CONSTRUCTION
-
-
-%% \begin{proposition}[Constructing dcpos]\ \\
-%%   \begin{enumerate}
-%%   \item Any discrete partial ordering $(A,=)$ is a
-%%     dcpo. \label{prop:discrete-dcpo}
-%%   \item Given a dcpo $(A,\sqsubseteq)$, its lifting $A_\bot = A \cup
-%%     \{ \bot \}$ is dcpo. \label{prop:pointed-dcpo}
-%%   \item If $A$ and $B$ are dcpos, then $A \times B$ with lexicographic
-%%     ordering is a dcpo. $(\bot,\bot)$ is the least
-%%     element. \label{prop:pair-dcpo}
-%%   \item If $A$ and $B$ are dcpos, then the set of continuous functions
-%%     from $A$ to $B$ with the pointwise ordering is a
-%%     dcpo.\label{prop:fun-dcpo}
-%%   \end{enumerate}
-%% \end{proposition}
-%% Applying these facts to our situation, $\mathit{Id}$ and
-%% $\mathit{Nat}$ are discrete partial orders, so they are dcpos
-%% \eqref{prop:discrete-dcpo}. Therefore $\mathit{Store}$ is also a dcpo
-%% \eqref{prop:fun-dcpo}, and so is $\mathit{Store}_\bot$
-%% \eqref{prop:pointed-dcpo}. Then the final step is that
-%% $\mathit{Store}_\bot{\to}\mathit{Store}_\bot$ is a dcpo
-%% \eqref{prop:fun-dcpo}.
-
-%% Next we need to show that the functional $F$ for $\mathtt{while}$ is
-%% continuous
-%% \begin{align*}
-%%   F &: (\mathit{Store}_\bot{\to}\mathit{Store}_\bot) \to (\mathit{Store}_\bot \to \mathit{Store}_\bot) \\
-%%   F\,r\,s &= \mathit{if}\, B\,b\,s \,\mathit{then}\, r(c\,s)\,\mathit{else}\,s
-%% \end{align*}
-
-%% \begin{proposition}\ \\
-%%   \begin{enumerate}
-%%   \item Any function $f : A \to B$ is continuous if $A$ is a discrete
-%%     partial order. \label{prop:discrete-continuous}
-%%   \item ...
-%%   \end{enumerate}
-%% \end{proposition}
-
-%% Because $\mathit{Id}$ is a discrete partial order, every $s \in
-%% \mathit{Store}$ is continuous.
-
-%% A partial function $f$ is an approximation of another partial function
-%% $g$ (less defined), written $f \sqsubseteq g$ and defined as follows.
-%% \[
-%%   f \sqsubseteq g \;\overset{\mathrm{def}}{=}\;
-%%       \forall x \in \mathrm{dom}(f).\, f(x) \sqsubseteq g(x).
-%% \]
+\begin{marginfigure}
+\[
+P'\,c\,n = (C'\,c\,\{A{\mapsto} n]\})\,Z 
+\]
+\begin{align*}
+C'\,\SKIP\,s &= s \\ 
+C'(\ASSIGN{x}{e})\,s &= [x\mapsto E\,e\,s]s\\
+C'(\SEQ{c_1}{c_2})\,s &=  C'\,c_2(C'\,c_1\,s) \\
+C'\left(\!\!\begin{array}{l}
+  \mathtt{if}\,b\,\mathtt{then}\,c_1\\
+  \mathtt{else}\,c_2
+  \end{array}\!\!\right)\,s
+  &= 
+ \begin{cases}
+  C'\,c_1\,s & \text{if } B\,b\,s = \TRUE \\
+  C'\,c_2\,s & \text{if } B\,b\,s = \FALSE
+ \end{cases} \\
+C'(\WHILE{b}{c})\,s &= \mathrm{fix}(F_{b,c})\,s
+\end{align*}
+\caption{Least Fixed-Point Semantics of an Imperative Language}
+\label{fig:imperative-fixed-point}
+\end{marginfigure}
 
 
+\begin{Exercise}
+  Prove that the semantics in Figure~\ref{fig:imperative} is
+  equivalent to the least fixed-point semantics in
+  Figure~\ref{fig:imperative-fixed-point}, i.e., $(n,n') \in P\,c$ iff
+  $P\,c\,n = n'$.
+\end{Exercise}
+\begin{Answer}
+TODO
+\end{Answer}
+
+In the literature there are two schools of thought regarding how to
+define complete partial orders. There is the one presented above, that
+requires lubs to exists for all
+chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  The
+other requires that the poset be directed complete, that is, lubs
+exists for all directed
+sets~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk}.  The two
+schools of thought are equivalent, i.e., a poset $P$ with a least
+element is directed-complete iff every chain in $P$ has a
+lub~\citep{Davey:2002fj} (Theorem 8.11).
 
 
+\section{A Functional Language: the $\lambda$-calculus}
+\label{sec:lambda}
+
+\marginnote{
+\begin{tabular}{ll}
+Reading: & \citet{Siek:2017ab} 
+\end{tabular}
+}
+
+We now turn to the prototypical functional language, the
+$\lambda$-calculus. The main feature of this language is a function,
+created by lambda abstractions $\LAM{x}e$. The application expression
+$(e_1\,e_2)$ calls the function produced by $e_1$ with the argument
+produced by $e_2$. We study here the call-by-value (CBV) version of
+the $\lambda$-calculus.  As a secondary feature, we include binary
+arithmetic (Section~\ref{sec:binary-arithmetic}).
+
+In the $\lambda$-calculus, functions are first-class entities, so they
+can be passed to other functions and returned from them. This
+introduces a difficulty in trying to give a semantics in terms of
+regular mathematical sets and functions. It seems that we need a set
+$\mathbb{D}$ that solves the following equation.
+\[
+   \mathbb{D} = \mathbb{N} + (\mathbb{D} \pto \mathbb{D})
+\]
+But such a set cannot exist because the size of $\mathbb{D} \pto
+\mathbb{D}$ is necessarily larger than $\mathbb{D}$!
+
+There are several ways around this problem. One approach is to
+consider only continuous functions, which cuts down the size enough to
+make it possible to solve the equation. The first model of the
+$\lambda$-calculus, $D_\infty$ of \citet{Scott:1970dp}, takes this
+approach. We shall study $D_\infty$ in Section~\ref{sec:D-infinity}.
+
+Another approach does not require solving the above equation, but
+recognizes that when passing a function to another function, one
+doesn't need to pass the entirety of the function (which is infinite),
+but one can instead pass a finite subset of the function's graph.  The
+trouble of deciding which finite subset to pass can be sidestepped by
+trying all possible subsets. This would of course be prohibitive if
+our current goal was to implement the $\lambda$-calculus, but this
+``inefficiency'' does not pose a problem for a semantics, a
+\emph{specification}, of the $\lambda$-calculus. The various semantics
+that take this approach are called \emph{graph models}. This first
+such model was $T^{*}_C$ of \citet{Plotkin:1972aa}. Then came
+$\mathcal{P}(\omega)$ of \citet{Scott:1976lq} and the simpler $D_A$ of
+\citet{Engeler:1981aa}. We shall study these three models in
+Section~\ref{sec:graph-models}. But first, we study perhaps the most
+straightforward of the graph models, the recent one by yours
+truly~\citep{Siek:2017ab}.
+
+\begin{figure*}
+\begin{minipage}{0.5\textwidth}
+\noindent Syntax
+\[
+\begin{array}{lrl}
+ \text{vars.} & x \in \mathbb{X}\\
+ \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x} e \mid (e \, e)
+\end{array}
+\]
+Domain
+\[
+\begin{array}{lrl}
+               & i \in \mathbb{N} \\
+  \text{elts.} & d \in \mathbb{D} ::= &i \mid \{ (d_1,d'_1), \ldots, (d_n,d'_n) \} \\
+  \text{env.} & \rho \in  \mathbb{X} \pto \mathbb{D} 
+\end{array}
+\]
+Ordering
+\[
+   n \sqsubseteq n \qquad 
+   \inference{t \subseteq t'}{t \sqsubseteq t'}
+\]
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+Semantics
+\[
+  P\,e = \{ d \mid \exists d'.\, d \sqsubseteq d' 
+               \text{ and } d' \in E\,e\,\emptyset\}
+\]
+\begin{align*}
+  E\, n \, \rho & = \{ N(n) \} \\
+  E\, (e_1 + e_2) \, \rho & = \{ i_1 + i_2 \mid i_1 \in E\,e_1\,\rho, 
+                                    i_2 \in E\,e_2\,\rho \} \\
+  E\, (e_1 \times e_2) \, \rho & = \{ i_1 i_2 \mid i_1 \in E\,e_1\,\rho, 
+                                    i_2 \in E\,e_2\,\rho \} \\
+  E\, x \,\rho &= \{ d \mid d = \rho\,x \} \\
+  E\, (\LAM{x}e)\,\rho &= \{ t \mid
+   \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]\rho \} \\
+  E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
+\end{align*}
+\[
+  D_1 \cdot D_2 \overset{\mathrm{def}}{=}
+  \left\{ d' \middle|
+  \begin{array}{l}\exists t d d_2.\, t \in D_1 \text{ and }  d_2 \in D_2, \\
+    (d,d') \in t \text{ and } d \sqsubseteq d_2
+  \end{array}
+  \right\}
+\]
+\end{minipage}
+\caption{$\lambda$-calculus}
+\label{fig:lambda}
+\end{figure*}
+
+Figure~\ref{fig:lambda} defines the syntax and semantics of a CBV
+$\lambda$-calculus. To enable trying all possible finite subsets of a
+function's graph, the semantics is non-deterministic. That is, the
+semantic function $E$ maps programs to sets of elements, instead of a
+single element. In the case when an expression produces a natural
+number, the set is just a singleton of that number. However, when the
+expression produces a function, the set contains all finite
+approximations of the function.
+
+The domain $\mathbb{D}$ consists of just the natural numbers and
+finite graphs (association tables) of functions.  $\mathcal{D}$ is
+defined inductively, or equivalently, it is the least solution of
+\[
+   \mathbb{D} = \mathbb{N} + \mathcal{P}_f(\mathbb{D} \times \mathbb{D})
+\]
+Let $t$ range over the finite graphs, that is, 
+$t \in \mathcal{P}_f(\mathbb{D} \times \mathbb{D})$.
+
+The semantics in Figure~\ref{fig:lambda} says the meaning of an
+abstraction $(\LAM{x}e)$ is the set of all tables $t$ such that each
+input-output entry $(d,d')$ makes sense for the $\lambda$. That is,
+$d' \in E\,e\,[x\mapsto d]\rho$. The semantics of application is
+defined in terms of the auxilliary application operator $D_1 \cdot
+D_2$, which applies all the tables in $D_1$ to all the elements
+(arguments) in $D_2$. A naive definition of the application operator
+is just table lookup in a non-deterministic setting.
+\begin{align*}
+  D_1 \cdot D_2 &= 
+  \{ d' \mid
+  \exists t d.\, t \in D_1, d \in D_2, 
+    (d,d') \in t
+  \}
+  & \text{(naive)}
+\end{align*}
+The idea is to collect up all the results $d'$ that come from matching
+up an argument $d \in D_2$ with an entry $(d,d')$ from a table $t \in
+D_1$. The problem with this naive version is that it prohibits self
+application, which is an important part of the $\lambda$-calculus.
+For example, it is necessary to define the $Y$ combinator and thereby
+express general recursion. The problem is that in self application,
+one would need a table to be inside itself, that is, $(t,d') \in t$.
+But that can't happen because the domain $\mathbb{D}$ is inductively
+defined. The solution is to allow the argument to be a larger table
+than the input $d$ of the table entry. We define the approximation
+ordering $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for
+argument $d_2 \in D_2$, we require $d \sqsubseteq d_2$ instead of $d =
+d_2$.
+
+We turn to an implementation of the $\lambda$-calculus, the
+interpreter in Figure~\ref{fig:interp-lambda}. The interpreter is
+based on the notion of a closure, which pairs a $\lambda$ abstraction
+with its environment to ensure that the free variables get their
+definitions from the lexical scope.
+
+\begin{marginfigure}
+\[
+\begin{array}{lrl}
+ \text{values} & v \in \mathbb{V} ::= & n \mid \langle \LAM{x}e, \rho \rangle \\
+ \text{env.} & \varrho \in \mathbb{X} \pto \mathbb{V} 
+\end{array}
+\]
+\begin{align*}
+  I\,n\,\varrho &= n \\
+  I\,(e_1 + e_2)\,\varrho &= \mathit{add}(I\,e_1\,\varrho, I\,e_2\,\varrho, 0) \\
+  I\,(e_1 \times e_2)\,\varrho &= \mathit{mult}(I\,e_1\,\varrho, I\,e_2\,\varrho) \\
+  I\,(\LAM{x}e)\,\varrho &= \langle \LAM{x}e, \varrho \rangle \\
+  I\,(e_1\,e_2)\,\varrho &=  I\,e\,[x\mapsto I\,e_2\,\varrho]\varrho'\\
+      & \quad \text{if } I\,e_1\,\varrho = \langle \LAM{x}e,\varrho' \rangle
+\end{align*}
+
+\caption{Interpreter for the $\lambda$-calculus}
+\label{fig:interp-lambda}
+\end{marginfigure}
+
+We prove the correctness of the interpreter in two steps.  First we
+show that if the semantics says the result of a program should be an
+integer $i$, then the interpreter produces a binary numeral $n$ such
+that $N(n) = i$. The second part is to show that if the interpreter
+produces an answer $n$, then the semantics agrees that $N(n)$ should
+be the answer.
+
+For the first part, we need to relate denotations (elements $d$) to
+the values $v$ used by the interpreter.
+\begin{align*}
+  \mathcal{G}(i) &= \{ n \mid N(n) = i \} \\
+  \mathcal{G}(t) &= \left\{ \langle \LAM{x} e, \varrho \rangle \middle|
+     \begin{array}{l}
+       \forall (d,d') \in t, v \in \mathcal{G}(d),\\
+       \exists v'. I\,e\,[x\mapsto v]\varrho = v'
+               \text{ and } v'\in\mathcal{G}(d')
+     \end{array} \right\}
+\end{align*}
+Similarly, we related semantic environments to the
+interpreter's environments.
+\[
+  \inference{}{\mathcal{G}(\emptyset,\emptyset)}
+  \qquad
+  \inference{v \in \mathcal{G}(d) & \mathcal{G}(\rho,\varrho)}
+            {\mathcal{G}([x\mapsto d] \rho, [x\mapsto v] \varrho}
+\]
+
+\noindent Leading up to the first theorem, we establish the following lemmas.
+
+\begin{lemma}[$\mathcal{G}$ is downward closed]
+\label{lem:sub-good}
+If $v \in \mathcal{G}(d)$ and $d' \sqsubseteq d$, then $v \in \mathcal{G}(d')$.
+\end{lemma}
+
+\begin{lemma}
+\label{lem:lookup-good}
+  If $\mathcal{G}(\rho,\varrho)$,
+  then $\varrho(x) \in \mathcal{G}(\rho(x))$
+\end{lemma}
+
+\begin{lemma}
+  If $d \in E\,e\,\rho$ and $\mathcal{G}(\rho,\varrho)$, then
+  $I\,e\,\varrho = v$, $v \in \mathcal{G}(d)$ for some $v$.
+\end{lemma}
+
+\begin{theorem}[Adequacy]
+If $E\,e\,\emptyset = E\,i\,\emptyset$, then $I\,e\,\emptyset = n$
+and $N(n) = i$.
+\end{theorem}
+
+UNDER CONSTRUCTION
 
 
+\section{Graph models of $\lambda$-calculus $(T^{*}_C$,$D_A$, and $\mathcal{P}(\omega))$ }
+\label{sec:graph-models}
 
+UNDER CONSTRUCTION
 
+\section{Filter models of $\lambda$-calculus}
+\label{sec:filter-models}
 
+UNDER CONSTRUCTION
 
+\section{$D_\infty$ model of $\lambda$-calculus}
+\label{sec:D-infinity}
 
-
-
+UNDER CONSTRUCTION
 
 \clearpage
 \pagebreak
@@ -995,6 +1261,155 @@ Syntax
 
 \section{Pointers}
 
+\section{Miscellaneous}
+
+A lub for a set $S$ can only exist of all the elements in $S$ are
+consistent with one another.
+%
+\marginnote{$\{3\mapsto 8\}$ and $\{3 \mapsto 9\}$ are inconsistent.}
+%
+Consistency can be characterized purely in terms of the ordering
+relation.
+
+\begin{definition}
+A subset $S$ of a partial order $(L,\sqsubseteq)$ is
+\textbf{\emph{consistent}} if every pair of elements $x$ and $y$ in
+$S$ has a common upper bound, i.e.  there exists $z \in L$ such $x
+\sqsubseteq z$ and $y \sqsubseteq z$.
+\end{definition}
+
+In the poset of partial functions $(A \pto B, \subseteq)$,
+every consistent subset $S$ has a lub, the function whose graph is the
+union of all the graphs in $S$.
+
+%
+%% A partial order in which all consistent subsets have a least upper
+%% bound is \textbf{\emph{consistently complete}}~\citep{Plotkin:1978aa}
+%% (aka. \emph{bounded complete}~\citep{Gunter:1992aa}).
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+ & \{ 1,2,3\} \ar@{-}[ddl]\ar@{-}[dr]\\
+ & & \{ 2,3 \} \ar@{-}[dl]\ar@{-}[d]\\
+\{1\}\ar@{-}[dr] & \{ 2 \} \ar@{-}[d]& \{ 3 \}\ar@{-}[dl]\\
+   & \emptyset & 
+} 
+\caption{A directed subset of $(\mathcal{\mathbb{N}},\subseteq)$.}
+\end{marginfigure}
+
+However, a slightly different property, directedness, is used in the
+fixed point theorem. (I am trying to find out why.) A directed set is
+similar to a consistent set, but we only require an upper bound for
+each pair in $S$ and the bound must itself be in $S$.
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+ & & \{ 2,3 \} \ar@{-}[dl]\ar@{-}[d]\\
+\{1\}\ar@{-}[dr] & \{ 2 \} \ar@{-}[d]& \{ 3 \}\ar@{-}[dl]\\
+   & \emptyset & 
+}
+\caption{A subset of $(\mathcal{\mathbb{N}},\subseteq)$ that is
+not directed.}
+\end{marginfigure}
+
+
+\begin{definition}
+  Given a poset $(L,\sqsubseteq)$, a subset $S$ of $L$ is
+  \textbf{\emph{directed}} if every pair of elements in $S$ has an
+  upper bound in $S$.
+\end{definition}
+
+The sequence of approximations $\bot \sqsubseteq F(\bot) \sqsubseteq
+F^2(\bot) \sqsubseteq \cdots$ is directed, any totally ordered subset
+is, because the upper bound of two elements is just the larger
+element.
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+    & a \ar@{-}[dl]\ar@{-}[dr]& \\
+  b &   & c
+}
+\caption{The subset $\{b,c\}$ is consistent but not directed.
+  The subset $\{a,b,c\}$ is both consistent and directed.}
+\end{marginfigure}
+
+\begin{proposition}
+  A finite directed set $S$ is also consistent.
+\end{proposition}
+\begin{proof}
+  By induction on $S$. If $S=\emptyset$, then it vacuously consistent.
+  Otherwise, remove a minimal element $x$ from $S$.  Then $S'=S -
+  \{x\}$ is still directed, so $S'$ is consistent by the induction
+  hypothesis, say with bound $z$. Then because $S$ is directed, for
+  every $y \in S'$, the pair $x$ and $y$ have a bound $w$ in $S'$ (the
+  bound couldn't be $x$), and $w \sqsubseteq z$ (because $S'$ is
+  consistent) so $x \sqsubseteq z$.  Thus, $S$ is consistent.
+\end{proof}
+
+Generalizing from the poset of partial functions, one might think that
+there is always a least upper bound of consistent or directed sets.
+However, this is not always the case because their may not be enough
+elements within the poset. For example, consider the poset
+$(\mathit{Nat},\leq)$. The sequence
+\[
+  0 \leq 1 \leq 2 \leq 3 \leq \cdots
+\]
+does not have a lub in $(\mathit{Nat},\leq)$ because there is no one
+natural number that is greater than all the rest. Of course, if we
+move to the poset $(\mathit{Nat} \cup \{\infty\},\leq)$, where $n \leq
+\infty$ for any $n \in \mathit{Nat}$, then $\infty$ is the lub of the
+above sequence. So in the abstract setting of partial orders, one must
+separately add the requirement that there exists a lub for any
+directed subset.
+
+\begin{marginfigure}
+\centering\xymatrix@=10pt{
+ a \ar@{-}[d]\ar@{-}[drr] &          & b \ar@{-}[d] \ar@{-}[dll]\\
+ c \ar@{-}[dr]&          & d \ar@{-}[dl]\\
+         & e 
+}  \\[2ex]
+\caption{A dcpo with a consistent set $\{c,d\}$ that has no
+  lub~\citep{Plotkin:1978aa}.}
+\end{marginfigure}
+
+\begin{definition}
+  A \textbf{\emph{directed-complete partial order (dcpo)}} has a least
+  upper bound for every directed subset.
+\end{definition}
+
+\begin{proposition}[Partial functions are dcpos]
+  Given any two sets $A$ and $B$, the partial order $(A \pto B,
+  \subseteq)$, is a dcpo.
+\end{proposition}
+
+\begin{theorem}[Fixed Point Theorem for Dcpos]\label{thm:fixed-point}
+Suppose $(L,\sqsubseteq)$ is a dcpo with a least element $\bot$, and
+let $F:L\to L$ be a continuous function. Then $F$ has a least fixed
+point, written $\mathrm{fix}\,F$, which is the least upper bound of
+the ascending chain of $F$:
+\[
+  \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
+\]
+\end{theorem}
+\begin{proof}
+We first prove that $\mathrm{fix}\,F$ is a fixed point of $F$.
+\begin{align*}
+  F(\mathrm{fix}\,F) &= F(\bigsqcup \{ F^n(\bot) \mid n \in \NAT \})\\
+  &= \bigsqcup\{ F(F^n(\bot)) \mid n \in \NAT \} & \text{by continuity}\\
+  &= \bigsqcup\{ F^{n+1}(\bot)) \mid n \in \NAT \} \\
+  %% &= \bigsqcup \{ F^1(\bot), F^2(\bot), F^3(\bot), \ldots\} \\
+  %% &= \bigsqcup \{ F^0(\bot), F^1(\bot), F^2(\bot), F^3(\bot), \ldots\} \\
+  &= \bigsqcup\{ F^n(\bot)) \mid n \in \NAT \} 
+  & \text{because } F^0(\bot) = \bot \sqsubseteq F^1(\bot)  \\
+  &= \mathrm{fix}\,F
+\end{align*}
+Next we prove that $\mathrm{fix}\,F$ is the least of the fixed points
+of $F$. Suppose $e$ is an arbitrary fixed point of $F$. By the
+monotonicity of $F$ we have $F^i(\bot) \sqsubseteq F^i(e)$ for all
+$i$.  And because $e$ is a fixed point, we also have $F^i(e) = e$, so
+$e$ is an upper bound of the ascending chain, and therefore
+$\mathrm{fix}\,F \sqsubseteq e$.
+\end{proof}
 
 
 %%  LocalWords:  implementers
