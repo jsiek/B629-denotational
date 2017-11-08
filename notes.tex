@@ -1207,16 +1207,17 @@ UNDER CONSTRUCTION
 \subsection{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
 \label{sec:t-c}
 
-\newcommand{\PSEM}[1]{\mathcal{E}_T\,#1\,}
+\newcommand{\PSEM}[1]{\mathcal{E}_P\,#1\,}
 
 
 \begin{figure}
 \begin{align*}
-  \mathbb{D} &= \mathbb{N} + \mathcal{P}_f(\mathbb{D}) \times \mathcal{P}_f(\mathbb{D}) \\
-  D & \in \mathcal{P}_f(\mathbb{D}) \\[2ex]
+  T^{*}_C &= C + \mathcal{P}_f(T^{*}_C) \times \mathcal{P}_f(T^{*}_C) \\
+  D & \in \mathcal{P}_f(T^{*}_C) \\[2ex]
 %% \PSEM{ n }\rho &= \{ n \} \\
 %% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
 %%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
+\mathcal{E}_{P}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T^{*}_C)) \to \mathcal{P}(T^{*}_C)\\
 \PSEM{ x }\rho &= \rho(x) \\
 \PSEM{ (\LAM{x} e) }\rho &= 
   \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
@@ -1232,7 +1233,8 @@ UNDER CONSTRUCTION
 
 \subsection{The $D_A$ model of \citet{Engeler:1981aa}}
 \label{sec:d-a}
-\newcommand{\ESEM}[1]{\mathcal{E}_E[\![ #1 ]\!]}
+
+\newcommand{\ESEM}[1]{\mathcal{E}_E\, #1 \,}
 
 
 
@@ -1241,7 +1243,6 @@ UNDER CONSTRUCTION
 
 Figure~\ref{fig:p-omega}
 
-
 \begin{figure}
 
 \begin{align*}
@@ -1249,12 +1250,12 @@ Figure~\ref{fig:p-omega}
 \langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
 e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
     k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
-P & : \mathbb{E} \to (\mathit{Id} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
-P\,x\,\rho &= \rho\,x \\  
-P\,(\LAM{x}e)\,\rho &= \{ \langle n, m \rangle \mid m \in P\,e\,[x\mapsto e_n]\rho \} \\
-P\,(e_1\,e_2)\,\rho &= \{ m \mid \exists e_n. \, 
-   \langle n,m \rangle \in P\,e_1\,\rho
-   \text{ and } e_n \subseteq P\,e_2\,\rho \}\\
+\mathcal{E}_S & : \mathbb{E} \to (\mathit{Id} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
+\mathcal{E}_S\,x\,\rho &= \rho\,x \\  
+\mathcal{E}_S\,(\LAM{x}e)\,\rho &= \{ \langle n, m \rangle \mid m \in \mathcal{E}_S\,e\,[x\mapsto e_n]\rho \} \\
+\mathcal{E}_S\,(e_1\,e_2)\,\rho &= \{ m \mid \exists e_n. \, 
+   \langle n,m \rangle \in \mathcal{E}_S\,e_1\,\rho
+   \text{ and } e_n \subseteq \mathcal{E}_S\,e_2\,\rho \}\\
 \end{align*}
 \caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
 \label{fig:p-omega}
