@@ -84,7 +84,7 @@ precise.  Here we have chosen to give the semantics of binary
 arithmetic in terms of decimal numbers because people are generally
 much more familiar with decimal numbers. 
 
-\begin{marginfigure}
+\begin{figure}
 \noindent Syntax
 \[
 \begin{array}{lrl}
@@ -93,20 +93,26 @@ much more familiar with decimal numbers.
  \text{expression}& e ::=& n \mid e + e \mid e \times e
 \end{array}
 \]
-Semantics
+Semantics\\
+\begin{minipage}{0.4\textwidth}
 \begin{align*}
  N\BR{ \epsilon } &= 0 \\
  N\BR{ n d } &= 2 N\BR{ n } + d\\[1ex]
- E\BR{ n } &= N\BR{ n } \\
+\end{align*}
+\end{minipage}
+\begin{minipage}{0.6\textwidth}
+  \begin{align*}
+  E\BR{ n } &= N\BR{ n } \\
  E\BR{ e_1 + e_2 } &= 
     E\BR{ e_1 } + E\BR{ e_2 } \\
  E\BR{ e_1 \times e_2 } &= 
     E\BR{ e_1 } E\BR{ e_2 }
 \end{align*}
+\end{minipage}
 \caption{Language of binary arithmetic}
 \label{fig:binary-arithmetic}
-\end{marginfigure}
-%
+\end{figure}
+
 When writing down a semantics, one is often tempted to consider the
 efficiency of a semantics, as if it were an implementation. Indeed, it
 would be straightforward to transcribe the definitions of $E$ and $N$
@@ -150,17 +156,17 @@ I\BR{ e_1 \times e_2 } &=
 Auxiliary Functions
 \begin{align*}
   \mathit{add3}(d_1, d_2, d_3) &= 
-  \begin{cases}
+  \text{let } n = d_1 + d_2 + d_3 \text{ in } \\
+  &\quad \begin{cases}
      00 &  \text{if } n = 0 \\
      01 &  \text{if } n = 1 \\
      10 &  \text{if } n = 2 \\
      11 &  \text{if } n = 3
-  \end{cases}
-\quad \text{where } n = d_1 + d_2 + d_3 \\[1ex]
+  \end{cases}\\
  \mathit{add}(\epsilon, \epsilon, c) &= 
    \begin{cases}
       \epsilon  & \text{if } c = 0 \\
-      \epsilon 1  & \text{otherwise}
+      \epsilon 1  & \text{if } c = 1
    \end{cases}
    \\
   \mathit{add}(n_1 d_1 , n_2 d_2, c) &= 
@@ -355,42 +361,11 @@ is partial function from variables (identifiers) to numbers.
 \[
   \mathit{Store} = \mathit{Id} \pto \mathit{Nat}
 \]
-We write $[x\mapsto n]s$ for $\{x\mapsto n\} \cup
-(s|_{\mathrm{dom}(s)-\{x\}})$.
+We write $[x\mapsto n]s$ for removing the entry for $x$ is $s$
+(if there is one) and then adding the entry $x\mapsto n$,
+that is, $\{x\mapsto n\} \cup (s|_{\mathrm{dom}(s)-\{x\}})$.
 
-The syntax of expressions is extended to include variables, so the
-meaning of expressions must be parameterized on the store. The meaning
-of a variable $x$ is the associated number in the store $s$.
-\[
-  E\,x\,s = s\,x
-\]
-%
-A program takes a number as input and it may produce a number or it
-might diverge. Traditional denotational semantics model this behavior
-with a partial function
-$\mathit{Nat}\pto\mathit{Nat}$. Here we shall use the
-alternate, but equivalent, approach of using a relation
-$\mathit{Nat}\times\mathit{Nat}$.
-
-We define the \texttt{while} loop using an auxiliary relation named
-$\mathit{loop}$, which we define inductively in
-Figure~\ref{fig:imperative}. Its two parameters are for the meaning of
-the condition $b$ and the body $c$ of the loop.  If the meaning of the
-condition $m_b$ is $\FALSE$, then the loop is already finished so the
-starting and finishing stores are the same. If the condition $m_b$ is
-$\TRUE$, then the loop executes the body, relating the starting store
-$s_1$ to an intermediate store $s_2$, and then the loop continues,
-relating $s_2$ to the finishing store $s_3$.
-
-%% Function update:
-%% \[
-%%    [x\mapsto n]s(y) =
-%%  \begin{cases} n & \text{if } y = x \\
-%%    s(y) & \text{if } y \neq x
-%%  \end{cases} 
-%% \]
-
-\begin{figure*}
+\begin{figure*}[btp]
 \begin{minipage}{0.5\textwidth}
 \noindent Syntax
 \[
@@ -418,7 +393,7 @@ Loops
 \begin{minipage}{0.5\textwidth}
 Semantics 
 \[
-P\,c = \{ (n,s'\,Z) \mid (\{A{\mapsto} n\},s') \in C\,c \}
+P\,c = \{ (n,s'\,\mathtt{Z}) \mid (\{\mathtt{A}{\mapsto} n\},s') \in C\,c \}
 \]
 \begin{align*}
 C\,\SKIP &= \mathit{id} \\ %\{(s,s) \mid s \in \mathit{Store} \}\\
@@ -439,6 +414,45 @@ C(\WHILE{b}{c}) &= \mathit{loop}(B\,b, C\,c)
 \caption{An Imperative Language: IMP}
 \label{fig:imperative}
 \end{figure*}
+
+The syntax of expressions is extended to include variables, so the
+meaning of expressions must be parameterized on the store. The meaning
+of a variable $x$ is the associated number in the store $s$.
+\[
+  E\,x\,s = s\,x
+\]
+%
+A program takes a number as input and it may produce a number or it
+might diverge. Traditional denotational semantics model this behavior
+with a partial function $\mathit{Nat}\pto\mathit{Nat}$. Here we shall
+use the alternate, but equivalent, approach of using a relation
+$\mathit{Nat}\times\mathit{Nat}$. A program is a command and the
+meaning of commands is given by the semantic function $C$, which maps
+a command to a relation on stores, that is, to a subset of
+$\mathit{Store} \times \mathit{Store}$. The meaning of a program is
+given by the function $P$, which initializes the store with the input
+number in variable $\mathtt{A}$.  When the program completes, the
+output is obtained from variable $\mathtt{Z}$.
+
+
+We define the \texttt{while} loop using an auxiliary relation named
+$\mathit{loop}$, which we define inductively in
+Figure~\ref{fig:imperative}. Its two parameters are for the meaning of
+the condition $b$ and the body $c$ of the loop.  If the meaning of the
+condition $m_b$ is $\FALSE$, then the loop is already finished so the
+starting and finishing stores are the same. If the condition $m_b$ is
+$\TRUE$, then the loop executes the body, relating the starting store
+$s_1$ to an intermediate store $s_2$, and then the loop continues,
+relating $s_2$ to the finishing store $s_3$.
+
+%% Function update:
+%% \[
+%%    [x\mapsto n]s(y) =
+%%  \begin{cases} n & \text{if } y = x \\
+%%    s(y) & \text{if } y \neq x
+%%  \end{cases} 
+%% \]
+
 
 
 We define an implementation of the imperative language, in terms of an
