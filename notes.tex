@@ -1128,7 +1128,7 @@ based on the notion of a closure, which pairs a $\lambda$ abstraction
 with its environment to ensure that the free variables get their
 definitions from the lexical scope.
 
-\begin{marginfigure}
+\begin{figure}
 \[
 \begin{array}{lrl}
  \text{values} & v \in \mathbb{V} ::= & n \mid \langle \LAM{x}e, \rho \rangle \\
@@ -1146,7 +1146,7 @@ definitions from the lexical scope.
 
 \caption{Interpreter for the $\lambda$-calculus}
 \label{fig:interp-lambda}
-\end{marginfigure}
+\end{figure}
 
 We prove the correctness of the interpreter in two steps.  First we
 show that if the semantics says the result of a program should be an
@@ -1204,7 +1204,64 @@ UNDER CONSTRUCTION
 \section{Graph models of $\lambda$-calculus $(T^{*}_C$,$D_A$, and $\mathcal{P}(\omega))$ }
 \label{sec:graph-models}
 
-UNDER CONSTRUCTION
+\subsection{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
+\label{sec:t-c}
+
+\newcommand{\PSEM}[1]{\mathcal{E}_T\,#1\,}
+
+
+\begin{figure}
+\begin{align*}
+  \mathbb{D} &= \mathbb{N} + \mathcal{P}_f(\mathbb{D}) \times \mathcal{P}_f(\mathbb{D}) \\
+  D & \in \mathcal{P}_f(\mathbb{D}) \\[2ex]
+%% \PSEM{ n }\rho &= \{ n \} \\
+%% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
+%%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
+\PSEM{ x }\rho &= \rho(x) \\
+\PSEM{ (\LAM{x} e) }\rho &= 
+  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
+\PSEM{ (e_1\,e_2) }\rho &= \bigcup \left\{ D' \, \middle| 
+   \begin{array}{l}
+   \exists D.\, (D,D') \in \PSEM{ e_1 }\rho \text{ and } D \subseteq \PSEM{ e_2 }\rho 
+   \end{array}
+\right\} 
+\end{align*}
+\caption{The $T^{*}_C$ model}
+\label{fig:t-c}
+\end{figure}
+
+\subsection{The $D_A$ model of \citet{Engeler:1981aa}}
+\label{sec:d-a}
+\newcommand{\ESEM}[1]{\mathcal{E}_E[\![ #1 ]\!]}
+
+
+
+\subsection{The $\mathcal{P}(\omega)$ model}
+\label{sec:p-omega}
+
+Figure~\ref{fig:p-omega}
+
+
+\begin{figure}
+
+\begin{align*}
+     & m,n \in \mathbb{N} \\
+\langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
+e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
+    k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
+P & : \mathbb{E} \to (\mathit{Id} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
+P\,x\,\rho &= \rho\,x \\  
+P\,(\LAM{x}e)\,\rho &= \{ \langle n, m \rangle \mid m \in P\,e\,[x\mapsto e_n]\rho \} \\
+P\,(e_1\,e_2)\,\rho &= \{ m \mid \exists e_n. \, 
+   \langle n,m \rangle \in P\,e_1\,\rho
+   \text{ and } e_n \subseteq P\,e_2\,\rho \}\\
+\end{align*}
+\caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
+\label{fig:p-omega}
+\end{figure}
+
+
+
 
 \section{Filter models of $\lambda$-calculus}
 \label{sec:filter-models}
