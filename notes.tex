@@ -1059,8 +1059,7 @@ Semantics
   E\, (e_1 \times e_2) \, \rho & = \{ i_1 i_2 \mid i_1 \in E\,e_1\,\rho, 
                                     i_2 \in E\,e_2\,\rho \} \\
   E\, x \,\rho &= \{ d \mid d = \rho\,x \} \\
-  E\, (\LAM{x}e)\,\rho &= \{ t \mid
-   \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]\rho \} \\
+  E\, (\LAM{x}e)\,\rho &= \uplambda^S (\uplambda d. E\,e\,[x\mapsto d]\rho) \\
   E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
 \end{align*}
 \begin{align*}
@@ -1270,17 +1269,12 @@ E_{P}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T_C)) \to T^{*}_C\\
   D_A &= \mathcal{P}(B) \\
 E_{E}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(B)) \to D_A\\
 \ESEM{ x }\rho &= \rho(x) \\
-\ESEM{ (\LAM{x} e) }\rho &= 
-  \{ (D,d') \mid  d' \in \ESEM{ e }[x\mapsto D]\rho \} \\
-\ESEM{ (e_1\,e_2) }\rho &= \left\{ d' \, \middle| 
-   \begin{array}{l}
-   \exists D.\, (D,d') \in \ESEM{ e_1 }\rho \text{ and } D \subseteq \ESEM{ e_2 }\rho 
-   \end{array}
-\right\} \\[1ex]
+\ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D.\, \ESEM{e}[x\mapsto D]\rho)\\
+\ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot (\ESEM{ e_2 }\rho) \\[1ex]
    - \cdot - &: D_A \to D_A \to D_A \\
    D^{*}_1 \cdot D^{*}_2 &= \{ d' \mid \exists D. D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
-   \uplambda^G &: (\mathcal{P}_f(B) \to D_A) \to D_A \\
-   \uplambda^G f &= \{ (D,d') \mid D \in \mathcal{P}_f(D) \land d' \in f\, D \} 
+   \uplambda^E &: (\mathcal{P}_f(B) \to D_A) \to D_A \\
+   \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} 
 \end{align*}
 \caption{The $D_A$ model}
 \label{fig:d-a}
@@ -1292,14 +1286,14 @@ $D_A$ ordered by set inclusion $\subseteq$ is a cpo.
 
 \begin{theorem}
   $D_A$ is a reflexive cpo by choosing $F = \uplambda x y.\, x \cdot
-  y$ and $G= \uplambda f.\, \uplambda^G f$. Therefore $D_A$ is a
+  y$ and $G= \uplambda f.\, \uplambda^E f$. Therefore $D_A$ is a
   $\lambda$-model.
 \end{theorem}
 \begin{proof}
   We need to show that $(F \circ G)\,f = f$
   for any continuous $f \in \mathcal{P}_f(B) \to D_A$.
   \begin{align*}
-    (F \circ G)\,f &= \uplambda x. (\uplambda^G f) \cdot x\\
+    (F \circ G)\,f &= \uplambda x. (\uplambda^E f) \cdot x\\
     &= \uplambda x. \{ d' \mid \exists D. D \subseteq x \land d' \in f\,D \}\\
     &= \uplambda x. \bigcup \{ f\,D \mid D \subseteq x \} \\
     &= \uplambda x.\, f\, x  & \text{by continuity of } f \\
