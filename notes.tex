@@ -11,6 +11,7 @@
 \usepackage{xypic}
 %\usepackage[noanswer]{exercise}
 \usepackage[answerdelayed]{exercise}
+\usepackage{upgreek}
 
 \renewcommand{\ExerciseHeader}{\noindent \textbf{
                 \ExerciseName\;\ExerciseHeaderNB\ExerciseHeaderTitle
@@ -1051,6 +1052,7 @@ Semantics
                \text{ and } d' \in E\,e\,\emptyset\}
 \]
 \begin{align*}
+  E & : \mathbb{E} \to (\mathit{Id}\to \mathbb{D}) \to \mathcal{P}(\mathbb{D})\\
   E\, n \, \rho & = \{ N(n) \} \\
   E\, (e_1 + e_2) \, \rho & = \{ i_1 + i_2 \mid i_1 \in E\,e_1\,\rho, 
                                     i_2 \in E\,e_2\,\rho \} \\
@@ -1061,14 +1063,18 @@ Semantics
    \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]\rho \} \\
   E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
 \end{align*}
-\[
-  D_1 \cdot D_2 \overset{\mathrm{def}}{=}
-  \left\{ d' \middle|
-  \begin{array}{l}\exists t d d_2.\, t \in D_1 \text{ and }  d_2 \in D_2, \\
-    (d,d') \in t \text{ and } d \sqsubseteq d_2
-  \end{array}
-  \right\}
-\]
+\begin{align*}
+  D^{*}_1 \cdot D^{*}_2 & \overset{\mathrm{def}}{=}
+    \left\{ d' \middle|
+    \begin{array}{l}
+      \exists t d d_2.\, t \in D^{*}_1 \text{ and }  d_2 \in D^{*}_2, \\
+      (d,d') \in t \text{ and } d \sqsubseteq d_2
+    \end{array}
+    \right\} \\[1ex]
+  \uplambda^S & : (\mathbb{D} \to \mathcal{P}(\mathbb{D})) \to \mathcal{P}(\mathbb{D}) \\
+  \uplambda^S f &\overset{\mathrm{def}}{=}
+      \{ t \mid \forall (d,d') \in t, d' \in f\, d \}
+\end{align*}
 \end{minipage}
 \caption{$\lambda$-calculus}
 \label{fig:lambda}
@@ -1089,28 +1095,30 @@ defined inductively, or equivalently, it is the least solution of
 \[
    \mathbb{D} = \mathbb{N} + \mathcal{P}_f(\mathbb{D} \times \mathbb{D})
 \]
-Let $t$ range over the finite graphs, that is, 
-$t \in \mathcal{P}_f(\mathbb{D} \times \mathbb{D})$.
+Let $t$ range over the finite graphs, that is, $t \in
+\mathcal{P}_f(\mathbb{D} \times \mathbb{D})$, $D$ range over finite
+sets of elements from $\mathbb{D}$, and $D^{*}$ range over possibly
+infinite sets of elements from $\mathbb{D}$.
 
 The semantics in Figure~\ref{fig:lambda} says the meaning of an
 abstraction $(\LAM{x}e)$ is the set of all tables $t$ such that each
 input-output entry $(d,d')$ makes sense for the $\lambda$. That is,
 $d' \in E\,e\,[x\mapsto d]\rho$. The semantics of application is
-defined in terms of the auxilliary application operator $D_1 \cdot
-D_2$, which applies all the tables in $D_1$ to all the elements
-(arguments) in $D_2$. A naive definition of the application operator
+defined in terms of the auxilliary application operator $D^{*}_1 \cdot
+D^{*}_2$, which applies all the tables in $D^{*}_1$ to all the elements
+(arguments) in $D^{*}_2$. A naive definition of the application operator
 is just table lookup in a non-deterministic setting.
 \begin{align*}
-  D_1 \cdot D_2 &= 
+  D^{*}_1 \cdot D^{*}_2 &= 
   \{ d' \mid
-  \exists t d.\, t \in D_1, d \in D_2, 
+  \exists t d.\, t \in D^{*}_1, d \in D^{*}_2, 
     (d,d') \in t
   \}
   & \text{(naive)}
 \end{align*}
 The idea is to collect up all the results $d'$ that come from matching
-up an argument $d \in D_2$ with an entry $(d,d')$ from a table $t \in
-D_1$. The problem with this naive version is that it prohibits self
+up an argument $d \in D^{*}_2$ with an entry $(d,d')$ from a table $t \in
+D^{*}_1$. The problem with this naive version is that it prohibits self
 application, which is an important part of the $\lambda$-calculus.
 For example, it is necessary to define the $Y$ combinator and thereby
 express general recursion. The problem is that in self application,
@@ -1119,7 +1127,7 @@ But that can't happen because the domain $\mathbb{D}$ is inductively
 defined. The solution is to allow the argument to be a larger table
 than the input $d$ of the table entry. We define the approximation
 ordering $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for
-argument $d_2 \in D_2$, we require $d \sqsubseteq d_2$ instead of $d =
+argument $d_2 \in D^{*}_2$, we require $d \sqsubseteq d_2$ instead of $d =
 d_2$.
 
 We turn to an implementation of the $\lambda$-calculus, the
@@ -1200,24 +1208,41 @@ and $N(n) = i$.
 
 UNDER CONSTRUCTION
 
+\subsection{$\lambda$-models}
 
-\section{Graph models of $\lambda$-calculus $(T^{*}_C$,$D_A$, and $\mathcal{P}(\omega))$ }
+
+\begin{definition}
+  A cpo $D$ is \emph{reflexive} if $[D \to D]$ is a retract of $D$.
+  That is, there are continuous maps $F:D \to [D \to D]$
+  and $G: [D \to D] \to D $ such that for any $f \in [D \to D]$,
+  \[
+    (F \circ G)\, f = f
+  \]
+\end{definition}
+
+
+\section{Graph models of $\lambda$-calculus $(T^{*}_C$, $D_A$, and $\mathcal{P}(\omega))$ }
 \label{sec:graph-models}
 
 \subsection{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
 \label{sec:t-c}
 
-\newcommand{\PSEM}[1]{\mathcal{E}_P\,#1\,}
+\newcommand{\PSEM}[1]{E_P\,#1\,}
 
 
-\begin{figure}
+  Let $D$ range over finite sets of elements from $T_C$, that is,
+  $\mathcal{P}_f(T_C)$.
+  Figure~\ref{fig:t-c}.
+  
+
+  \begin{figure}
 \begin{align*}
-  T^{*}_C &= C + \mathcal{P}_f(T^{*}_C) \times \mathcal{P}_f(T^{*}_C) \\
-  D & \in \mathcal{P}_f(T^{*}_C) \\[2ex]
+  T_C &= C + \mathcal{P}_f(T_C) \times \mathcal{P}_f(T_C) \\
+  T^{*}_C &= \mathcal{P}(T_C) \\
 %% \PSEM{ n }\rho &= \{ n \} \\
 %% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
 %%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
-\mathcal{E}_{P}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T^{*}_C)) \to \mathcal{P}(T^{*}_C)\\
+E_{P}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T_C)) \to T^{*}_C\\
 \PSEM{ x }\rho &= \rho(x) \\
 \PSEM{ (\LAM{x} e) }\rho &= 
   \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
@@ -1234,9 +1259,53 @@ UNDER CONSTRUCTION
 \subsection{The $D_A$ model of \citet{Engeler:1981aa}}
 \label{sec:d-a}
 
-\newcommand{\ESEM}[1]{\mathcal{E}_E\, #1 \,}
+\newcommand{\ESEM}[1]{E_E\, #1 \,}
+
+  Let $D$ range over finite sets of elements from $B$, that is,
+  $\mathcal{P}_f(B)$.  Figure~\ref{fig:d-a}
+
+\begin{figure}
+\begin{align*}
+  B &= A + \mathcal{P}_f(B) \times B \\
+  D_A &= \mathcal{P}(B) \\
+E_{E}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(B)) \to D_A\\
+\ESEM{ x }\rho &= \rho(x) \\
+\ESEM{ (\LAM{x} e) }\rho &= 
+  \{ (D,d') \mid  d' \in \ESEM{ e }[x\mapsto D]\rho \} \\
+\ESEM{ (e_1\,e_2) }\rho &= \left\{ d' \, \middle| 
+   \begin{array}{l}
+   \exists D.\, (D,d') \in \ESEM{ e_1 }\rho \text{ and } D \subseteq \ESEM{ e_2 }\rho 
+   \end{array}
+\right\} \\[1ex]
+   - \cdot - &: D_A \to D_A \to D_A \\
+   D^{*}_1 \cdot D^{*}_2 &= \{ d' \mid \exists D. D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
+   \uplambda^G &: (\mathcal{P}_f(B) \to D_A) \to D_A \\
+   \uplambda^G f &= \{ (D,d') \mid D \in \mathcal{P}_f(D) \land d' \in f\, D \} 
+\end{align*}
+\caption{The $D_A$ model}
+\label{fig:d-a}
+\end{figure}
 
 
+$D_A$ ordered by set inclusion $\subseteq$ is a cpo.
+
+
+\begin{theorem}
+  $D_A$ is a reflexive cpo by choosing $F = \uplambda x y.\, x \cdot
+  y$ and $G= \uplambda f.\, \uplambda^G f$. Therefore $D_A$ is a
+  $\lambda$-model.
+\end{theorem}
+\begin{proof}
+  We need to show that $(F \circ G)\,f = f$
+  for any continuous $f \in \mathcal{P}_f(B) \to D_A$.
+  \begin{align*}
+    (F \circ G)\,f &= \uplambda x. (\uplambda^G f) \cdot x\\
+    &= \uplambda x. \{ d' \mid \exists D. D \subseteq x \land d' \in f\,D \}\\
+    &= \uplambda x. \bigcup \{ f\,D \mid D \subseteq x \} \\
+    &= \uplambda x.\, f\, x  & \text{by continuity of } f \\
+    &= f
+  \end{align*}
+\end{proof}
 
 \subsection{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
 \label{sec:p-omega}
