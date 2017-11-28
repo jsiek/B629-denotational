@@ -1015,7 +1015,7 @@ our current goal was to implement the $\lambda$-calculus, but this
 \emph{specification}, of the $\lambda$-calculus. The various semantics
 that take this approach are called \emph{graph models}. This first
 such model was $T^{*}_C$ of \citet{Plotkin:1972aa}. Then came
-$\mathcal{P}(\omega)$ of \citet{Scott:1976lq} and the simpler $D_A$ of
+$\mathcal{P}\omega$ of \citet{Scott:1976lq} and the simpler $D_A$ of
 \citet{Engeler:1981aa}. We shall study these three models in
 Section~\ref{sec:graph-models}. But first, we study perhaps the most
 straightforward of the graph models, the recent one by yours
@@ -1201,13 +1201,24 @@ and $N(n) = i$.
 UNDER CONSTRUCTION
 
 
-\section{Graph models of $\lambda$-calculus $(T^{*}_C$,$D_A$, and $\mathcal{P}(\omega))$ }
+\section{Graph models of $\lambda$-calculus $(T^{*}_C$,$D_A$, and $\mathcal{P}\omega)$ }
 \label{sec:graph-models}
+
+
+\subsection{The $D_A$ model of \citet{Engeler:1981aa}}
+\label{sec:d-a}
+
+\newcommand{\EP}[0]{\mathcal{E}_E}
+\newcommand{\ESEM}[1]{\EE\, #1 \,}
+
+
 
 \subsection{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
 \label{sec:t-c}
 
-\newcommand{\PSEM}[1]{\mathcal{E}_P\,#1\,}
+\newcommand{\EP}[0]{\mathcal{E}_P}
+\newcommand{\PSEM}[1]{\EP\,#1\,}
+
 
 
 \begin{figure}
@@ -1217,7 +1228,7 @@ UNDER CONSTRUCTION
 %% \PSEM{ n }\rho &= \{ n \} \\
 %% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
 %%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
-\mathcal{E}_{P}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T^{*}_C)) \to \mathcal{P}(T^{*}_C)\\
+\EP &: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T^{*}_C)) \to \mathcal{P}(T^{*}_C)\\
 \PSEM{ x }\rho &= \rho(x) \\
 \PSEM{ (\LAM{x} e) }\rho &= 
   \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
@@ -1231,40 +1242,44 @@ UNDER CONSTRUCTION
 \label{fig:t-c}
 \end{figure}
 
-\subsection{The $D_A$ model of \citet{Engeler:1981aa}}
-\label{sec:d-a}
-
-\newcommand{\ESEM}[1]{\mathcal{E}_E\, #1 \,}
 
 
-
-\subsection{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
+\subsection{The $\mathcal{P}\omega$ model of \citet{Scott:1976lq}}
 \label{sec:p-omega}
 
-\marginnote{
-\begin{tabular}{ll}
-Reading: & \citet{barendregt84:_lambda_calculus} Sec. 18.1\\
-         & \citet{Scott:1976lq}
-\end{tabular}
-}
+%% \marginnote{
+%% \begin{tabular}{ll}
+%% Reading: & \citet{barendregt84:_lambda_calculus} Sec. 18.1\\
+%%          & \citet{Scott:1976lq}
+%% \end{tabular}
+%% }
 
-Figure~\ref{fig:p-omega}
+Figure~\ref{fig:p-omega} defines a semantics for the $\lambda$-calculus
+using the $\mathcal{P}\omega$ model of \citet{Scott:1976lq}.
+However, here we use the 
+
+
+\citet{barendregt84:_lambda_calculus}
+
+\newcommand{\ES}[0]{\mathcal{E}_S}
+\newcommand{\SSEM}[1]{\ES\,#1\,}
+
 
 \begin{figure}
 
 \begin{align*}
-     & m,n \in \mathbb{N} \\
+     & m,n \in \mathit{Nat} \\
 \langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
 e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
     k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
-\mathcal{E}_S & : \mathbb{E} \to (\mathit{Id} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
-\mathcal{E}_S\,x\,\rho &= \rho\,x \\  
-\mathcal{E}_S\,(\LAM{x}e)\,\rho &= \{ \langle n, m \rangle \mid m \in \mathcal{E}_S\,e\,[x\mapsto e_n]\rho \} \\
-\mathcal{E}_S\,(e_1\,e_2)\,\rho &= \{ m \mid \exists e_n. \, 
-   \langle n,m \rangle \in \mathcal{E}_S\,e_1\,\rho
-   \text{ and } e_n \subseteq \mathcal{E}_S\,e_2\,\rho \}\\
+\ES & : \mathbb{E} \to (\mathit{Id} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
+\mathcal{E}_{\mathcal{P}\omega}\,x\,\rho &= \rho\,x \\  
+\mathcal{E}_{\mathcal{P}\omega}\,(\LAM{x}e)\,\rho &= \{ \langle n, m \rangle \mid m \in \mathcal{E}_{\mathcal{P}\omega}\,e\,[x\mapsto e_n]\rho \} \\
+\mathcal{E}_{\mathcal{P}\omega}\,(e_1\,e_2)\,\rho &= \{ m \mid \exists e_n. \, 
+   \langle n,m \rangle \in \mathcal{E}_{\mathcal{P}\omega}\,e_1\,\rho
+   \text{ and } e_n \subseteq \mathcal{E}_{\mathcal{P}\omega}\,e_2\,\rho \}\\
 \end{align*}
-\caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
+\caption{$\lambda$-calculus in $\mathcal{P}\omega$}
 \label{fig:p-omega}
 \end{figure}
 
