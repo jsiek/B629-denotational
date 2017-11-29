@@ -1281,7 +1281,6 @@ It seems that the answer is no because the types don't work out.
 \newcommand{\EP}[0]{E_P}
 \newcommand{\PSEM}[1]{\EP\,#1\,}
 
-  Let $d$ range over elements of $T_C$.
   Let $D$ range over finite sets of elements from $T_C$
   and $D^{*}$ range over possibly infinite sets.
   Figure~\ref{fig:t-c} defines the semantics.
@@ -1332,7 +1331,7 @@ It seems that the answer is no because the types don't work out.
    \uplambda^E &: [D_A \to D_A] \to D_A \\
    \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} \\
    - \cdot_E - &: D_A \to D_A \to D_A \\
-   D^{*}_1 \cdot_E D^{*}_2 &= \{ d' \mid \exists D. D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
+   D^{*}_1 \cdot_E D^{*}_2 &= \{ d' \mid \exists D, D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
 \EE &: \mathbb{E} \to (\mathbb{X}\to D_A) \to D_A\\
 \ESEM{ x }\rho &= \rho(x) \\
 \ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D^{*}.\, \ESEM{e}[x\mapsto D^{*}]\rho)\\
@@ -1356,7 +1355,7 @@ $D_A$ ordered by set inclusion $\subseteq$ is a cpo.
   for any $f \in [D_A \to D_A]$.
   \begin{align*}
     (F \circ G)\,f &= \uplambda x. (\uplambda^E f) \cdot_E x\\
-    &= \uplambda x. \{ d' \mid \exists D. D \subseteq x \land d' \in f\,D \}\\
+    &= \uplambda x. \{ d' \mid \exists D, D \subseteq x \land d' \in f\,D \}\\
     &= \uplambda x. \bigcup \{ f\,D \mid D \subseteq x \} \\
     &= \uplambda x.\, f\, x  & \text{by continuity of } f \\
     &= f
