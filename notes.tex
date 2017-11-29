@@ -1237,96 +1237,102 @@ UNDER CONSTRUCTION
 
 \begin{theorem}
   $\mathcal{P}(\mathbb{D})$ is a reflexive cpo by
-  choosing $F=\uplambda x y. x \cdot y$ and
-  $G=\uplambda f. \uplambda^S f$.
+  choosing $F=\uplambda x.\uplambda y. x \cdot y$ and
+  $G=\uplambda^S$.
 
 \end{theorem}
 \begin{proof}
-  TO DO: prove that $F$ and $G$ are continuous and that
-  \[
-  (F \circ G)\, f = f
-  \]
+  TODO: prove that $F$ and $G$ are continuous and that
+  $(F \circ G)\, f = f$.
+
+\begin{align*}
+  (F \circ G)\, f &= \uplambda y. (\uplambda^S f) \cdot y \\
+     &= \uplambda y. \{ d' \mid \exists t d d_2,
+            t \in (\uplambda^S f), d_2 \in y, (d,d') \in t, d \sqsubseteq d_2 \}\\
+     &= \uplambda y. \{ d' \mid \exists t d d_2,
+            (\forall (d_0,d'_0) \in t, d'_0 \in f d_0),
+            d_2 \in y, (d,d') \in t, d \sqsubseteq d_2 \}\\
+     &= \uplambda y. \{ d' \mid \exists d d_2,
+            d_2 \in y, d' \in f\, d, d \sqsubseteq d_2 \}\\
+     & \vdots \\
+     &= \uplambda y. \{ d' \mid ... \}\\
+     &= f
+\end{align*}
+
 \end{proof}
 
 
-
+%===============================================================================
+%===============================================================================
 \section{Graph models of $\lambda$-calculus $(T^{*}_C$, $D_A$, and $\mathcal{P}(\omega))$ }
 \label{sec:graph-models}
 
 
-\subsection{The $D_A$ model of \citet{Engeler:1981aa}}
-\label{sec:d-a}
 
-\newcommand{\EP}[0]{\mathcal{E}_E}
-\newcommand{\ESEM}[1]{\EE\, #1 \,}
-
-
-
+%===============================================================================
 \subsection{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
 \label{sec:t-c}
 
-<<<<<<< HEAD
-\newcommand{\EP}[0]{\mathcal{E}_P}
+
+\newcommand{\EP}[0]{E_P}
 \newcommand{\PSEM}[1]{\EP\,#1\,}
 
-=======
-\newcommand{\PSEM}[1]{E_P\,#1\,}
->>>>>>> a448a31461e66d90a63bf1706d2e4ea74b838659
-
-
-  Let $D$ range over finite sets of elements from $T_C$, that is,
-  $\mathcal{P}_f(T_C)$.
-  Figure~\ref{fig:t-c}.
+  Let $d$ range over elements of $T_C$.
+  Let $D$ range over finite sets of elements from $T_C$
+  and $D^{*}$ range over possibly infinite sets.
+  Figure~\ref{fig:t-c} defines the semantics.
   
 
   \begin{figure}
 \begin{align*}
   T_C &= C + \mathcal{P}_f(T_C) \times \mathcal{P}_f(T_C) \\
   T^{*}_C &= \mathcal{P}(T_C) \\
+  \uplambda^P &: [T^{*}_C \to T^{*}_C] \to T^{*}_C \\
+  \uplambda^P f &= \{ (D,D') \mid D' \subseteq f\,D \} \\
+  D^{*}_1 \cdot_P D^{*}_2 &\defeq 
+     \bigcup\{ D'\mid \exists D, (D,D') \in D^{*}_1, D \subseteq D^{*}_2\}\\[1ex]
 %% \PSEM{ n }\rho &= \{ n \} \\
 %% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
 %%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
-<<<<<<< HEAD
-\EP &: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T^{*}_C)) \to \mathcal{P}(T^{*}_C)\\
-=======
-E_{P}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(T_C)) \to T^{*}_C\\
->>>>>>> a448a31461e66d90a63bf1706d2e4ea74b838659
+\EP&: \mathbb{E} \to (\mathbb{X}\to T^{*}_C) \to T^{*}_C\\
 \PSEM{ x }\rho &= \rho(x) \\
-\PSEM{ (\LAM{x} e) }\rho &= 
-  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
-\PSEM{ (e_1\,e_2) }\rho &= \bigcup \left\{ D' \, \middle| 
-   \begin{array}{l}
-   \exists D.\, (D,D') \in \PSEM{ e_1 }\rho \text{ and } D \subseteq \PSEM{ e_2 }\rho 
-   \end{array}
-\right\} 
+%\PSEM{ (\LAM{x} e) }\rho &= 
+%  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
+\PSEM{ (\LAM{x} e) }\rho &= \uplambda^P (\uplambda D^{*}.\, \PSEM{e}[x\mapsto D^{*}]\rho) \\
+\PSEM{ (e_1\,e_2) }\rho &= (\PSEM{ e_1 }\rho) \cdot_P (\PSEM{ e_2 }\rho)
 \end{align*}
 \caption{The $T^{*}_C$ model}
 \label{fig:t-c}
 \end{figure}
 
 
-<<<<<<< HEAD
+%===============================================================================
+\subsection{The $D_A$ model of \citet{Engeler:1981aa}}
+\label{sec:d-a}
 
-\subsection{The $\mathcal{P}\omega$ model of \citet{Scott:1976lq}}
-\label{sec:p-omega}
-=======
-\newcommand{\ESEM}[1]{E_E\, #1 \,}
+\newcommand{\EE}[0]{E_E}
+\newcommand{\ESEM}[1]{\EE\, #1 \,}
 
-  Let $D$ range over finite sets of elements from $B$, that is,
-  $\mathcal{P}_f(B)$.  Figure~\ref{fig:d-a}
+
+  Let $d$ range over elements of $B_A$.
+  Let $D$ range over finite sets of elements from $B_A$ and $D^{*}$
+  range over possibly infinite sets.  Figure~\ref{fig:d-a} gives the
+  semantics, following the presentation of
+  \citet{barendregt84:_lambda_calculus} (Section 5.4).
+  
 
 \begin{figure}
 \begin{align*}
-  B &= A + \mathcal{P}_f(B) \times B \\
-  D_A &= \mathcal{P}(B) \\
-E_{E}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(B)) \to D_A\\
-\ESEM{ x }\rho &= \rho(x) \\
-\ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D.\, \ESEM{e}[x\mapsto D]\rho)\\
-\ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot_E (\ESEM{ e_2 }\rho) \\[1ex]
-%   - \cdot - &: D_A \to D_A \to D_A \\
+  B_A &= A + \mathcal{P}_f(B_A) \times B_A \\
+  D_A &= \mathcal{P}(B_A) \\
+   \uplambda^E &: [D_A \to D_A] \to D_A \\
+   \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} \\
+   - \cdot_E - &: D_A \to D_A \to D_A \\
    D^{*}_1 \cdot_E D^{*}_2 &= \{ d' \mid \exists D. D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
-   \uplambda^E &: (\mathcal{P}_f(B) \to D_A) \to D_A \\
-   \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} 
+\EE &: \mathbb{E} \to (\mathbb{X}\to D_A) \to D_A\\
+\ESEM{ x }\rho &= \rho(x) \\
+\ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D^{*}.\, \ESEM{e}[x\mapsto D^{*}]\rho)\\
+\ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot_E (\ESEM{ e_2 }\rho) 
 \end{align*}
 \caption{The $D_A$ model}
 \label{fig:d-a}
@@ -1334,28 +1340,16 @@ E_{E}&: \mathbb{E} \to (\mathit{Id}\to\mathcal{P}_f(B)) \to D_A\\
 
 
 $D_A$ ordered by set inclusion $\subseteq$ is a cpo.
->>>>>>> a448a31461e66d90a63bf1706d2e4ea74b838659
 
-%% \marginnote{
-%% \begin{tabular}{ll}
-%% Reading: & \citet{barendregt84:_lambda_calculus} Sec. 18.1\\
-%%          & \citet{Scott:1976lq}
-%% \end{tabular}
-%% }
 
-<<<<<<< HEAD
-Figure~\ref{fig:p-omega} defines a semantics for the $\lambda$-calculus
-using the $\mathcal{P}\omega$ model of \citet{Scott:1976lq}.
-However, here we use the 
-=======
 \begin{theorem}
   $D_A$ is a reflexive cpo by choosing $F = \uplambda x y.\, x \cdot_E
-  y$ and $G= \uplambda f.\, \uplambda^E f$. Therefore $D_A$ is a
+  y$ and $G= \uplambda^E$. Therefore $D_A$ is a
   $\lambda$-model.
 \end{theorem}
 \begin{proof}
   We need to show that $(F \circ G)\,f = f$
-  for any continuous $f \in \mathcal{P}_f(B) \to D_A$.
+  for any $f \in [D_A \to D_A]$.
   \begin{align*}
     (F \circ G)\,f &= \uplambda x. (\uplambda^E f) \cdot_E x\\
     &= \uplambda x. \{ d' \mid \exists D. D \subseteq x \land d' \in f\,D \}\\
@@ -1365,36 +1359,47 @@ However, here we use the
   \end{align*}
 \end{proof}
 
-\subsection{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
+
+
+%===============================================================================
+\subsection{The $\mathcal{P}\omega$ model of \citet{Scott:1976lq}}
 \label{sec:p-omega}
->>>>>>> a448a31461e66d90a63bf1706d2e4ea74b838659
 
 
-\citet{barendregt84:_lambda_calculus}
+%% \marginnote{
+%% \begin{tabular}{ll}
+%% Reading: & \citet{barendregt84:_lambda_calculus} Sec. 18.1\\
+%%          & \citet{Scott:1976lq}
+%% \end{tabular}
+%% }
 
-\newcommand{\ES}[0]{\mathcal{E}_S}
-\newcommand{\SSEM}[1]{\ES\,#1\,}
+Figure~\ref{fig:p-omega} defines a semantics for the
+$\lambda$-calculus using the $\mathcal{P}\omega$ model of
+\citet{Scott:1976lq}.  However, here we use the formulation of
+$\mathcal{P}\omega$ given by \citet{barendregt84:_lambda_calculus}.
+
+\newcommand{\EPo}[0]{\mathcal{E}_{\mathcal{P}\omega}}
+\newcommand{\POSEM}[1]{\EPo{}\,#1\,}
 
 
 \begin{figure}
-
 \begin{align*}
      & m,n \in \mathit{Nat} \\
 \langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
 e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
     k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
-\ES & : \mathbb{E} \to (\mathit{Id} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
-\mathcal{E}_{\mathcal{P}\omega}\,x\,\rho &= \rho\,x \\  
-\mathcal{E}_{\mathcal{P}\omega}\,(\LAM{x}e)\,\rho &= \{ \langle n, m \rangle \mid m \in \mathcal{E}_{\mathcal{P}\omega}\,e\,[x\mapsto e_n]\rho \} \\
-\mathcal{E}_{\mathcal{P}\omega}\,(e_1\,e_2)\,\rho &= \{ m \mid \exists e_n. \, 
-   \langle n,m \rangle \in \mathcal{E}_{\mathcal{P}\omega}\,e_1\,\rho
-   \text{ and } e_n \subseteq \mathcal{E}_{\mathcal{P}\omega}\,e_2\,\rho \}\\
+\EPo{} & : \mathbb{E} \to (\mathbb{X} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
+\POSEM{x}\rho &= \rho\,x \\  
+\POSEM{(\LAM{x}e)}\rho &= \{ \langle n, m \rangle \mid m \in \POSEM{e}[x\mapsto e_n]\rho \} \\
+\POSEM{(e_1\,e_2)}\rho &= \{ m \mid \exists e_n. \, 
+   \langle n,m \rangle \in \POSEM{e_1}\rho
+   \text{ and } e_n \subseteq \POSEM{e_2}\rho \}
 \end{align*}
 \caption{$\lambda$-calculus in $\mathcal{P}\omega$}
 \label{fig:p-omega}
 \end{figure}
 
-
+%===============================================================================
 
 
 \section{Filter models of $\lambda$-calculus}
