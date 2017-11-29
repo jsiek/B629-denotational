@@ -1047,7 +1047,7 @@ Ordering
 \]
 Abstraction and Application
 \begin{align*}
-%  \uplambda^S & : (\mathbb{D} \to \mathcal{P}(\mathbb{D})) \to \mathcal{P}(\mathbb{D}) \\
+  \uplambda^S & : (\mathbb{D} \to \mathcal{P}(\mathbb{D})) \to \mathcal{P}(\mathbb{D}) \\
   \uplambda^S f &\defeq
       \{ t \mid \forall (d,d') \in t, d' \in f\, d \} \\[1ex]
   D^{*}_1 \cdot D^{*}_2 & \defeq
@@ -1106,7 +1106,9 @@ $d' \in E\,e\,[x\mapsto d]\rho$. While this is straightforward to
 express directly, we make use of an auxilliary function $\uplambda^S$,
 also defined in Figure~\ref{fig:lambda}, which is useful in connecting
 this semantics to the notions of $\lambda$-models and reflexive cpos
-from the literature. So far we have discussed two of the three
+from the literature. 
+[I'm not so sure about this anymore -Jeremy]
+So far we have discussed two of the three
 lambda's on the line that gives meaning to abstractions: $\lambda$ is
 the syntactic entity in $\mathbb{E}$ and $\uplambda^S$ is the helper
 function defined in ~\ref{fig:lambda}.  The third lambda, the
@@ -1225,41 +1227,43 @@ UNDER CONSTRUCTION
 
 
 \begin{definition}
-  A cpo $D$ is \emph{reflexive} if there is some function space
-  $\mathcal{F}(D)$ that is a retract of $D$.  That is to say, there
-  are continuous maps $F:D \to \mathcal{F}(D)$ and $G: \mathcal{F}(D)
-  \to D $ such that for any $f \in \mathcal{F}(D)$,
+  A cpo $D$ is \emph{reflexive} if $[D \to D]$ is a retract of $D$.
+  That is to say, there are continuous maps $F:D \to [D \to D]$ and
+  $G: [D \to D] \to D $ such that for any $f \in [D \to D]$,
   \[
     (F \circ G)\, f = f
   \]
 \end{definition}
 
 
-\begin{theorem}
-  $\mathcal{P}(\mathbb{D})$ is a reflexive cpo by
-  choosing $F=\uplambda x.\uplambda y. x \cdot y$ and
-  $G=\uplambda^S$.
+It seems that the answer is no because the types don't work out.
 
-\end{theorem}
-\begin{proof}
-  TODO: prove that $F$ and $G$ are continuous and that
-  $(F \circ G)\, f = f$.
 
-\begin{align*}
-  (F \circ G)\, f &= \uplambda y. (\uplambda^S f) \cdot y \\
-     &= \uplambda y. \{ d' \mid \exists t d d_2,
-            t \in (\uplambda^S f), d_2 \in y, (d,d') \in t, d \sqsubseteq d_2 \}\\
-     &= \uplambda y. \{ d' \mid \exists t d d_2,
-            (\forall (d_0,d'_0) \in t, d'_0 \in f d_0),
-            d_2 \in y, (d,d') \in t, d \sqsubseteq d_2 \}\\
-     &= \uplambda y. \{ d' \mid \exists d d_2,
-            d_2 \in y, d' \in f\, d, d \sqsubseteq d_2 \}\\
-     & \vdots \\
-     &= \uplambda y. \{ d' \mid ... \}\\
-     &= f
-\end{align*}
+%% \begin{theorem}
+%%   $\mathcal{P}(\mathbb{D})$ is a reflexive cpo by
+%%   choosing $F=\uplambda x.\uplambda y. x \cdot y$ and
+%%   $G=\uplambda^S$.
 
-\end{proof}
+%% \end{theorem}
+%% \begin{proof}
+%%   TODO: prove that $F$ and $G$ are continuous and that
+%%   $(F \circ G)\, f = f$.
+
+%% \begin{align*}
+%%   (F \circ G)\, f &= \uplambda y. (\uplambda^S f) \cdot y \\
+%%      &= \uplambda y. \{ d' \mid \exists t d d_2,
+%%             t \in (\uplambda^S f), d_2 \in y, (d,d') \in t, d \sqsubseteq d_2 \}\\
+%%      &= \uplambda y. \{ d' \mid \exists t d d_2,
+%%             (\forall (d_0,d'_0) \in t, d'_0 \in f d_0),
+%%             d_2 \in y, (d,d') \in t, d \sqsubseteq d_2 \}\\
+%%      &= \uplambda y. \{ d' \mid \exists d d_2,
+%%             d_2 \in y, d' \in f\, d, d \sqsubseteq d_2 \}\\
+%%      & \vdots \\
+%%      &= \uplambda y. \{ d' \mid ... \}\\
+%%      &= f
+%% \end{align*}
+
+%% \end{proof}
 
 
 %===============================================================================
