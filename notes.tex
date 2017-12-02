@@ -1363,9 +1363,17 @@ $D_A$ ordered by set inclusion $\subseteq$ is a cpo.
 \end{proof}
 
 
+\noindent Resources about $D_A$:
+\begin{itemize}
+\item \citet{barendregt84:_lambda_calculus} (Section 5.4),
+\item \citet{Gunter:1992aa} (Section 8.1), and
+\item \citet{Engeler:1981aa}.
+\end{itemize}
+
+
 
 %===============================================================================
-\subsection{The $\mathcal{P}\omega$ model of \citet{Scott:1976lq}}
+\subsection{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
 \label{sec:p-omega}
 
 
@@ -1377,11 +1385,11 @@ $D_A$ ordered by set inclusion $\subseteq$ is a cpo.
 %% }
 
 Figure~\ref{fig:p-omega} defines a semantics for the
-$\lambda$-calculus using the $\mathcal{P}\omega$ model of
+$\lambda$-calculus using the $\mathcal{P}(\omega)$ model of
 \citet{Scott:1976lq}.  However, here we use the formulation of
-$\mathcal{P}\omega$ given by \citet{barendregt84:_lambda_calculus}.
+$\mathcal{P}(\omega)$ given by \citet{barendregt84:_lambda_calculus}.
 
-\newcommand{\EPo}[0]{\mathcal{E}_{\mathcal{P}\omega}}
+\newcommand{\EPo}[0]{\mathcal{E}_{\mathcal{P}(\omega)}}
 \newcommand{\POSEM}[1]{\EPo{}\,#1\,}
 
 
@@ -1398,7 +1406,7 @@ e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
    \langle n,m \rangle \in \POSEM{e_1}\rho
    \text{ and } e_n \subseteq \POSEM{e_2}\rho \}
 \end{align*}
-\caption{$\lambda$-calculus in $\mathcal{P}\omega$}
+\caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
 \label{fig:p-omega}
 \end{figure}
 
