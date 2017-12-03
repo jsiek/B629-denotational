@@ -1281,7 +1281,7 @@ Figure~\ref{fig:lambda-eq}
 \[
 \begin{array}{lrl}
  \text{types} & A,B ::= & \mathit{nat} \mid A \to B \mid A \times B \mid \mathit{dyn} \\
- \text{type tag}  & t ::= & \mathit{fun} \mid \mathit{nat} \mid \mathit{pair} \\
+ \text{type tag}  & t ::= & \mathit{fun} \mid \mathit{nat} \\
  \text{coercion} & c ::= & t! \mid t? \\
  \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x \of A} e \mid (e \, e) \mid e \langle c \rangle
 \end{array}
@@ -1300,7 +1300,7 @@ Figure~\ref{fig:lambda-eq}
      \coerce{\uni{e_1}}{\mathit{fun}?} \APP \uni{e_2}
 \end{align*}
 
-Equational theory
+\noindent Equational theory
 \[
 \begin{array}{lc}
   & \coerce{\coerce{e}{t!}}{t?} = e
@@ -1323,6 +1323,15 @@ The proof is by induction on the derivation of $\vdash e = e'$.
         &= [x:=\uni{e_2}]\uni{e_1} \\
         &= \uni{[x:=e_2]e_1} 
   \end{align*}
+\item[Case $\vdash n_1 + n_2 = n_3$ where $n_3$ is $n_1 + n_2$]
+\begin{align*}
+  \uni{n_1+n_2} &= 
+     \coerce{(\coerce{\coerce{n_1}{\mathit{nat}!}}{\mathit{nat}?} +
+              \coerce{\coerce{n_2}{\mathit{nat}!}}{\mathit{nat}?})}{\mathit{nat}!} \\
+  &= \coerce{(n_1 + n_2)}{\mathit{nat}!} \\
+  &= \coerce{n_3}{\mathit{nat}!} \\
+  &= \uni{n_3} 
+\end{align*}
 \item[TODO]
 \end{itemize}
 \end{proof}
