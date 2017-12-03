@@ -1281,7 +1281,7 @@ Figure~\ref{fig:lambda-eq}
 \[
 \begin{array}{lrl}
  \text{types} & A,B ::= & \mathit{nat} \mid A \to B \mid A \times B \mid \mathit{dyn} \\
- \text{type constr.}  & t ::= & \mathit{fun} \mid \mathit{nat} \mid \mathit{pair} \\
+ \text{type tag}  & t ::= & \mathit{fun} \mid \mathit{nat} \mid \mathit{pair} \\
  \text{coercion} & c ::= & t! \mid t? \\
  \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x \of A} e \mid (e \, e) \mid e \langle c \rangle
 \end{array}
@@ -1300,7 +1300,12 @@ Figure~\ref{fig:lambda-eq}
      \coerce{\uni{e_1}}{\mathit{fun}?} \APP \uni{e_2}
 \end{align*}
 
-
+Equational theory
+\[
+\begin{array}{lc}
+  & \coerce{\coerce{e}{t!}}{t?} = e
+\end{array}
+\]
 
 
 \begin{theorem}
