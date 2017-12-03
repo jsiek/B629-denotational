@@ -654,6 +654,14 @@ $x \sqsubseteq y$ if $x$ approximates $y$.
   $\sqsubseteq$ on $L$.
 \end{definition}
 
+For example, consider the poset
+$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$ of partial
+functions on natural numbers. Some partial function $f$ is a better
+approximation than another partial function $g$ if it is defined on
+more inputs, that is, if the graph of $f$ is a subset of the graph of
+$g$.  Two partial functions are incomparable if neither is a subset of
+the other.
+
 \begin{marginfigure}
 \centering\large
 \xymatrix@=10pt{
@@ -673,14 +681,6 @@ $x \sqsubseteq y$ if $x$ approximates $y$.
 \label{fig:poset-of-partial-functions}
 \end{marginfigure}
 %
-For example, consider the poset
-$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$ of partial
-functions on natural numbers. Some partial function $f$ is a better
-approximation than another partial function $g$ if it is defined on
-more inputs, that is, if the graph of $f$ is a subset of the graph of
-$g$.  Two partial functions are incomparable if neither is a subset of
-the other.
-
 The sequence of approximations will start with the worst
 approximation, a bottom element, written $\bot$, that contains no
 information. (For example, $\emptyset$ is the $\bot$ for the poset of
@@ -972,7 +972,9 @@ element is directed-complete iff every chain in $P$ has a
 lub~\citep{Davey:2002fj} (Theorem 8.11).
 
 
-\section{A Functional Language: the $\lambda$-calculus}
+\section{The simply-typed $\lambda$-calculus}
+
+\section{The untyped $\lambda$-calculus}
 \label{sec:lambda}
 
 \marginnote{
@@ -1253,6 +1255,72 @@ UNDER CONSTRUCTION
 %% \end{align*}
 
 %% \end{proof}
+
+\subsection{Equational Theory}
+
+\begin{figure}
+\[
+\begin{array}{lc}
+  \text{(refl)} & \vdash x = x \\[2ex]
+  \text{(sym)}  & \inference{\vdash e_1 = e_2}{\vdash e_2 = e_1}  \\[2ex]
+  \text{(trans)} & \inference{\vdash e_1 = e_2 & \vdash e_2 = e_3}{\vdash e_1 = e_3} \\[2ex]
+  \text{(cong)} & \inference{\vdash e_1 = e_3 & \vdash e_2 = e_4}
+                            {\vdash e_1 \APP e_2 = e_3 \APP e_4} \\[2ex]
+  \text{($\xi$)} & \inference{\vdash e = e'}{\vdash \LAM{x}e = \LAM{x}e'} \\[2ex]
+  \text{($\beta$)} & \vdash (\LAM{x}e_1)\APP e_2 = [x:=e_2]e_1
+\end{array}
+\]
+\caption{Equational Theory of the $\lambda$-calculus}
+\label{fig:lambda-eq}
+\end{figure}
+
+Figure~\ref{fig:lambda-eq}
+
+\subsection{Untyped as a uni-typed}
+
+\[
+\begin{array}{lrl}
+ \text{types} & A,B ::= & \mathit{nat} \mid A \to B \mid A \times B \mid \mathit{dyn} \\
+ \text{type constr.}  & t ::= & \mathit{fun} \mid \mathit{nat} \mid \mathit{pair} \\
+ \text{coercion} & c ::= & t! \mid t? \\
+ \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x \of A} e \mid (e \, e) \mid e \langle c \rangle
+\end{array}
+\]
+
+\newcommand{\uni}[1]{U(#1)}
+\newcommand{\coerce}[2]{#1\langle #2\rangle}
+
+\begin{align*}
+  \uni{n} &= \coerce{n}{\mathit{nat}!} \\
+  \uni{e_1 + e_2} &= \coerce{(\coerce{\uni{e_1}}{\mathit{nat}?} +
+    \coerce{\uni{e_2}}{\mathit{nat}?})}{\mathit{nat}!} \\
+  \uni{x} &= x \\
+  \uni{\LAM{x} e} &= \coerce{(\LAM{x\of \mathit{dyn}} \uni{e})}{\mathit{fun}!}\\
+  \uni{e_1 \APP e_2} &= 
+     \coerce{\uni{e_1}}{\mathit{fun}?} \APP \uni{e_2}
+\end{align*}
+
+
+
+
+\begin{theorem}
+If $\vdash e = e'$, then $\vdash \uni{e} = \uni{e'}$.
+\end{theorem}
+\begin{proof}
+The proof is by induction on the derivation of $\vdash e = e'$.
+\begin{itemize}
+\item[Case] $\vdash (\LAM{x}e_1)\APP e_2 = [ x := e_2 ]e_1$
+  \begin{align*}
+    \uni{(\LAM{x}e_1)\APP e_2}
+        &= \coerce{(\uni{\LAM{x}e_1})}{\mathit{fun}?} \APP \uni{e_2}\\
+        &= \coerce{\coerce{(\LAM{x}\uni{e_1})}{\mathit{fun}!}}{\mathit{fun}?} \APP \uni{e_2}\\
+        &= (\LAM{x}\uni{e_1}) \APP \uni{e_2}\\
+        &= [x:=\uni{e_2}]\uni{e_1} \\
+        &= \uni{[x:=e_2]e_1} 
+  \end{align*}
+\item[TODO]
+\end{itemize}
+\end{proof}
 
 
 %===============================================================================
