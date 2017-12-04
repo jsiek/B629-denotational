@@ -992,7 +992,7 @@ created by lambda abstractions $\LAM{x}e$. The application expression
 $(e_1\,e_2)$ calls the function produced by $e_1$ with the argument
 produced by $e_2$. We study here the call-by-value (CBV) version of
 the $\lambda$-calculus.  As a secondary feature, we include
-arithmetic.
+arithmetic on natural numbers.
 \[
 \begin{array}{lrl}
               & n \in \mathbb{N} \\
@@ -1058,6 +1058,7 @@ Application
   %% \uplambda^S & : (\mathbb{D} \to \mathcal{P}(\mathbb{D})) \to \mathcal{P}(\mathbb{D}) \\
   %% \uplambda^S f &\defeq
   %%     \{ t \mid \forall (d,d') \in t, d' \in f\, d \} \\[1ex]
+  \_ \cdot \_ &: \mathcal{P}(\mathbb{D}) \times \mathcal{P}(\mathbb{D})\to \mathcal{P}(\mathbb{D}) \\
   D^{*}_1 \cdot D^{*}_2 & \defeq
     \left\{ d' \middle|
     \begin{array}{l}
@@ -1072,7 +1073,7 @@ Semantics
 \begin{align*}
   P\,e &\defeq \{ d \mid \exists d'.\, d \sqsubseteq d' 
                \text{ and } d' \in E\,e\,\emptyset\} \\[1ex]
-  E & : \mathbb{E} \to (\mathbb{X}\to \mathbb{D}) \to \mathcal{P}(\mathbb{D})\\
+  E & : \mathbb{E} \to (\mathbb{X} \pto \mathbb{D}) \to \mathcal{P}(\mathbb{D})\\
   E\, n \, \rho & = \{ N(n) \} \\
   E\, (e_1 + e_2) \, \rho & = \{ n_1 + n_2 \mid n_1 \in E\,e_1\,\rho, 
                                     n_2 \in E\,e_2\,\rho \} \\
@@ -1171,12 +1172,14 @@ definitions from the lexical scope.
 \]
 \begin{align*}
   I\,n\,\varrho &= n \\
-  I\,(e_1 + e_2)\,\varrho &= \mathit{add}(I\,e_1\,\varrho, I\,e_2\,\varrho, 0) \\
-  I\,(e_1 \times e_2)\,\varrho &= \mathit{mult}(I\,e_1\,\varrho, I\,e_2\,\varrho) \\
+  I\,(e_1 + e_2)\,\varrho &= n_1 + n_2 \\
+      & \text{if } I\,e_1\,\varrho = n_1, I\,e_2\,\varrho = n_2 \\
+  I\,(e_1 \times e_2)\,\varrho &= n_1 n_2 \\
+      & \text{if } I\,e_1\,\varrho = n_1, I\,e_2\,\varrho = n_2 \\
   I\,(\LAM{x}e)\,\varrho &= \langle \LAM{x}e, \varrho \rangle \\
   I\,(e_1\,e_2)\,\varrho &=  I\,e\,[x\mapsto v]\varrho'\\
-      & \quad \text{if } I\,e_1\,\varrho = \langle \LAM{x}e,\varrho' \rangle \text{ and}\\
-      & \quad I\,e_2\,\varrho = v
+  & \text{if } I\,e_1\,\varrho = \langle \LAM{x}e,\varrho' \rangle,
+      I\,e_2\,\varrho = v
 \end{align*}
 
 \caption{Interpreter for the $\lambda$-calculus}
@@ -1185,10 +1188,9 @@ definitions from the lexical scope.
 
 We prove the correctness of the interpreter in two steps.  First we
 show that if the semantics says the result of a program should be an
-integer $i$, then the interpreter produces a binary numeral $n$ such
-that $N(n) = i$. The second part is to show that if the interpreter
-produces an answer $n$, then the semantics agrees that $N(n)$ should
-be the answer.
+number $n$, then the interpreter also produces $n$. The second part is
+to show that if the interpreter produces an answer $n$, then the
+semantics agrees that $n$ should be the answer.
 
 For the first part, we need to relate denotations (elements $d$) to
 the values $v$ used by the interpreter.
@@ -1229,8 +1231,8 @@ If $v \in \mathcal{G}(d)$ and $d' \sqsubseteq d$, then $v \in \mathcal{G}(d')$.
 \end{lemma}
 
 \begin{theorem}[Adequacy]
-If $E\,e\,\emptyset = E\,i\,\emptyset$, then $I\,e\,\emptyset = n$
-and $N(n) = i$.
+If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$
+and $N(n) = n$.
 \end{theorem}
 
 UNDER CONSTRUCTION
@@ -1271,7 +1273,7 @@ UNDER CONSTRUCTION
 
 \begin{figure}
 \begin{gather*}
-  \text{(refl)}  \vdash x = x 
+  \text{(refl)}  \vdash e = e
   \quad
   \text{(sym)}   \inference{\vdash e_1 = e_2}{\vdash e_2 = e_1}  
   \quad
@@ -1291,25 +1293,97 @@ Figure~\ref{fig:lambda-eq}
 
 
 \begin{definition}[$\lambda$-models]
-  An $R$-model of the $\lambda$-calculus is a triple $\langle D, \cdot,
-  E\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D \to D$,
-  and $E : \mathbb{E}\to(\mathbb{X}\to D)\to D$, and 
+  An \emph{$R$-model of the $\lambda$-calculus} is a triple $\langle
+  D, \cdot, M\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D
+  \to D$, and $M : \mathbb{E}\to(\mathbb{X}\pto D)\to D$, and the
+  following conditions hold.
   \begin{enumerate}
-  \item $E\, x\,\rho = \rho(x)$,
-  \item $E\,(e_1\APP e_2)\,\rho = (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)$,
-  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $(E\,(\LAM{x}e)\,\rho) \cdot (E\,e'\,\rho) = E\,e\,[x\by E\,e'\,\rho]\rho$,
+  \item $M\, x\,\rho = \rho(x)$,
+  \item $M\,(e_1\APP e_2)\,\rho = (M\,e_1\,\rho) \cdot (M\,e_2\,\rho)$ \label{cond:app},
+  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $(M\,(\LAM{x}e)\,\rho) \cdot (M\,e'\,\rho) = M\,e\,[x\by M\,e'\,\rho]\rho$ \label{cond:R},
   \item $\forall x \in \mathrm{FV}(e)$, if  $\rho(x) = \rho'(x)$,
-       then $E\,e\,\rho = E\,e\,\rho'$.
-     \item If $\forall d \in D, E\,e\,[x\by d]\rho = E\,e'\,[x\by d]\rho$,
-       then $E\,(\LAM{x} e)\,\rho = E\,(\LAM{x} e')\,\rho$.
+       then $M\,e\,\rho = M\,e\,\rho'$.
+  \item If $\forall d \in D, M\,e\,[x\by d]\rho = M\,e'\,[x\by d]\rho$,
+       then $M\,(\LAM{x} e)\,\rho = M\,(\LAM{x} e')\,\rho$. \label{cond:lam}
   \end{enumerate}
 \end{definition}
 
+\begin{example}
+  The semantic function $E$ given in Figure~\ref{fig:lambda} does not
+  directly fit the above definition of $\lambda$-model because its
+  environment parameter maps variables to $\mathbb{D}$ instead of
+  $\mathcal{P}(\mathbb{D})$. However, this difference can be bridged
+  with the following alternative semantic function.
+  \begin{align*}
+    E' &: \mathbb{E} \to (\mathbb{X}\pto \mathcal{P}(\mathbb{D}))
+         \to \mathcal{P}(\mathbb{D}) \\
+    E'\,e\,\rho' &=
+    \{ d \mid \exists \rho, d \in E\,e\,\rho \text{ and }
+        \forall x \in \mathrm{dom}(\rho), \rho(x) \in \rho'(x) \}
+  \end{align*}
+  The triple $\langle \mathcal{P}(\mathbb{D}), \cdot, E')$ is a
+  $\beta_v$-model of the $\lambda$-calculus.
+  TODO: Prove it!
+\end{example}
+
+\begin{theorem}
+  Suppose $\langle D,\cdot,M\rangle$ is an $R$-model of the
+  $\lambda$-calculus.
+  \[
+  \text{if } R \vdash e = e', \text{ then } \forall \rho, M\,e\,\rho = M\,e'\,\rho
+  \]
+\end{theorem}
+\begin{proof}
+  The proof is by induction on $R \vdash e = e'$.
+  \begin{itemize}
+  \item[Case (refl):] We have $\forall \rho, M\,e\,\rho = M\,e\,\rho$
+    because $M$ is a function.
+    
+  \item[Case (sym):]
+    By the IH, we have $\forall \rho, M\,e_1\,\rho = M\,e_2\,\rho$.
+    So it trivially follows that $\forall \rho, M\,e_2\,\rho = M\,e_1\,\rho$.
+    
+  \item[Case (trans):]
+    By the IH, we have $\forall \rho, M\,e_1\,\rho = M\,e_2\,\rho$
+    and $\forall \rho, M\,e_2\,\rho = M\,e_3\,\rho$.
+    Thus, we immediately have $\forall \rho, M\,e_1\,\rho = M\,e_3\,\rho$.
+    
+  \item[Case (cong):]
+    Let $\rho$ be an arbitrary environment.
+    We need to show that $M\,(e_1\APP e_2)\,\rho = M\,(e_3\APP e_4)\,\rho$.
+    \begin{align*}
+      M\,(e_1\APP e_2)\,\rho &= (M\,e_1\,\rho) \cdot (M\,e_2\,\rho) & \text{condition \ref{cond:app}}\\
+        &= (M\,e_3\,\rho) \cdot (M\,e_4\,\rho) & \text{by IH}\\
+        &= M\,(e_3\APP e_4)\,\rho & \text{condition \ref{cond:app}}
+    \end{align*}
+    
+  \item[Case $\xi$:]
+    We need to show $\forall \rho, M\,(\LAM{x}e)\,\rho = M\,(\LAM{x}e')\,\rho$.
+    Let $\rho$ be an arbitrary environment.
+    By condition \ref{cond:lam} it suffices to show that
+    $M\,e\,[x\by d]\rho = M\,e'\,[x\by d]\rho$,
+    and that follows from the IH.
+
+  \item[Case $R$:]
+    Let $\rho$ be an arbitrary environment.
+    We need to show that
+    $M\,((\LAM{x}e)\APP e')\,\rho = M\,([x\by e']e)\,\rho$,
+    where $((\LAM{x}e)\APP e')$ is an $R$-redex.
+    \begin{align*}
+      M\,((\LAM{x}e)\APP e')\,\rho &=
+      (M\,(\LAM{x}e)\,\rho) \cdot (M\,e'\,\rho) & \text{condition \ref{cond:app}} \\
+      &= M \,e\, [x\by M\,e'\,\rho]\rho & \text{condition \ref{cond:R}} \\
+      &= M\,([x\by e']e)\,\rho & \text{by ???}
+    \end{align*}
+    
+  \end{itemize}
+\end{proof}
 
 Resources:
   \citet{barendregt84:_lambda_calculus} (Section 2.1 for
   equational theory and Section 5.3 for (syntactical) $\lambda$-models).
- \citet{Alessi:2006aa}
+  \citet{Alessi:2006aa}
+  \citet{Hindley:1980aa}
 
 %===============================================================================
 
@@ -1414,7 +1488,7 @@ Figure~\ref{fig:intersect-type-system}
   \_ \cdot \_ & : \mathbb{F} \times \mathbb{F} \to \mathbb{F}\\
   S_1 \cdot S_2 &\defeq \UP{\{ B \mid \exists A \in S_2, A \to B \in S_1 \}}\\
   \Gamma \models \rho &\defeq \forall x\of B \in \Gamma, B \in \rho(x) \\
-  F &: \mathbb{E} \to (\mathbb{X} \to \mathbb{F}) \to \mathbb{F}\\
+  F &: \mathbb{E} \to (\mathbb{X} \pto \mathbb{F}) \to \mathbb{F}\\
   F\,e\,\rho &\defeq \{ A \mid \exists \Gamma, \Gamma \models \rho \text{ and } \Gamma \vdash e : A\} 
 \end{align*}
 \end{definition}
@@ -1453,7 +1527,7 @@ Figure~\ref{fig:intersect-type-system}
 %% \PSEM{ n }\rho &= \{ n \} \\
 %% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
 %%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
-\EP&: \mathbb{E} \to (\mathbb{X}\to T^{*}_C) \to T^{*}_C\\
+\EP&: \mathbb{E} \to (\mathbb{X}\pto T^{*}_C) \to T^{*}_C\\
 \PSEM{ x }\rho &= \rho(x) \\
 %\PSEM{ (\LAM{x} e) }\rho &= 
 %  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
@@ -1488,7 +1562,7 @@ Figure~\ref{fig:intersect-type-system}
    \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} \\
    - \cdot_E - &: D_A \to D_A \to D_A \\
    D^{*}_1 \cdot_E D^{*}_2 &= \{ d' \mid \exists D, D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
-\EE &: \mathbb{E} \to (\mathbb{X}\to D_A) \to D_A\\
+\EE &: \mathbb{E} \to (\mathbb{X}\pto D_A) \to D_A\\
 \ESEM{ x }\rho &= \rho(x) \\
 \ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D^{*}.\, \ESEM{e}[x\mapsto D^{*}]\rho)\\
 \ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot_E (\ESEM{ e_2 }\rho) 
@@ -1564,7 +1638,7 @@ $\mathcal{P}(\omega)$ given by \citet{barendregt84:_lambda_calculus}.
 \langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
 e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
     k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
-\EPo{} & : \mathbb{E} \to (\mathbb{X} \to \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
+\EPo{} & : \mathbb{E} \to (\mathbb{X} \pto \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
 \POSEM{x}\rho &= \rho\,x \\  
 \POSEM{(\LAM{x}e)}\rho &= \{ \langle n, m \rangle \mid m \in \POSEM{e}[x\mapsto e_n]\rho \} \\
 \POSEM{(e_1\,e_2)}\rho &= \{ m \mid \exists e_n. \, 
@@ -1574,13 +1648,6 @@ e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
 \caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
 \label{fig:p-omega}
 \end{figure}
-
-
-%===============================================================================
-\subsection{$D_\infty$ model of $\lambda$-calculus}
-\label{sec:D-infinity}
-
-UNDER CONSTRUCTION
 
 
 
@@ -1644,6 +1711,13 @@ The proof is by induction on the derivation of $\vdash e = e'$.
 \item[TODO]
 \end{itemize}
 \end{proof}
+
+%===============================================================================
+\subsection{$D_\infty$ model of $\lambda$-calculus}
+\label{sec:D-infinity}
+
+UNDER CONSTRUCTION
+
 
 
 \clearpage
