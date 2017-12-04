@@ -92,20 +92,20 @@ much more familiar with decimal numbers.
 \[
 \begin{array}{lrl}
  \text{digit}& d ::=& 0 \mid 1 \\
- \text{binary numeral}& n ::=& \epsilon \mid nd  \\
- \text{expression}& e ::=& n \mid e + e \mid e \times e
+ \text{binary numeral}& b ::=& \epsilon \mid bd  \\
+ \text{expression}& e ::=& b \mid e + e \mid e \times e
 \end{array}
 \]
 Semantics\\
 \begin{minipage}{0.4\textwidth}
 \begin{align*}
  N\BR{ \epsilon } &= 0 \\
- N\BR{ n d } &= 2 N\BR{ n } + d\\[1ex]
+ N\BR{ b d } &= 2 N\BR{ b } + d\\[1ex]
 \end{align*}
 \end{minipage}
 \begin{minipage}{0.6\textwidth}
   \begin{align*}
-  E\BR{ n } &= N\BR{ n } \\
+  E\BR{ b } &= N\BR{ b } \\
  E\BR{ e_1 + e_2 } &= 
     E\BR{ e_1 } + E\BR{ e_2 } \\
  E\BR{ e_1 \times e_2 } &= 
@@ -142,7 +142,7 @@ learned in grade school, but for binary instead of decimals.
 \begin{figure}
 \noindent Interpreter 
 \begin{align*}
-I\BR{ n } &= n \\
+I\BR{ b } &= b \\
 I\BR{ e_1 + e_2 } &=
   \mathit{add}(I\BR{ e_1 }, I\BR{ e_2 },0) \\
 I\BR{ e_1 \times e_2 } &=
@@ -172,17 +172,17 @@ Auxiliary Functions
       \epsilon 1  & \text{if } c = 1
    \end{cases}
    \\
-  \mathit{add}(n_1 d_1 , n_2 d_2, c) &= 
-   \mathit{add}(n_1, n_2, c')\,d_3
+  \mathit{add}(b_1 d_1 , b_2 d_2, c) &= 
+   \mathit{add}(b_1, b_2, c')\,d_3
   \qquad \text{if } \mathit{add3}(d_1, d_2, c) = c' d_3 \\
-\mathit{add}(n_1 d_1 , \epsilon, c) &= 
-  \mathit{add}(n_1 d_1 , \epsilon 0, c) \\
-\mathit{add}(\epsilon, n_2 d_2, c) &= 
-  \mathit{add}( \epsilon 0, n_2 d_2,c) \\[1ex]
- \mathit{mult}(n_1, \epsilon) &= \epsilon \\
- \mathit{mult}(n_1, n_2 0) &= \mathit{mult}(n_1,n_2) 0 \\
- \mathit{mult}(n_1, n_2 1) &= 
-  \mathit{add}(n_1, \mathit{mult}(n_1,n_2)0, 0) 
+\mathit{add}(b_1 d_1 , \epsilon, c) &= 
+  \mathit{add}(b_1 d_1 , \epsilon 0, c) \\
+\mathit{add}(\epsilon, b_2 d_2, c) &= 
+  \mathit{add}( \epsilon 0, b_2 d_2,c) \\[1ex]
+ \mathit{mult}(b_1, \epsilon) &= \epsilon \\
+ \mathit{mult}(b_1, b_2 0) &= \mathit{mult}(b_1,b_2) 0 \\
+ \mathit{mult}(b_1, b_2 1) &= 
+  \mathit{add}(b_1, \mathit{mult}(b_1,b_2)0, 0) 
 \end{align*}
 \caption{Binary arithmetic interpreter.}
 \label{fig:interp-binary}
@@ -211,7 +211,7 @@ $N (\mathit{add3}(d_1, d_2, d_3)) = d_1 + d_2 + d_3$.
 
 \begin{Exercise}
   \label{ex:add}
-  Prove that $N(\mathit{add}(n_1,n_2,c)) = N(n_1) + N(n_2) + c$.
+  Prove that $N(\mathit{add}(b_1,b_2,c)) = N(b_1) + N(b_2) + c$.
 \end{Exercise}
 \begin{Answer}
 The proof is by induction on $\mathit{add}$.
@@ -220,37 +220,37 @@ The proof is by induction on $\mathit{add}$.
        = N\BR{ \epsilon} + N\BR{ \epsilon} + 0$
 \item Case $N(\mathit{add}(\epsilon, \epsilon, 1)) = N\BR{\epsilon 1} = 1
        = N\BR{\epsilon} + N\BR{\epsilon} + 1$
-\item Case $\mathit{add}(n'_1 d_1 , n'_2  d_2, c) 
-    = \mathit{add}(n_1, n_2, c')d_3$ \\
+\item Case $\mathit{add}(b'_1 d_1 , b'_2  d_2, c) 
+    = \mathit{add}(b_1, b_2, c')d_3$ \\
   where $\mathit{add3}(d_1, d_2, c) = c'd_3$. 
     \begin{align*}
-    N(\mathit{add}(n'_1 d_1 , n'_2  d_2, c)) 
-      &= N(\mathit{add}(n'_1, n'_2, c')d_3) \\
-      &= N(\mathit{add}(n'_1, n'_2, c')) \times 2 + d_3 \\
-      &= (N(n'_1) + N(n'_2) + c') \times 2 + d_3\\
-      &= 2 N(n'_1) + 2 N(n'_2) + c' \times 2 + d_3 \\
-      &= 2 N(n'_1) + 2 N(n'_2) + N\BR{c' d_3} \\
-      &= 2 N(n'_1) +  d_1 + 2 N(n'_2) +  d_2 + c 
+    N(\mathit{add}(b'_1 d_1 , b'_2  d_2, c)) 
+      &= N(\mathit{add}(b'_1, b'_2, c')d_3) \\
+      &= N(\mathit{add}(b'_1, b'_2, c')) \times 2 + d_3 \\
+      &= (N(b'_1) + N(b'_2) + c') \times 2 + d_3\\
+      &= 2 N(b'_1) + 2 N(b'_2) + c' \times 2 + d_3 \\
+      &= 2 N(b'_1) + 2 N(b'_2) + N\BR{c' d_3} \\
+      &= 2 N(b'_1) +  d_1 + 2 N(b'_2) +  d_2 + c 
          & \text{by Ex.~\ref{ex:bit-add}}\\
-      &= N \BR{n'_1 d_1} + N \BR{n'_2 d_2} + c
+      &= N \BR{b'_1 d_1} + N \BR{b'_2 d_2} + c
     \end{align*}
 
-\item Case $\mathit{add}(n_1 d_1 , \epsilon, c) = 
-  \mathit{add}(n_1 d_1 , \epsilon 0, c)$
+\item Case $\mathit{add}(b_1 d_1 , \epsilon, c) = 
+  \mathit{add}(b_1 d_1 , \epsilon 0, c)$
   \begin{align*}
-    N(\mathit{add}(n_1 d_1 , \epsilon, c))
-    & = N\mathit{add}(n_1 d_1 , \epsilon 0, c) \\
-    & = N \BR{n_1d_1} + N \BR{\epsilon 0} + c & \text{by I.H.}\\
-    & = N \BR{n_1 d_1} + N\BR{\epsilon} + c
+    N(\mathit{add}(b_1 d_1 , \epsilon, c))
+    & = N\mathit{add}(b_1 d_1 , \epsilon 0, c) \\
+    & = N \BR{b_1d_1} + N \BR{\epsilon 0} + c & \text{by I.H.}\\
+    & = N \BR{b_1 d_1} + N\BR{\epsilon} + c
   \end{align*}
 
-\item Case $\mathit{add}(\epsilon, n_2 d_2, c) = 
-  \mathit{add}( \epsilon 0, n_2 d_2,c)$
+\item Case $\mathit{add}(\epsilon, b_2 d_2, c) = 
+  \mathit{add}( \epsilon 0, b_2 d_2,c)$
   \begin{align*}
-    N(\mathit{add}(\epsilon, n_2 d_2, c))
-    &= N(\mathit{add}( \epsilon 0, n_2 d_2,c)) \\
-    &= N\BR{\epsilon 0} + N\BR{n_2 d_2} + c \\
-    &= N\BR{\epsilon} + N\BR{n_2 d_2} + c
+    N(\mathit{add}(\epsilon, b_2 d_2, c))
+    &= N(\mathit{add}( \epsilon 0, b_2 d_2,c)) \\
+    &= N\BR{\epsilon 0} + N\BR{b_2 d_2} + c \\
+    &= N\BR{\epsilon} + N\BR{b_2 d_2} + c
   \end{align*}
 
 \end{itemize}
@@ -258,35 +258,35 @@ The proof is by induction on $\mathit{add}$.
 
 \begin{Exercise}
 \label{ex:mult}
-Prove that $N(\mathit{mult}(n_1,n_2)) = N(n_1) N(n_2)$.
+Prove that $N(\mathit{mult}(b_1,b_2)) = N(b_1) N(b_2)$.
 \end{Exercise}
 \begin{Answer}
 By induction on $\mathit{mult}$.
 \begin{itemize}
-\item Case $\mathit{mult}(n_1,\epsilon) = \epsilon$:\\
+\item Case $\mathit{mult}(b_1,\epsilon) = \epsilon$:\\
   \[
-  N(\mathit{mult}(n_1,\epsilon)) = N(\epsilon) = 0 
-  = N(n_1) N(\epsilon)
+  N(\mathit{mult}(b_1,\epsilon)) = N(\epsilon) = 0 
+  = N(b_1) N(\epsilon)
   \]
 
-\item Case $\mathit{mult}(n_1, n'_2 0) = \mathit{mult}(n_1,n'_2) 0$:
+\item Case $\mathit{mult}(b_1, b'_2 0) = \mathit{mult}(b_1,b'_2) 0$:
   \begin{align*}
-    N(\mathit{mult}(n_1, n'_2 0)) &= N(\mathit{mult}(n_1,n'_2) 0) \\
-     & = 2 N(\mathit{mult}(n_1,n'_2)) \\
-     & = 2 N(n_1) N(n'_2) & \text{by I.H.}\\
-     & = N(n_1) N (n'_2 0)
+    N(\mathit{mult}(b_1, b'_2 0)) &= N(\mathit{mult}(b_1,b'_2) 0) \\
+     & = 2 N(\mathit{mult}(b_1,b'_2)) \\
+     & = 2 N(b_1) N(b'_2) & \text{by I.H.}\\
+     & = N(b_1) N (b'_2 0)
   \end{align*}
 
-\item Case $\mathit{mult}(n_1, n'_2 1) = 
-  \mathit{add}(n_1, \mathit{mult}(n_1,n'_2)0)$:
+\item Case $\mathit{mult}(b_1, b'_2 1) = 
+  \mathit{add}(b_1, \mathit{mult}(b_1,b'_2)0)$:
   \begin{align*}
-    N(\mathit{mult}(n_1, n'_2 1)) &= 
-    N(\mathit{add}(n_1, \mathit{mult}(n_1,n'_2)0, 0)) \\
-    &= N(n_1) + N(\mathit{mult}(n_1,n'_2)0) + 0 & \text{by Ex.~\ref{ex:add}}\\
-    &= N(n_1) + 2 N(\mathit{mult}(n_1,n'_2)) \\
-    &= N(n_1) + 2 N(n_1) N(n'_2) & \text{by I.H.}\\
-    &= N(n_1) (2 N(n'_2) + 1) \\
-    &= N(n_1) N(n'_2 1)
+    N(\mathit{mult}(b_1, b'_2 1)) &= 
+    N(\mathit{add}(b_1, \mathit{mult}(b_1,b'_2)0, 0)) \\
+    &= N(b_1) + N(\mathit{mult}(b_1,b'_2)0) + 0 & \text{by Ex.~\ref{ex:add}}\\
+    &= N(b_1) + 2 N(\mathit{mult}(b_1,b'_2)) \\
+    &= N(b_1) + 2 N(b_1) N(b'_2) & \text{by I.H.}\\
+    &= N(b_1) (2 N(b'_2) + 1) \\
+    &= N(b_1) N(b'_2 1)
   \end{align*}
 \end{itemize}
 \end{Answer}
@@ -740,7 +740,7 @@ input improves, that is, require $F$ to be monotonic.
   \bot \sqsubseteq F(\bot) \sqsubseteq F^2(\bot) 
     \sqsubseteq F^3(\bot) \sqsubseteq \cdots
 \]
-\caption{Ascending chain of $F$.}
+\caption{Ascending sequence of $F$.}
 \label{fig:kleene-chain}
 \end{marginfigure}
 %
@@ -780,17 +780,16 @@ have $\bigsqcup S \sqsubseteq z$.
 
 In arbitrary posets, a least upper bound may not exist for an
 arbitrary subset. In particular, for the poset
-$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$, two partial
-functions do not have a lub if they are inconsistent, that is, if they
-map the same input to different outputs, such as $\{3\mapsto 8\}$ and
-$\{3 \mapsto 9\}$. However, the CPO Fixed-Point Theorem will only need to
-consider totally ordered subsets, i.e., chains, and all the elements
-in a chain are consistent.
+$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$, two partial functions do
+not have a lub if they are inconsistent, that is, if they map the same
+input to different outputs, such as $\{3\mapsto 8\}$ and $\{3 \mapsto
+9\}$. However, the CPO Fixed-Point Theorem will only need to consider
+totally ordered sequences, and all the elements in such a sequence are
+consistent.
 
 \begin{definition}
-  A \textbf{\emph{chain}} is a totally ordered subset of a poset.  A
-  \textbf{\emph{chain-complete partial order (cpo)}} has a least upper
-  bound for every chain.
+  A \textbf{\emph{complete partial order (cpo)}} has a least upper
+  bound for every sequence of totally ordered elements.
 \end{definition}
 
 
@@ -818,10 +817,10 @@ in a chain are consistent.
   cpo.
 \end{proposition}
 \begin{proof}
-  Let $S$ be a chain in $(A\pto B,\subseteq)$.  We claim
-  that the lub of $S$ is just the union of all the elements of $S$,
-  that is $\bigcup S$. Recall that $\forall x y, (x,y) \in \bigcup S$
-  iff $\exists f \in S, (x,y) \in f$.
+  Let $S$ be a totally ordered sequence in $(A\pto B,\subseteq)$.  We
+  claim that the lub of $S$ is just the union of all the elements of
+  $S$, that is $\bigcup S$. Recall that $\forall x y, (x,y) \in
+  \bigcup S$ iff $\exists f \in S, (x,y) \in f$.
 %
   We first need to show that $\bigcup S$ is an upper bound of $S$.
   Suppose $f \in S$. We need to show that $f \subseteq \bigcup S$.
@@ -847,7 +846,8 @@ lub of the set obtained by mapping $F$ over the elements of $X$
 
 \begin{definition}
   A monotonic function $F : A {\to} B$ on a cpo is
-  \textbf{\emph{continuous}} iff for all chains $X$ of $A$
+  \textbf{\emph{continuous}} iff for all totally ordered sequences $X$
+  of $A$
   \[
   F(\bigsqcup X) = \bigsqcup \{ F(x) \mid x \in X \}
   \]
@@ -858,8 +858,8 @@ lub of the set obtained by mapping $F$ over the elements of $X$
   is continuous.
 \end{proposition}
 \begin{proof}
-  Let $S$ be a chain in $(A\pto B,\subseteq)$. 
-  We need to show that
+  Let $S$ be a totally ordered sequence in $(A\pto B,\subseteq)$.  We
+  need to show that
   \[
   F_{b,c}(\bigcup S) = \bigcup \{ F_{b,c}(f) \mid f \in S\}
   \]
@@ -890,15 +890,15 @@ We now state the fixed point theorem for cpos.
 \begin{theorem}[CPO Fixed-Point Theorem]\label{thm:fixed-point}
 Suppose $(L,\sqsubseteq)$ is a cpo and let $F:L\to L$ be a continuous
 function. Then $F$ has a least fixed point, written $\mathrm{fix}\,F$,
-which is the least upper bound of the ascending chain of $F$:
+which is the least upper bound of the ascending sequence of $F$:
 \[
   \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
 \]
 \end{theorem}
 \begin{proof}
 Note that $\bot$ is an element of $L$ because it is the lub of the
-empty chain.  We first prove that $\mathrm{fix}\,F$ is a fixed point
-of $F$.
+empty sequence.  We first prove that $\mathrm{fix}\,F$ is a fixed
+point of $F$.
 \begin{align*}
   F(\mathrm{fix}\,F) &= F(\bigsqcup \{ F^n(\bot) \mid n \in \NAT \})\\
   &= \bigsqcup\{ F(F^n(\bot)) \mid n \in \NAT \} & \text{by continuity}\\
@@ -916,18 +916,6 @@ $i$.  And because $e$ is a fixed point, we also have $F^i(e) = e$, so
 $e$ is an upper bound of the ascending chain, and therefore
 $\mathrm{fix}\,F \sqsubseteq e$.
 \end{proof}
-
-
-Returning to the semantics of the \texttt{while} loop, we give the
-least fixed-point semantics of an imperative language in
-Figure~\ref{fig:imperative-fixed-point}. We have already seen that the
-poset of partitial functions is a cpo and that $F_{b,c}$ is
-continuous, so $\mathrm{fix}\,(F_{b,c})$ is well defined and is the
-least fixed-point of $F_{b,c}$. Thus, we can define the meaning
-of the \texttt{while} loop as follows.
-\[
-  C(\WHILE{b}{c})\,s = \mathrm{fix}(F_{b,c})\,s
-\]
 
 \begin{marginfigure}
 \[
@@ -952,6 +940,18 @@ C'(\WHILE{b}{c})\,s &= \mathrm{fix}(F_{b,c})\,s
 \label{fig:imperative-fixed-point}
 \end{marginfigure}
 
+Returning to the semantics of the \texttt{while} loop, we give the
+least fixed-point semantics of an imperative language in
+Figure~\ref{fig:imperative-fixed-point}. We have already seen that the
+poset of partitial functions is a cpo and that $F_{b,c}$ is
+continuous, so $\mathrm{fix}\,(F_{b,c})$ is well defined and is the
+least fixed-point of $F_{b,c}$. Thus, we can define the meaning
+of the \texttt{while} loop as follows.
+\[
+  C(\WHILE{b}{c})\,s = \mathrm{fix}(F_{b,c})\,s
+\]
+
+
 
 \begin{Exercise}
   Prove that the semantics in Figure~\ref{fig:imperative} is
@@ -965,14 +965,14 @@ TODO
 
 In the literature there are two schools of thought regarding how to
 define complete partial orders. There is the one presented above, that
-requires lubs to exists for all
-chains~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  The
+requires lubs to exists for all totally ordered
+sequences~\citep{Plotkin:1983aa,Schmidt:1986vn,Winskel:1993uq}.  The
 other requires that the poset be directed complete, that is, lubs
 exists for all directed
 sets~\citep{Gunter:1990aa,Mitchell:1996nn,Amadio:1998fk}.  The two
 schools of thought are equivalent, i.e., a poset $P$ with a least
-element is directed-complete iff every chain in $P$ has a
-lub~\citep{Davey:2002fj} (Theorem 8.11).
+element is directed-complete iff every totally ordered sequence in $P$
+has a lub~\citep{Davey:2002fj} (Theorem 8.11).
 
 
 \section{The simply-typed $\lambda$-calculus}
@@ -991,8 +991,17 @@ $\lambda$-calculus. The main feature of this language is a function,
 created by lambda abstractions $\LAM{x}e$. The application expression
 $(e_1\,e_2)$ calls the function produced by $e_1$ with the argument
 produced by $e_2$. We study here the call-by-value (CBV) version of
-the $\lambda$-calculus.  As a secondary feature, we include binary
-arithmetic (Section~\ref{sec:binary-arithmetic}).
+the $\lambda$-calculus.  As a secondary feature, we include
+arithmetic.
+\[
+\begin{array}{lrl}
+              & n \in \mathbb{N} \\
+ \text{vars.} & x \in \mathbb{X}\\
+ \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x} e \mid (e \, e)
+\end{array}
+\]
+
+\subsection{Semantics}
 
 In the $\lambda$-calculus, functions are first-class entities, so they
 can be passed to other functions and returned from them. This
@@ -1011,8 +1020,6 @@ make it possible to solve the equation. The first model of the
 $\lambda$-calculus, $D_\infty$ of \citet{Scott:1970dp}, takes this
 approach. We shall study $D_\infty$ in Section~\ref{sec:D-infinity}.
 
-\subsection{Semantics of the $\lambda$-calculus}
-
 Another approach does not require solving the above equation, but
 recognizes that when passing a function to another function, one
 doesn't need to pass the entirety of the function (which is infinite),
@@ -1024,7 +1031,7 @@ our current goal was to implement the $\lambda$-calculus, but this
 \emph{specification}, of the $\lambda$-calculus. The various semantics
 that take this approach are called \emph{graph models}. This first
 such model was $T^{*}_C$ of \citet{Plotkin:1972aa}. Then came
-$\mathcal{P}\omega$ of \citet{Scott:1976lq} and the simpler $D_A$ of
+$\mathcal{P}(\omega)$ of \citet{Scott:1976lq} and the simpler $D_A$ of
 \citet{Engeler:1981aa}. We shall study these three models in
 Section~\ref{sec:graph-models}. But first, we study perhaps the most
 straightforward of the graph models, the recent one by yours
@@ -1033,13 +1040,6 @@ Siek's in some sense closer to the filter models?)
 
 \begin{figure*}
 \begin{minipage}{0.5\textwidth}
-\noindent Syntax
-\[
-\begin{array}{lrl}
- \text{vars.} & x \in \mathbb{X}\\
- \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x} e \mid (e \, e)
-\end{array}
-\]
 Domain
 \[
 \begin{array}{lrl}
@@ -1084,7 +1084,7 @@ Semantics
   E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
 \end{align*}
 \end{minipage}
-\caption{$\lambda$-calculus}
+\caption{Semantics of the $\lambda$-calculus}
 \label{fig:lambda}
 \end{figure*}
 
@@ -1313,7 +1313,7 @@ Resources:
 
 %===============================================================================
 
-\subsection{Filter models of $\lambda$-calculus}
+\subsection{Intersection Types and Filter models}
 \label{sec:filter-models}
 
 \newcommand{\UP}[1]{\mathop{\uparrow}\! #1}
@@ -1408,14 +1408,14 @@ Figure~\ref{fig:intersect-type-system}
 
 
 \begin{definition}
-  A \emph{filter $\lambda$-structure} is $\langle \mathbb{F}, \cdot, F\rangle$
-  where 
+  A \emph{filter $\lambda$-structure} is a triple $\langle \mathbb{F},
+  \cdot, F\rangle$ where
 \begin{align*}
   \_ \cdot \_ & : \mathbb{F} \times \mathbb{F} \to \mathbb{F}\\
   S_1 \cdot S_2 &\defeq \UP{\{ B \mid \exists A \in S_2, A \to B \in S_1 \}}\\
   \Gamma \models \rho &\defeq \forall x\of B \in \Gamma, B \in \rho(x) \\
   F &: \mathbb{E} \to (\mathbb{X} \to \mathbb{F}) \to \mathbb{F}\\
-  F\,e\,\rho &\defeq \{ A \mid \exists \Gamma \models \rho, \Gamma \vdash e : A\} 
+  F\,e\,\rho &\defeq \{ A \mid \exists \Gamma, \Gamma \models \rho \text{ and } \Gamma \vdash e : A\} 
 \end{align*}
 \end{definition}
 
@@ -1582,20 +1582,7 @@ e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
 
 UNDER CONSTRUCTION
 
-\clearpage
-\pagebreak
 
-\section*{Answers to Exercises}
-
-\shipoutAnswer
-
-\clearpage
-\pagebreak
-
-\bibliographystyle{plainnat}
-\bibliography{all}
-
-\end{document}
 
 %===============================================================================
 \subsection{Untyped as a uni-typed}
@@ -1657,6 +1644,23 @@ The proof is by induction on the derivation of $\vdash e = e'$.
 \item[TODO]
 \end{itemize}
 \end{proof}
+
+
+\clearpage
+\pagebreak
+
+\section*{Answers to Exercises}
+
+\shipoutAnswer
+
+\clearpage
+\pagebreak
+
+\bibliographystyle{plainnat}
+\bibliography{all}
+
+\end{document}
+
 
 %===============================================================================
 \section{Records and Variants}
