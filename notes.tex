@@ -34,6 +34,7 @@
 \newcommand{\TRUE}[0]{\mathtt{true}}
 \newcommand{\FALSE}[0]{\mathtt{false}}
 \newcommand{\of}[0]{\!:\!}
+\newcommand{\by}[0]{\!:=\!}
 \newcommand{\pto}[0]{\rightharpoonup}
 \newcommand{\NAT}[0]{\ensuremath{\mathit{Nat}}}
 \newcommand{\COND}[3]{#1\,\texttt{?}\,#2\,\texttt{:}\,#3}
@@ -333,7 +334,7 @@ The proof is by induction on $e$.
 
 %% local, immutable variables??
 
-\section{An Imperative Language: IMP}
+\section{Loops and Mutable Variables}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -357,6 +358,8 @@ that their semantics is typically expressed in terms of fixed points
 of continuous functions, which takes some time to explain. However, it
 turns out that the semantics of \texttt{while} loops can be defined
 more simply.
+
+\subsection{Semantics of IMP}
 
 To give meaning to mutable variables, we use a $\mathit{Store}$ which
 is partial function from variables (identifiers) to numbers.
@@ -455,7 +458,7 @@ relating $s_2$ to the finishing store $s_3$.
 %%  \end{cases} 
 %% \]
 
-
+\subsection{Implementation of IMP}
 
 We define an implementation of the imperative language, in terms of an
 abstract machine, in Figure~\ref{fig:imp-impl}. The machine executes
@@ -591,7 +594,7 @@ TODO
 \end{Answer}
 
 
-\section{Recursive Definitions via Least Fixed Points}
+\subsection{Recursive Definitions via Least Fixed Points}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -1008,6 +1011,8 @@ make it possible to solve the equation. The first model of the
 $\lambda$-calculus, $D_\infty$ of \citet{Scott:1970dp}, takes this
 approach. We shall study $D_\infty$ in Section~\ref{sec:D-infinity}.
 
+\subsection{Semantics of the $\lambda$-calculus}
+
 Another approach does not require solving the above equation, but
 recognizes that when passing a function to another function, one
 doesn't need to pass the entirety of the function (which is infinite),
@@ -1023,7 +1028,8 @@ $\mathcal{P}\omega$ of \citet{Scott:1976lq} and the simpler $D_A$ of
 \citet{Engeler:1981aa}. We shall study these three models in
 Section~\ref{sec:graph-models}. But first, we study perhaps the most
 straightforward of the graph models, the recent one by yours
-truly~\citep{Siek:2017ab}.
+truly~\citep{Siek:2017ab}. (todo: What about filter models? And isn't
+Siek's in some sense closer to the filter models?)
 
 \begin{figure*}
 \begin{minipage}{0.5\textwidth}
@@ -1047,11 +1053,11 @@ Ordering
    n \sqsubseteq n \qquad 
    \inference{t \subseteq t'}{t \sqsubseteq t'}
 \]
-Abstraction and Application
+Application
 \begin{align*}
-  \uplambda^S & : (\mathbb{D} \to \mathcal{P}(\mathbb{D})) \to \mathcal{P}(\mathbb{D}) \\
-  \uplambda^S f &\defeq
-      \{ t \mid \forall (d,d') \in t, d' \in f\, d \} \\[1ex]
+  %% \uplambda^S & : (\mathbb{D} \to \mathcal{P}(\mathbb{D})) \to \mathcal{P}(\mathbb{D}) \\
+  %% \uplambda^S f &\defeq
+  %%     \{ t \mid \forall (d,d') \in t, d' \in f\, d \} \\[1ex]
   D^{*}_1 \cdot D^{*}_2 & \defeq
     \left\{ d' \middle|
     \begin{array}{l}
@@ -1073,7 +1079,8 @@ Semantics
   E\, (e_1 \times e_2) \, \rho & = \{ n_1 n_2 \mid n_1 \in E\,e_1\,\rho, 
                                     n_2 \in E\,e_2\,\rho \} \\
   E\, x \,\rho &= \{ \rho\,x \} \\
-  E\, (\LAM{x}e)\,\rho &= \uplambda^S (\uplambda d. E\,e\,[x\mapsto d]\rho) \\
+  E\, (\LAM{x}e)\,\rho &= 
+      \{ t \mid \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]\rho) \} \\
   E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
 \end{align*}
 \end{minipage}
@@ -1104,20 +1111,21 @@ infinite sets of elements from $\mathbb{D}$.
 The semantics in Figure~\ref{fig:lambda} says the meaning of an
 abstraction $(\LAM{x}e)$ is the set of all tables $t$ such that each
 input-output entry $(d,d')$ makes sense for the $\lambda$. That is,
-$d' \in E\,e\,[x\mapsto d]\rho$. While this is straightforward to
-express directly, we make use of an auxilliary function $\uplambda^S$,
-also defined in Figure~\ref{fig:lambda}, which is useful in connecting
-this semantics to the notions of $\lambda$-models and reflexive cpos
-from the literature. 
-[I'm not so sure about this anymore -Jeremy]
-So far we have discussed two of the three
-lambda's on the line that gives meaning to abstractions: $\lambda$ is
-the syntactic entity in $\mathbb{E}$ and $\uplambda^S$ is the helper
-function defined in ~\ref{fig:lambda}.  The third lambda, the
-$\uplambda$ in $(\uplambda d. E\,e\,[x\mapsto d]\rho)$, is the
-notation we use for defining a good-old mathematical function.  (The
-author thinks in HOL, so he really has the lambda of
-HOL~\cite{Nipkow:2002jl} in mind.)
+$d' \in E\,e\,[x\mapsto d]\rho$. 
+%% While this is straightforward to
+%% express directly, we make use of an auxilliary function $\uplambda^S$,
+%% also defined in Figure~\ref{fig:lambda}, which is useful in connecting
+%% this semantics to the notions of $\lambda$-models and reflexive cpos
+%% from the literature. 
+%% [I'm not so sure about this anymore -Jeremy]
+%% So far we have discussed two of the three
+%% lambda's on the line that gives meaning to abstractions: $\lambda$ is
+%% the syntactic entity in $\mathbb{E}$ and $\uplambda^S$ is the helper
+%% function defined in ~\ref{fig:lambda}.  The third lambda, the
+%% $\uplambda$ in $(\uplambda d. E\,e\,[x\mapsto d]\rho)$, is the
+%% notation we use for defining a good-old mathematical function.  (The
+%% author thinks in HOL, so he really has the lambda of
+%% HOL~\cite{Nipkow:2002jl} in mind.)
 
 The semantics of application is defined in terms of the auxilliary
 application operator $D^{*}_1 \cdot D^{*}_2$, which applies all the
@@ -1146,6 +1154,8 @@ ordering $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for
 argument $d_2 \in D^{*}_2$, we require $d \sqsubseteq d_2$ instead of $d =
 d_2$.
 
+\subsection{Implementation of the $\lambda$-calculus}
+
 We turn to an implementation of the $\lambda$-calculus, the
 interpreter in Figure~\ref{fig:interp-lambda}. The interpreter is
 based on the notion of a closure, which pairs a $\lambda$ abstraction
@@ -1164,8 +1174,9 @@ definitions from the lexical scope.
   I\,(e_1 + e_2)\,\varrho &= \mathit{add}(I\,e_1\,\varrho, I\,e_2\,\varrho, 0) \\
   I\,(e_1 \times e_2)\,\varrho &= \mathit{mult}(I\,e_1\,\varrho, I\,e_2\,\varrho) \\
   I\,(\LAM{x}e)\,\varrho &= \langle \LAM{x}e, \varrho \rangle \\
-  I\,(e_1\,e_2)\,\varrho &=  I\,e\,[x\mapsto I\,e_2\,\varrho]\varrho'\\
-      & \quad \text{if } I\,e_1\,\varrho = \langle \LAM{x}e,\varrho' \rangle
+  I\,(e_1\,e_2)\,\varrho &=  I\,e\,[x\mapsto v]\varrho'\\
+      & \quad \text{if } I\,e_1\,\varrho = \langle \LAM{x}e,\varrho' \rangle \text{ and}\\
+      & \quad I\,e_2\,\varrho = v
 \end{align*}
 
 \caption{Interpreter for the $\lambda$-calculus}
@@ -1256,96 +1267,169 @@ UNDER CONSTRUCTION
 
 %% \end{proof}
 
-\subsection{Equational Theory}
+\subsection{Equational Theory and Models}
 
 \begin{figure}
-\[
-\begin{array}{lc}
-  \text{(refl)} & \vdash x = x \\[2ex]
-  \text{(sym)}  & \inference{\vdash e_1 = e_2}{\vdash e_2 = e_1}  \\[2ex]
-  \text{(trans)} & \inference{\vdash e_1 = e_2 & \vdash e_2 = e_3}{\vdash e_1 = e_3} \\[2ex]
-  \text{(cong)} & \inference{\vdash e_1 = e_3 & \vdash e_2 = e_4}
-                            {\vdash e_1 \APP e_2 = e_3 \APP e_4} \\[2ex]
-  \text{($\xi$)} & \inference{\vdash e = e'}{\vdash \LAM{x}e = \LAM{x}e'} \\[2ex]
-  \text{($\beta$)} & \vdash (\LAM{x}e_1)\APP e_2 = [x:=e_2]e_1
-\end{array}
-\]
+\begin{gather*}
+  \text{(refl)}  \vdash x = x 
+  \quad
+  \text{(sym)}   \inference{\vdash e_1 = e_2}{\vdash e_2 = e_1}  
+  \quad
+  \text{(trans)}  \inference{\vdash e_1 = e_2 & \vdash e_2 = e_3}{\vdash e_1 = e_3} \\[2ex]
+  \text{(cong)}  \inference{\vdash e_1 = e_3 & \vdash e_2 = e_4}
+                            {\vdash e_1 \APP e_2 = e_3 \APP e_4}
+   \quad
+  \text{($\xi$)}  \inference{\vdash e = e'}{\vdash \LAM{x}e = \LAM{x}e'} \\[2ex]
+  \text{($\beta$)}  \vdash (\LAM{x}e_1)\APP e_2 = [x:=e_2]e_1 \\[2ex]
+  \text{($\beta_v$)}  \vdash (\LAM{x}e)\APP v = [x:=v]e
+\end{gather*}
 \caption{Equational Theory of the $\lambda$-calculus}
 \label{fig:lambda-eq}
 \end{figure}
 
 Figure~\ref{fig:lambda-eq}
 
-\subsection{Untyped as a uni-typed}
 
+\begin{definition}[$\lambda$-models]
+  An $R$-model of the $\lambda$-calculus is a triple $\langle D, \cdot,
+  E\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D \to D$,
+  and $E : \mathbb{E}\to(\mathbb{X}\to D)\to D$, and 
+  \begin{enumerate}
+  \item $E\, x\,\rho = \rho(x)$,
+  \item $E\,(e_1\APP e_2)\,\rho = (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)$,
+  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $(E\,(\LAM{x}e)\,\rho) \cdot (E\,e'\,\rho) = E\,e\,[x\by E\,e'\,\rho]\rho$,
+  \item $\forall x \in \mathrm{FV}(e)$, if  $\rho(x) = \rho'(x)$,
+       then $E\,e\,\rho = E\,e\,\rho'$.
+     \item If $\forall d \in D, E\,e\,[x\by d]\rho = E\,e'\,[x\by d]\rho$,
+       then $E\,(\LAM{x} e)\,\rho = E\,(\LAM{x} e')\,\rho$.
+  \end{enumerate}
+\end{definition}
+
+
+Resources:
+  \citet{barendregt84:_lambda_calculus} (Section 2.1 for
+  equational theory and Section 5.3 for (syntactical) $\lambda$-models).
+ \citet{Alessi:2006aa}
+
+%===============================================================================
+
+\subsection{Filter models of $\lambda$-calculus}
+\label{sec:filter-models}
+
+\newcommand{\UP}[1]{\mathop{\uparrow}\! #1}
+
+UNDER CONSTRUCTION
+
+\marginnote{
+\begin{tabular}{ll}
+Reading: & \citet{Alessi:2006aa}
+\end{tabular}
+}
+
+
+Our type constants are $\{\NAT,\nu\}$, so our types correspond to
+$\mathbb{T}(\{\NAT,\nu\})$ of \citet{Alessi:2006aa} and the types of
+\citet{Egidi:1992aa}.
+
+Figure~\ref{fig:intersection-types} also defines the subtyping and
+type equivalence rules.
+
+
+\begin{figure}
 \[
 \begin{array}{lrl}
- \text{types} & A,B ::= & \mathit{nat} \mid A \to B \mid A \times B \mid \mathit{dyn} \\
- \text{type tag}  & t ::= & \mathit{fun} \mid \mathit{nat} \\
- \text{coercion} & c ::= & t! \mid t? \\
- \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x \of A} e \mid (e \, e) \mid e \langle c \rangle
+  \text{types} & A,B,C \in \mathbb{T} ::= & \NAT \mid \nu \mid A \to B \mid A \cap B
 \end{array}
 \]
-
-\newcommand{\uni}[1]{U(#1)}
-\newcommand{\coerce}[2]{#1\langle #2\rangle}
-
-\begin{align*}
-  \uni{n} &= \coerce{n}{\mathit{nat}!} \\
-  \uni{e_1 + e_2} &= \coerce{(\coerce{\uni{e_1}}{\mathit{nat}?} +
-    \coerce{\uni{e_2}}{\mathit{nat}?})}{\mathit{nat}!} \\
-  \uni{x} &= x \\
-  \uni{\LAM{x} e} &= \coerce{(\LAM{x\of \mathit{dyn}} \uni{e})}{\mathit{fun}!}\\
-  \uni{e_1 \APP e_2} &= 
-     \coerce{\uni{e_1}}{\mathit{fun}?} \APP \uni{e_2}
-\end{align*}
-
-\noindent Equational theory
 \[
-\begin{array}{lc}
-  & \coerce{\coerce{e}{t!}}{t?} = e
+\begin{array}{rlrl}
+  \text{(refl)} &  A <: A & \text{(idem)} & A <: A \cap A \\[1ex]
+  \text{(incl-L)} & A \cap B <: A & \text{(incl-R)} & A \cap B <: B\\[1ex]
+  \text{(mon)} & \inference{A <: A' & B <: B'}{A \cap B <: A' \cap B'} &
+  \text{(trans)} & \inference{A <: B & B <: C}{A <: C} \\[2ex]
+  \text{($\nu$)} & A \to B <: \nu \\[1ex]
+  \text{($\to-\cap$)} & (A \to B) \cap (A \to C) <: A \to (B \cap C) &
+  \text{($\eta$)} & \inference{A' <: A & B <: B'}
+       {A \to B <: A' \to B'} \\[1ex]
+  & A \sim B \defeq A <: B \text{ and } B <: A
 \end{array}
 \]
+\caption{Types, subtyping, and equivalence}
+\label{fig:intersection-types}
+\end{figure}
+
+\begin{definition}[Filter]
+  A subset $S$ of types $\mathbb{T}$ is a \emph{filter} if it is
+  closed with respect to subtyping and intersection. That is,
+  \begin{itemize}
+  \item if $A \in S$ and $A <: B$, then $B \in S$, and
+  \item if $A \in S$ and $B \in S$, then $A \cap B \in S$.
+  \end{itemize}
+  The set of all filters is $\mathbb{F}$.
+  We define the upward closure of a set $\UP{S}$ as follows.
+  \begin{gather*}
+    \inference{A \in S}
+              {A \in \UP{S}} 
+    \quad
+    \inference{A \in \UP{S} & A <: B}
+              {B \in \UP{S}}
+    \quad
+    \inference{A \in \UP{S} & B \in \UP{S}}
+              {A \cap B \in \UP{S}}
+  \end{gather*}
+\end{definition}
+
+\begin{figure}
+\begin{gather*}
+\inference{x:A \in \Gamma}
+          {\Gamma \vdash x : A}
+\qquad
+\inference{}
+          {\Gamma \vdash \LAM{x} e : \nu}
+\\[2ex]
+\inference{\Gamma,x:A \vdash e : B}
+          {\Gamma \vdash \LAM{x} e : A \to B}
+\qquad
+\inference{\Gamma \vdash e_1 : A \to B & \Gamma \vdash e_2 : A}
+          {\Gamma \vdash e_1 \APP e_2 : B}
+\\[2ex]
+\inference{\Gamma \vdash e : A & \Gamma \vdash e : B}
+          {\Gamma \vdash e : A \cap B}
+\qquad
+\inference{\Gamma \vdash e : A & A <: B}
+          {\Gamma \vdash e : B}
+\end{gather*}
+
+\caption{Intersection Type System}
+\label{fig:intersect-type-system}
+\end{figure}
+
+Figure~\ref{fig:intersect-type-system}
 
 
-\begin{theorem}
-If $\vdash e = e'$, then $\vdash \uni{e} = \uni{e'}$.
-\end{theorem}
-\begin{proof}
-The proof is by induction on the derivation of $\vdash e = e'$.
-\begin{itemize}
-\item[Case] $\vdash (\LAM{x}e_1)\APP e_2 = [ x := e_2 ]e_1$
-  \begin{align*}
-    \uni{(\LAM{x}e_1)\APP e_2}
-        &= \coerce{(\uni{\LAM{x}e_1})}{\mathit{fun}?} \APP \uni{e_2}\\
-        &= \coerce{\coerce{(\LAM{x}\uni{e_1})}{\mathit{fun}!}}{\mathit{fun}?} \APP \uni{e_2}\\
-        &= (\LAM{x}\uni{e_1}) \APP \uni{e_2}\\
-        &= [x:=\uni{e_2}]\uni{e_1} \\
-        &= \uni{[x:=e_2]e_1} 
-  \end{align*}
-\item[Case $\vdash n_1 + n_2 = n_3$ where $n_3$ is $n_1 + n_2$]
+\begin{definition}
+  A \emph{filter $\lambda$-structure} is $\langle \mathbb{F}, \cdot, F\rangle$
+  where 
 \begin{align*}
-  \uni{n_1+n_2} &= 
-     \coerce{(\coerce{\coerce{n_1}{\mathit{nat}!}}{\mathit{nat}?} +
-              \coerce{\coerce{n_2}{\mathit{nat}!}}{\mathit{nat}?})}{\mathit{nat}!} \\
-  &= \coerce{(n_1 + n_2)}{\mathit{nat}!} \\
-  &= \coerce{n_3}{\mathit{nat}!} \\
-  &= \uni{n_3} 
+  \_ \cdot \_ & : \mathbb{F} \times \mathbb{F} \to \mathbb{F}\\
+  S_1 \cdot S_2 &\defeq \UP{\{ B \mid \exists A \in S_2, A \to B \in S_1 \}}\\
+  \Gamma \models \rho &\defeq \forall x\of B \in \Gamma, B \in \rho(x) \\
+  F &: \mathbb{E} \to (\mathbb{X} \to \mathbb{F}) \to \mathbb{F}\\
+  F\,e\,\rho &\defeq \{ A \mid \exists \Gamma \models \rho, \Gamma \vdash e : A\} 
 \end{align*}
-\item[TODO]
-\end{itemize}
-\end{proof}
+\end{definition}
+
+
 
 
 %===============================================================================
-%===============================================================================
-\section{Graph models of $\lambda$-calculus $(T^{*}_C$, $D_A$, and $\mathcal{P}(\omega))$ }
+\subsection{Graph models of $\lambda$-calculus $(T^{*}_C$, $D_A$, and $\mathcal{P}(\omega))$ }
 \label{sec:graph-models}
 
 
 
-%===============================================================================
-\subsection{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
+%-------------------------------------------------------------------------------
+\paragraph{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
 \label{sec:t-c}
 
 
@@ -1381,8 +1465,8 @@ The proof is by induction on the derivation of $\vdash e = e'$.
 \end{figure}
 
 
-%===============================================================================
-\subsection{The $D_A$ model of \citet{Engeler:1981aa}}
+%-------------------------------------------------------------------------------
+\paragraph{The $D_A$ model of \citet{Engeler:1981aa}}
 \label{sec:d-a}
 
 \newcommand{\EE}[0]{E_E}
@@ -1453,9 +1537,8 @@ $D_A$ ordered by set inclusion $\subseteq$ is a cpo.
 \end{itemize}
 
 
-
-%===============================================================================
-\subsection{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
+%-------------------------------------------------------------------------------
+\paragraph{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
 \label{sec:p-omega}
 
 
@@ -1492,45 +1575,9 @@ e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
 \label{fig:p-omega}
 \end{figure}
 
+
 %===============================================================================
-
-
-\section{Filter models of $\lambda$-calculus}
-\label{sec:filter-models}
-
-UNDER CONSTRUCTION
-
-\marginnote{
-\begin{tabular}{ll}
-Reading: & \cite{Alessi:2006aa}
-\end{tabular}
-}
-
-
-\[
-\begin{array}{lrl}
-  \text{types} & A,B,C ::= & \mathtt{Nat} \mid \nu \mid A \to B \mid A \cap B
-\end{array}
-\]
-
-Subtyping and equivalence relations
-\[
-\begin{array}{rlrl}
-  \text{(refl)} &  A <: A & \text{(idem)} & A <: A \cap A \\[1ex]
-  \text{(incl-L)} & A \cap B <: A & \text{(incl-R)} & A \cap B <: B\\[1ex]
-  \text{(mon)} & \inference{A <: A' & B <: B'}{A \cap B <: A' \cap B'} &
-  \text{(trans)} & \inference{A <: B & B <: C}{A <: C} \\[2ex]
-  \text{($\nu$)} & A \to B <: \nu \\[1ex]
-  \text{($\to-\cap^{\sim}$)} & (A \to B) \cap (A \to C) \sim A \to (B\cap C)&
-  \text{($\eta^{\sim}$)} & \inference{A \sim A' & B \sim B'}
-       {A \to B \sim A' \to B'} \\[1ex]
-  & A \sim B \defeq A <: B \text{ and } B <: A
-\end{array}
-\]
-
-
-
-\section{$D_\infty$ model of $\lambda$-calculus}
+\subsection{$D_\infty$ model of $\lambda$-calculus}
 \label{sec:D-infinity}
 
 UNDER CONSTRUCTION
@@ -1550,7 +1597,68 @@ UNDER CONSTRUCTION
 
 \end{document}
 
+%===============================================================================
+\subsection{Untyped as a uni-typed}
 
+\[
+\begin{array}{lrl}
+ \text{types} & A,B ::= & \mathit{nat} \mid A \to B \mid A \times B \mid \mathit{dyn} \\
+ \text{type tag}  & t ::= & \mathit{fun} \mid \mathit{nat} \\
+ \text{coercion} & c ::= & t! \mid t? \\
+ \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x \of A} e \mid (e \, e) \mid e \langle c \rangle
+\end{array}
+\]
+
+\newcommand{\uni}[1]{U(#1)}
+\newcommand{\coerce}[2]{#1\langle #2\rangle}
+
+\begin{align*}
+  \uni{n} &= \coerce{n}{\mathit{nat}!} \\
+  \uni{e_1 + e_2} &= \coerce{(\coerce{\uni{e_1}}{\mathit{nat}?} +
+    \coerce{\uni{e_2}}{\mathit{nat}?})}{\mathit{nat}!} \\
+  \uni{x} &= x \\
+  \uni{\LAM{x} e} &= \coerce{(\LAM{x\of \mathit{dyn}} \uni{e})}{\mathit{fun}!}\\
+  \uni{e_1 \APP e_2} &= 
+     \coerce{\uni{e_1}}{\mathit{fun}?} \APP \uni{e_2}
+\end{align*}
+
+\noindent Equational theory: STLC's + 
+\[
+\begin{array}{lc}
+  & \coerce{\coerce{e}{t!}}{t?} = e
+\end{array}
+\]
+
+
+\begin{theorem}
+If $\vdash e = e'$, then $\vdash \uni{e} = \uni{e'}$.
+\end{theorem}
+\begin{proof}
+The proof is by induction on the derivation of $\vdash e = e'$.
+\begin{itemize}
+\item[Case] $\vdash (\LAM{x}e_1)\APP e_2 = [ x := e_2 ]e_1$
+  \begin{align*}
+    \uni{(\LAM{x}e_1)\APP e_2}
+        &= \coerce{(\uni{\LAM{x}e_1})}{\mathit{fun}?} \APP \uni{e_2}\\
+        &= \coerce{\coerce{(\LAM{x}\uni{e_1})}{\mathit{fun}!}}{\mathit{fun}?} \APP \uni{e_2}\\
+        &= (\LAM{x}\uni{e_1}) \APP \uni{e_2}\\
+        &= [x:=\uni{e_2}]\uni{e_1} \\
+        &= \uni{[x:=e_2]e_1} 
+  \end{align*}
+\item[Case $\vdash n_1 + n_2 = n_3$ where $n_3$ is $n_1 + n_2$]
+\begin{align*}
+  \uni{n_1+n_2} &= 
+     \coerce{(\coerce{\coerce{n_1}{\mathit{nat}!}}{\mathit{nat}?} +
+              \coerce{\coerce{n_2}{\mathit{nat}!}}{\mathit{nat}?})}{\mathit{nat}!} \\
+  &= \coerce{(n_1 + n_2)}{\mathit{nat}!} \\
+  &= \coerce{n_3}{\mathit{nat}!} \\
+  &= \uni{n_3} 
+\end{align*}
+\item[TODO]
+\end{itemize}
+\end{proof}
+
+%===============================================================================
 \section{Records and Variants}
 
 \section{Functions}
