@@ -1062,10 +1062,10 @@ Application
   %%     \{ t \mid \forall (d,d') \in t, d' \in f\, d \} \\[1ex]
   \_ \cdot \_ &: \mathcal{P}(\mathbb{D}) \times \mathcal{P}(\mathbb{D})\to \mathcal{P}(\mathbb{D}) \\
   D^{*}_1 \cdot D^{*}_2 & \defeq
-    \left\{ d' \middle|
+    \left\{ d_3 \middle|
     \begin{array}{l}
-      \exists t d d_2, t \in D^{*}_1,  d_2 \in D^{*}_2, \\
-      (d,d') \in t, \text{ and } d \sqsubseteq d_2
+      \exists t d_2 d d', t \in D^{*}_1,  d_2 \in D^{*}_2, \\
+      (d,d') \in t, d \sqsubseteq d_2, d_3 \sqsubseteq d'
     \end{array}
     \right\}
 \end{align*}
@@ -1073,15 +1073,14 @@ Application
 \begin{minipage}{0.5\textwidth}
 Semantics
 \begin{align*}
-  P\,e &\defeq \{ d \mid \exists d'.\, d \sqsubseteq d' 
-               \text{ and } d' \in E\,e\,\emptyset\} \\[1ex]
+  P\,e &\defeq \{ d \mid d \in E\,e\,\emptyset\} \\[1ex]
   E & : \mathbb{E} \to (\mathbb{X} \pto \mathbb{D}) \to \mathcal{P}(\mathbb{D})\\
-  E\, n \, \rho & = \{ N(n) \} \\
+  E\, n \, \rho & = \{ n \} \\
   E\, (e_1 + e_2) \, \rho & = \{ n_1 + n_2 \mid n_1 \in E\,e_1\,\rho, 
                                     n_2 \in E\,e_2\,\rho \} \\
   E\, (e_1 \times e_2) \, \rho & = \{ n_1 n_2 \mid n_1 \in E\,e_1\,\rho, 
                                     n_2 \in E\,e_2\,\rho \} \\
-  E\, x \,\rho &= \{ \rho\,x \} \\
+  E\, x \,\rho &= \{ d \mid d \sqsubseteq \rho\,x \} \\
   E\, (\LAM{x}e)\,\rho &= 
       \{ t \mid \forall (d,d') \in t, d' \in E\,e\,\ext{x}{ d}{\rho}) \} \\
   E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
@@ -1100,9 +1099,9 @@ number, the set is just a singleton of that number. However, when the
 expression produces a function, the set contains all finite
 approximations of the function.
 
-The domain $\mathbb{D}$ consists of just the natural numbers and
-finite graphs (association tables) of functions.  $\mathcal{D}$ is
-defined inductively, or equivalently, it is the least solution of
+The set $\mathbb{D}$ consists of just the natural numbers and finite
+graphs (association tables) of functions.  $\mathbb{D}$ is defined
+inductively, or equivalently, it is the least solution of
 \[
    \mathbb{D} = \mathbb{N} + \mathcal{P}_f(\mathbb{D} \times \mathbb{D})
 \]
@@ -1157,6 +1156,20 @@ ordering $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for
 argument $d_2 \in D^{*}_2$, we require $d \sqsubseteq d_2$ instead of $d =
 d_2$.
 
+Say something about $d'$ and $d_3$ to motivate the following.
+
+\[
+X \vdash \rho \sqsubseteq \rho' \defeq
+  \forall x, x \in X \implies \rho(x) \sqsubseteq \rho'(x)
+\]
+
+\begin{proposition}[Subsumption]\ \\
+  \label{prop:sub}
+  If $e \in E\,e\,\rho$, $d' \sqsubseteq d$,
+  and $\mathrm{FV}(e) \vdash \rho \sqsubseteq \rho'$,
+  then $d' \in E\,e\,\rho'$.
+\end{proposition}
+
 \subsection{Implementation of the $\lambda$-calculus}
 
 We turn to an implementation of the $\lambda$-calculus, the
@@ -1178,6 +1191,7 @@ definitions from the lexical scope.
       & \text{if } I\,e_1\,\varrho = n_1, I\,e_2\,\varrho = n_2 \\
   I\,(e_1 \times e_2)\,\varrho &= n_1 n_2 \\
       & \text{if } I\,e_1\,\varrho = n_1, I\,e_2\,\varrho = n_2 \\
+  I\,x\,\varrho &= \varrho(x) \\
   I\,(\LAM{x}e)\,\varrho &= \langle \LAM{x}e, \varrho \rangle \\
   I\,(e_1\,e_2)\,\varrho &=  I\,e\,[x\mapsto v]\varrho'\\
   & \text{if } I\,e_1\,\varrho = \langle \LAM{x}e,\varrho' \rangle,
@@ -1197,11 +1211,11 @@ semantics agrees that $n$ should be the answer.
 For the first part, we need to relate denotations (elements $d$) to
 the values $v$ used by the interpreter.
 \begin{align*}
-  \mathcal{G}(i) &= \{ n \mid N(n) = i \} \\
+  \mathcal{G}(n) &= \{ n \} \\
   \mathcal{G}(t) &= \left\{ \langle \LAM{x} e, \varrho \rangle \middle|
      \begin{array}{l}
        \forall (d,d') \in t, v \in \mathcal{G}(d),\\
-       \exists v'. I\,e\,[x\mapsto v]\varrho = v'
+       \exists v', I\,e\,\ext{x}{v}{\varrho} = v'
                \text{ and } v'\in\mathcal{G}(d')
      \end{array} \right\}
 \end{align*}
@@ -1233,8 +1247,7 @@ If $v \in \mathcal{G}(d)$ and $d' \sqsubseteq d$, then $v \in \mathcal{G}(d')$.
 \end{lemma}
 
 \begin{theorem}[Adequacy]
-If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$
-and $N(n) = n$.
+If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 \end{theorem}
 
 UNDER CONSTRUCTION
@@ -1301,7 +1314,7 @@ Figure~\ref{fig:lambda-eq}
   following conditions hold.
   \begin{enumerate}
   \item $\SEM{ x}\rho = \rho(x)$, \label{cond:var}
-  \item $\SEM{(e_1\APP e_2)}\rho = \SEM{e_1}\rho \cdot \SEM{e_2}\rho$ \label{cond:app},
+  \item $\SEM{e_1\APP e_2}\rho = \SEM{e_1}\rho \cdot \SEM{e_2}\rho$ \label{cond:app},
   \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $\SEM{(\LAM{x}e)}\rho \cdot \SEM{e'}\rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$\label{cond:R}, \\
         alternative: $\SEM{(\LAM{x}e)}\rho \cdot d = \SEM{e}\ext{x}{ d}{\rho}$ \label{cond:lam-app}
   \item $\forall x \in \mathrm{FV}(e)$, if  $\rho(x) = \rho'(x)$,
@@ -1311,23 +1324,75 @@ Figure~\ref{fig:lambda-eq}
   \end{enumerate}
 \end{definition}
 
-\begin{example}
-  The semantic function $E$ given in Figure~\ref{fig:lambda} does not
-  directly fit the above definition of $\lambda$-model because its
-  environment parameter maps variables to $\mathbb{D}$ instead of
-  $\mathcal{P}(\mathbb{D})$. However, this difference can be bridged
-  with the following alternative semantic function.
+The semantic function $E$ given in Figure~\ref{fig:lambda} does not
+directly fit the above definition of $\lambda$-model because its
+environment maps variables to $\mathbb{D}$ instead of
+$\mathcal{P}(\mathbb{D})$. However, this difference can be bridged
+with the following alternative semantic function.
+\begin{align*}
+  E' &: \mathbb{E} \to (\mathbb{X}\pto \mathcal{P}(\mathbb{D}))
+  \to \mathcal{P}(\mathbb{D}) \\
+  E'\,e\,\rho' &=
+  \{ d \mid \exists \rho, d \in E\,e\,\rho
+  \text{ and } \rho \models \rho' \}
+\end{align*}
+where
+\[
+\rho\models\rho' \defeq \forall x \in\mathrm{dom}(\rho),\rho(x)\in \rho'(x)
+\]
+
+\begin{lemma}
+  \label{lem:env-less-model}
+  If $\rho_1 \models \rho'$, $\rho_2 \models \rho'$,
+  $\rho_1 \sqsubseteq \rho$, $\rho_2 \sqsubseteq \rho$,
+  then $\rho \models \rho'$.
+\end{lemma}
+\begin{proof}
+  TODO This is where we probably need the requirements of
+  being closed under union (ideal), dual to filters.
+\end{proof}
+
+
+The triple $\langle \mathcal{P}(\mathbb{D}), \cdot, E')$ is a
+$\beta_v$-model of the $\lambda$-calculus.
+\begin{enumerate}
+\item
   \begin{align*}
-    E' &: \mathbb{E} \to (\mathbb{X}\pto \mathcal{P}(\mathbb{D}))
-         \to \mathcal{P}(\mathbb{D}) \\
-    E'\,e\,\rho' &=
-    \{ d \mid \exists \rho, d \in E\,e\,\rho \text{ and }
-        \forall x \in \mathrm{dom}(\rho), \rho(x) \in \rho'(x) \}
+    E'\,x\,\rho' &=
+    \{ d \mid \exists \rho, d \in E\,x\,\rho, \rho \models \rho'\}\\
+    &= \{ d \mid \exists \rho, \rho(x)=d, d \in \rho'(x) \} \\
+    &= \{ d \mid d \in \rho'(x) \} \\
+    &= \rho'(x)
   \end{align*}
-  The triple $\langle \mathcal{P}(\mathbb{D}), \cdot, E')$ is a
-  $\beta_v$-model of the $\lambda$-calculus.
-  TODO: Prove it!
-\end{example}
+\item
+  \begin{align*}
+    E'\,(e_1\APP e_2)\,\rho' &=
+    \{ d' \mid \exists \rho, d' \in E\,(e_1\APP e_2)\,\rho,
+    \rho \models \rho'\} \\
+    &= \{ d' \mid \exists \rho, d' \in (E\,e_1\,\rho) \cdot (E\,e_2\,\rho),
+    \rho \models \rho' \} \\
+    &= \{ d' \mid \exists  t d d_2 \rho,
+    t \in E\,e_1\,\rho,  d_2 \in E\,e_2\,\rho, 
+    (d,d') \in t, d \sqsubseteq d_2,
+    \rho \models \rho' \} \\
+    &= \{ d' \mid
+    \exists t d d_2,
+    (\exists \rho, t \in E\,e_1\,\rho,\rho\models\rho'),
+    (\exists \rho, d_2 \in E\,e_2\,\rho,\rho \models \rho'),
+    (d,d') \in t, d \sqsubseteq d_2
+    \} \\
+    & \qquad \text{by Proposition~\ref{prop:sub} and Lemma~\ref{lem:env-less-model}}\\
+    &= \{ d' \mid
+    \exists t d d_2, t \in E'\,e_1\,\rho',  d_2 \in E'\,e_2\,\rho',
+    (d,d') \in t, d \sqsubseteq d_2
+    \} \\
+    &= (E'\,e_1\,\rho') \cdot (E'\,e_2\,\rho')
+  \end{align*}
+\item
+\item
+\item 
+\end{enumerate}
+
 
 \begin{lemma}[Replace Variable]
   \label{lem:change-var}
@@ -1354,12 +1419,14 @@ Figure~\ref{fig:lambda-eq}
   \begin{enumerate}
   \item If $z \notin \mathrm{FV}(e)$, then
       $\forall \rho, \SEM{ [x\by z]e } \rho = \SEM{e}\ext{x}{\SEM{z}\rho}{\rho}$.
-  \item If $\forall \rho, \SEM{ [x\by e']e} \rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$, then
-    $\forall \rho, \SEM{ ([x\by e']\LAM{y}e)} \rho = \SEM{(\LAM{y}e)}\ext{x}{\SEM{e'}\rho}{\rho}$.
+  \item If $\forall \rho, \SEM{ [x\by e']e} \rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$, \\
+    then $\forall \rho, \SEM{ [x\by e']\LAM{y}e} \rho = \SEM{\LAM{y}e}\ext{x}{\SEM{e'}\rho}{\rho}$.
   \item $\forall \rho, \SEM{ [x\by e']e} \rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$.
   \end{enumerate}
 \end{lemma}
-\begin{proof}\ 
+\begin{proof}\
+  We prove parts 1 and 2 independently.
+  Then prove part 3 using 1 and 2.
 \begin{enumerate}
 \item Assume $z \notin \mathrm{FV}(e)$. Let $e \equiv e(x)$.
   \begin{align*}
@@ -1372,73 +1439,125 @@ Figure~\ref{fig:lambda-eq}
   \begin{equation}
     \forall \rho, \SEM{ [x\by e']e} \rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho} \label{eq:phi-subst}
   \end{equation}
+  Let $\rho$ be an arbitrary environment.
   We consider two cases, whether $x \in \mathrm{FV}(e')$ or not.
   \begin{itemize}
-  \item Assume $x \in \mathrm{FV}(e')$.
+  \item Assume $x \in \mathrm{FV}(e')$. TODO
   \item Assume $x \notin \mathrm{FV}(e')$.
-    Let $\rho'=\ext{x}{\SEM{e'}\rho}{\rho}$
-    and $d \in D$ be an arbitrary element.
+    Let $d \in D$ be an arbitrary element.
+    \begin{align}
+           \SEM{[x\by e']e}\ext{y}{d}{\ext{x}{\SEM{e'}\rho}{\rho}} \notag
+        &= \SEM{[x\by e']e}\ext{y}{d}{\rho} & \text{cond. \ref{cond:env}}\notag\\
+        &= \SEM{e}\ext{x}{\SEM{e'}\rho}{\ext{y}{d}{\rho}} & \text{by eq. \eqref{eq:phi-subst}} \notag\\
+        &= \SEM{e}\ext{y}{d}{\ext{x}{\SEM{e'}\rho}{\rho}} & x\neq y \label{eq:body}
+    \end{align}
     \begin{align*}
-           \SEM{[x\by e']e}\ext{y}{d}{\rho'}
-        &= \SEM{[x\by e']e}\ext{y}{d}{\rho} & \text{condition \ref{cond:env}}\\
-        &= \SEM{e}\ext{x}{\SEM{e'}\rho}{\ext{y}{d}{\rho}} & \text{by \eqref{eq:phi-subst}} \\
-        &= \SEM{e}\ext{y}{d}{\rho'}
+      \SEM{ [x\by e']\LAM{y}e} \rho
+      &= \SEM{ [x\by e']\LAM{y}e} \ext{x}{\SEM{e'}\rho}{\rho}
+         & \text{condition \ref{cond:env}} \\
+      &= \SEM{ \LAM{y}[x\by e'] e} \ext{x}{\SEM{e'}\rho}{\rho} \\
+      &= \SEM{\LAM{y}e}\ext{x}{\SEM{e'}\rho}{\rho}
+          & \text{cond. \ref{cond:lam} and eq. \eqref{eq:body}}
     \end{align*}
+    
     
   \end{itemize}
   
-\item  By induction on $e$. TODO
+\item The proof is by induction on $e$.
+  \begin{itemize}
+  %% \item[Case $e=n$:]
+  %%   $\SEM{[x\by e']n}\rho = \SEM{n}\rho = \SEM{n}\ext{x}{\SEM{e'}\rho}{\rho}$
+  %%   by condition \ref{cond:env}
+  %% \item[Case $e=e_1 + e_2$:]
+  %%   \begin{align*}
+  %%     \SEM{[x\by e'](e_1 + e_2)}\rho
+  %%     &= \SEM{[x\by e']e_1 + [x\by e']e_2}\rho \\
+  %%     &= ...
+  %%   \end{align*}
+  %% \item[Case $e=e_1 \times e_2$:] (analogous to the above case)
+  \item[Case $e=y$:]
+    If $y \neq x$, then
+    $\SEM{[x\by e']y}\rho = \rho(y) = \SEM{y}\ext{x}{\SEM{e'}\rho}{\rho}$.\\
+    If $y = x$, then
+    $\SEM{[x\by e']y}\rho = \SEM{e'}\rho = \SEM{y}\ext{x}{\SEM{e'}\rho}{\rho}$.
+  \item[Case $e=\LAM{y}e_1$:]
+    By the IH we have
+    \[
+    \forall \rho, \SEM{ [x\by e']e_1} \rho = \SEM{e_1}\ext{x}{\SEM{e'}\rho}{\rho}
+    \]
+    Then by part 2 of this lemma we conclude that
+    \[
+    \forall \rho, \SEM{[x\by e']\LAM{y}e_1}\rho = \SEM{\LAM{y}e_1}\ext{x}{\SEM{e'}\rho}{\rho}
+    \]
+    
+  \item[Case $e=e_1\APP e_2$:]
+    Let $\rho$ be an arbitrary environment.
+    \begin{align*}
+      \SEM{[x\by e'](e_1 \APP e_2)} \rho
+      &= \SEM{[x\by e']e_1 \APP [x\by e']e_2} \rho \\
+      &= \SEM{[x\by e']e_1}\rho \cdot \SEM{[x\by e']e_2} \rho
+         & \text{by cond. \ref{cond:app}}\\
+      &= \SEM{e_1}\ext{x}{\SEM{e'}\rho}{\rho}
+          \cdot \SEM{e_2}\ext{x}{\SEM{e'}\rho}{\rho}
+         & \text{by IH}\\
+      &= \SEM{e_1 \APP e_2}\ext{x}{\SEM{e'}\rho}{\rho}
+         & \text{by cond. \ref{cond:app}}
+    \end{align*}
+    
+    
+  \end{itemize}
+  
 \end{enumerate}
 \end{proof}
 
 \begin{theorem}[Soundess of R-models wrt. $\lambda$ theory]
-  Suppose $\langle D,\cdot,M\rangle$ is an $R$-model of the
+  Suppose $\langle D,\cdot,\SEM{\ }\rangle$ is an $R$-model of the
   $\lambda$-calculus.
   \[
-  \text{if } R \vdash e = e', \text{ then } \forall \rho, M\,e\,\rho = M\,e'\,\rho
+  \text{if } R \vdash e = e', \text{ then } \forall \rho, \SEM{e}\rho = \SEM{e'}\rho
   \]
 \end{theorem}
 \begin{proof}
   The proof is by induction on $R \vdash e = e'$.
   \begin{itemize}
-  \item[Case (refl):] We have $\forall \rho, M\,e\,\rho = M\,e\,\rho$
-    because $M$ is a function.
+  \item[Case (refl):] We have $\forall \rho, \SEM{e}\rho = \SEM{e}\rho$
+    because $\SEM{\ }$ is a function.
     
   \item[Case (sym):]
-    By the IH, we have $\forall \rho, M\,e_1\,\rho = M\,e_2\,\rho$.
-    So it trivially follows that $\forall \rho, M\,e_2\,\rho = M\,e_1\,\rho$.
+    By the IH, we have $\forall \rho, \SEM{e_1}\rho = \SEM{e_2}\rho$.
+    So it trivially follows that $\forall \rho, \SEM{e_2}\rho = \SEM{e_1}\rho$.
     
   \item[Case (trans):]
-    By the IH, we have $\forall \rho, M\,e_1\,\rho = M\,e_2\,\rho$
-    and $\forall \rho, M\,e_2\,\rho = M\,e_3\,\rho$.
-    Thus, we immediately have $\forall \rho, M\,e_1\,\rho = M\,e_3\,\rho$.
+    By the IH, we have $\forall \rho, \SEM{e_1}\rho = \SEM{e_2}\rho$
+    and $\forall \rho, \SEM{e_2}\rho = \SEM{e_3}\rho$.
+    Thus, we immediately have $\forall \rho, \SEM{e_1}\rho = \SEM{e_3}\rho$.
     
   \item[Case (cong):]
     Let $\rho$ be an arbitrary environment.
-    We need to show that $M\,(e_1\APP e_2)\,\rho = M\,(e_3\APP e_4)\,\rho$.
+    We need to show that $\SEM{(e_1\APP e_2)}\rho = \SEM{(e_3\APP e_4)}\rho$.
     \begin{align*}
-      M\,(e_1\APP e_2)\,\rho &= (M\,e_1\,\rho) \cdot (M\,e_2\,\rho) & \text{condition \ref{cond:app}}\\
-        &= (M\,e_3\,\rho) \cdot (M\,e_4\,\rho) & \text{by IH}\\
-        &= M\,(e_3\APP e_4)\,\rho & \text{condition \ref{cond:app}}
+      \SEM{e_1\APP e_2}\rho &= \SEM{e_1}\rho \cdot \SEM{e_2}\rho & \text{condition \ref{cond:app}}\\
+        &= \SEM{e_3}\rho \cdot \SEM{e_4}\rho & \text{by IH}\\
+        &= \SEM{e_3\APP e_4}\rho & \text{condition \ref{cond:app}}
     \end{align*}
     
   \item[Case $\xi$:]
-    We need to show $\forall \rho, M\,(\LAM{x}e)\,\rho = M\,(\LAM{x}e')\,\rho$.
+    We need to show $\forall \rho, \SEM{\LAM{x}e}\rho = \SEM{\LAM{x}e'}\rho$.
     Let $\rho$ be an arbitrary environment.
     By condition \ref{cond:lam} it suffices to show that
-    $M\,e\,[x\by d]\rho = M\,e'\,[x\by d]\rho$,
+    $\SEM{e}\ext{x}{d}{\rho} = \SEM{e'}\ext{x}{d}{\rho}$,
     and that follows from the IH.
 
   \item[Case $R$:]
     Let $\rho$ be an arbitrary environment.
     We need to show that
-    $M\,((\LAM{x}e)\APP e')\,\rho = M\,([x\by e']e)\,\rho$,
-    where $((\LAM{x}e)\APP e')$ is an $R$-redex.
+    $\SEM{(\LAM{x}e)\APP e'}\rho = \SEM{[x\by e']e}\rho$,
+    where $(\LAM{x}e)\APP e'$ is an $R$-redex.
     \begin{align*}
-      M\,((\LAM{x}e)\APP e')\,\rho &=
-      (M\,(\LAM{x}e)\,\rho) \cdot (M\,e'\,\rho) & \text{condition \ref{cond:app}} \\
-      &= M \,e\, [x\by M\,e'\,\rho]\rho & \text{condition \ref{cond:R}} \\
-      &= M\,([x\by e']e)\,\rho & \text{by Lemma~\ref{lem:subst-model}}
+      \SEM{(\LAM{x}e)\APP e'}\rho &=
+      \SEM{\LAM{x}e}\rho \cdot \SEM{e'}\rho & \text{condition \ref{cond:app}} \\
+      &= \SEM{e} \ext{x}{\SEM{e'}\rho}{\rho} & \text{condition \ref{cond:R}} \\
+      &= \SEM{[x\by e']e}\rho & \text{by Lemma~\ref{lem:subst-model}}
     \end{align*}
     
   \end{itemize}
