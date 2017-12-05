@@ -39,6 +39,7 @@
 \newcommand{\pto}[0]{\rightharpoonup}
 \newcommand{\NAT}[0]{\ensuremath{\mathit{Nat}}}
 \newcommand{\COND}[3]{#1\,\texttt{?}\,#2\,\texttt{:}\,#3}
+\newcommand{\ext}[3]{#3(#1{\mapsto}#2)}
 
 \newtheorem{theorem}{Theorem}%[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -1082,7 +1083,7 @@ Semantics
                                     n_2 \in E\,e_2\,\rho \} \\
   E\, x \,\rho &= \{ \rho\,x \} \\
   E\, (\LAM{x}e)\,\rho &= 
-      \{ t \mid \forall (d,d') \in t, d' \in E\,e\,[x\mapsto d]\rho) \} \\
+      \{ t \mid \forall (d,d') \in t, d' \in E\,e\,\ext{x}{ d}{\rho}) \} \\
   E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
 \end{align*}
 \end{minipage}
@@ -1113,7 +1114,7 @@ infinite sets of elements from $\mathbb{D}$.
 The semantics in Figure~\ref{fig:lambda} says the meaning of an
 abstraction $(\LAM{x}e)$ is the set of all tables $t$ such that each
 input-output entry $(d,d')$ makes sense for the $\lambda$. That is,
-$d' \in E\,e\,[x\mapsto d]\rho$. 
+$d' \in E\,e\,\ext{x}{ d}{\rho}$. 
 %% While this is straightforward to
 %% express directly, we make use of an auxilliary function $\uplambda^S$,
 %% also defined in Figure~\ref{fig:lambda}, which is useful in connecting
@@ -1124,7 +1125,7 @@ $d' \in E\,e\,[x\mapsto d]\rho$.
 %% lambda's on the line that gives meaning to abstractions: $\lambda$ is
 %% the syntactic entity in $\mathbb{E}$ and $\uplambda^S$ is the helper
 %% function defined in ~\ref{fig:lambda}.  The third lambda, the
-%% $\uplambda$ in $(\uplambda d. E\,e\,[x\mapsto d]\rho)$, is the
+%% $\uplambda$ in $(\uplambda d. E\,e\,\ext{x}{ d}{\rho})$, is the
 %% notation we use for defining a good-old mathematical function.  (The
 %% author thinks in HOL, so he really has the lambda of
 %% HOL~\cite{Nipkow:2002jl} in mind.)
@@ -1301,11 +1302,11 @@ Figure~\ref{fig:lambda-eq}
   \begin{enumerate}
   \item $\SEM{ x}\rho = \rho(x)$, \label{cond:var}
   \item $\SEM{(e_1\APP e_2)}\rho = \SEM{e_1}\rho \cdot \SEM{e_2}\rho$ \label{cond:app},
-  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $\SEM{(\LAM{x}e)}\rho \cdot \SEM{e'}\rho = \SEM{e}[x\by \SEM{e'}\rho]\rho$ \label{cond:R}, \\
-        alternative: $\SEM{(\LAM{x}e)}\rho \cdot d = \SEM{e}[x\by d]\rho$ \label{cond:lam-app}
+  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $\SEM{(\LAM{x}e)}\rho \cdot \SEM{e'}\rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$\label{cond:R}, \\
+        alternative: $\SEM{(\LAM{x}e)}\rho \cdot d = \SEM{e}\ext{x}{ d}{\rho}$ \label{cond:lam-app}
   \item $\forall x \in \mathrm{FV}(e)$, if  $\rho(x) = \rho'(x)$,
        then $\SEM{e}\rho = \SEM{e}\rho'$. \label{cond:env}
-  \item If $\forall d \in D, \SEM{e}[x\by d]\rho = \SEM{e'}[x\by d]\rho$,
+  \item If $\forall d \in D, \SEM{e}\ext{x}{ d}{\rho} = \SEM{e'}\ext{x}{ d}{\rho}$,
        then $\SEM{\LAM{x} e}\rho = \SEM{\LAM{x} e'}\rho$. \label{cond:lam}
   \end{enumerate}
 \end{definition}
@@ -1328,34 +1329,34 @@ Figure~\ref{fig:lambda-eq}
   TODO: Prove it!
 \end{example}
 
-\begin{lemma}
+\begin{lemma}[Replace Variable]
   \label{lem:change-var}
   Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $R$-model of the
-  $\lambda$-calculus and $y \notin \mathrm{FV}(e(x))$.
+  $\lambda$-calculus and $y \notin \mathrm{FV}(e)$.
   \[
-    \SEM{e(x)} [x\by d]\rho
+    \SEM{e} \ext{x}{ d}{\rho}
     = 
-    \SEM{e(y)} [y\by d]\rho
+    \SEM{[x\by y]e} \ext{y}{ d}{\rho}
   \]
 \end{lemma}
 \begin{proof}
   \begin{align*}
-    \SEM{e(x)} [x\by d]\rho &= \SEM{\LAM{x}e(x)}\rho \cdot d & \text{by condition \ref{cond:lam-app}}\\
-       &= \SEM{\LAM{y}e(y)}\rho \cdot d & \text{$\alpha$ conversion}\\
-       &= \SEM{e(y)} [y\by d]\rho & \text{by condition \ref{cond:lam-app}}
+    \SEM{e} \ext{x}{ d}{\rho} &= \SEM{\LAM{x}e}\rho \cdot d & \text{by condition \ref{cond:lam-app}}\\
+       &= \SEM{\LAM{y}[x\by y]e}\rho \cdot d & \text{$\alpha$ conversion}\\
+       &= \SEM{[x\by y]e} \ext{y}{ d}{\rho} & \text{by condition \ref{cond:lam-app}}
   \end{align*}
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}[Substitution]
 \label{lem:subst-model}
   Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $R$-model of the
   $\lambda$-calculus. 
   \begin{enumerate}
   \item If $z \notin \mathrm{FV}(e)$, then
-      $\SEM{ [x\by z]e } \rho = \SEM{e}[x\by \SEM{z}\rho]\rho$.
-  \item If $\SEM{ [x\by e']e} \rho = \SEM{e}[x\by \SEM{e'}\rho]\rho$, then
-      $\SEM{ ([x\by e']\LAM{y}e)} \rho = \SEM{(\LAM{y}e)}[x\by \SEM{e'}\rho]\rho$.
-  \item $\SEM{ [x\by e']e} \rho = \SEM{e}[x\by \SEM{e'}\rho]\rho$.
+      $\forall \rho, \SEM{ [x\by z]e } \rho = \SEM{e}\ext{x}{\SEM{z}\rho}{\rho}$.
+  \item If $\forall \rho, \SEM{ [x\by e']e} \rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$, then
+    $\forall \rho, \SEM{ ([x\by e']\LAM{y}e)} \rho = \SEM{(\LAM{y}e)}\ext{x}{\SEM{e'}\rho}{\rho}$.
+  \item $\forall \rho, \SEM{ [x\by e']e} \rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$.
   \end{enumerate}
 \end{lemma}
 \begin{proof}\ 
@@ -1366,7 +1367,26 @@ Figure~\ref{fig:lambda-eq}
        &= \SEM{e(x)}[x\by \rho(z)]\rho & \text{by Lemma~\ref{lem:change-var}}\\
        &= \SEM{e(x)}[x\by \SEM{z}\rho]\rho  & \text{by condition \ref{cond:var}}
   \end{align*}
-\item TODO
+\item 
+  To prove this implication, we assume its premise:
+  \begin{equation}
+    \forall \rho, \SEM{ [x\by e']e} \rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho} \label{eq:phi-subst}
+  \end{equation}
+  We consider two cases, whether $x \in \mathrm{FV}(e')$ or not.
+  \begin{itemize}
+  \item Assume $x \in \mathrm{FV}(e')$.
+  \item Assume $x \notin \mathrm{FV}(e')$.
+    Let $\rho'=\ext{x}{\SEM{e'}\rho}{\rho}$
+    and $d \in D$ be an arbitrary element.
+    \begin{align*}
+           \SEM{[x\by e']e}\ext{y}{d}{\rho'}
+        &= \SEM{[x\by e']e}\ext{y}{d}{\rho} & \text{condition \ref{cond:env}}\\
+        &= \SEM{e}\ext{x}{\SEM{e'}\rho}{\ext{y}{d}{\rho}} & \text{by \eqref{eq:phi-subst}} \\
+        &= \SEM{e}\ext{y}{d}{\rho'}
+    \end{align*}
+    
+  \end{itemize}
+  
 \item  By induction on $e$. TODO
 \end{enumerate}
 \end{proof}
