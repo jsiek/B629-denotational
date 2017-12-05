@@ -22,6 +22,7 @@
 %\newcommand{\BR}[1]{\llbracket #1 \rrbracket}
 \newcommand{\defeq}[0]{\overset{\mathrm{def}}{=}}
 \newcommand{\BR}[1]{(#1)}
+\newcommand{\SEM}[1]{\llbracket #1 \rrbracket}
 \newcommand{\LAM}[1]{\lambda #1.\,}
 \newcommand{\APP}[0]{\,}
 \newcommand{\ASSIGN}[2]{#1 \mathrel{:=} #2}
@@ -1282,8 +1283,8 @@ UNDER CONSTRUCTION
                             {\vdash e_1 \APP e_2 = e_3 \APP e_4}
    \quad
   \text{($\xi$)}  \inference{\vdash e = e'}{\vdash \LAM{x}e = \LAM{x}e'} \\[2ex]
-  \text{($\beta$)}  \vdash (\LAM{x}e_1)\APP e_2 = [x:=e_2]e_1 \\[2ex]
-  \text{($\beta_v$)}  \vdash (\LAM{x}e)\APP v = [x:=v]e
+  \text{($\beta$)}  \vdash (\LAM{x}e_1)\APP e_2 = [x\by e_2]e_1 \\[2ex]
+  \text{($\beta_v$)}  \vdash (\LAM{x}e)\APP v = [x\by v]e
 \end{gather*}
 \caption{Equational Theory of the $\lambda$-calculus}
 \label{fig:lambda-eq}
@@ -1294,17 +1295,18 @@ Figure~\ref{fig:lambda-eq}
 
 \begin{definition}[$\lambda$-models]
   An \emph{$R$-model of the $\lambda$-calculus} is a triple $\langle
-  D, \cdot, M\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D
-  \to D$, and $M : \mathbb{E}\to(\mathbb{X}\pto D)\to D$, and the
+  D, \cdot, \SEM{\ }\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D
+  \to D$, and $\SEM{\_} : \mathbb{E}\to(\mathbb{X}\pto D)\to D$, and the
   following conditions hold.
   \begin{enumerate}
-  \item $M\, x\,\rho = \rho(x)$,
-  \item $M\,(e_1\APP e_2)\,\rho = (M\,e_1\,\rho) \cdot (M\,e_2\,\rho)$ \label{cond:app},
-  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $(M\,(\LAM{x}e)\,\rho) \cdot (M\,e'\,\rho) = M\,e\,[x\by M\,e'\,\rho]\rho$ \label{cond:R},
+  \item $\SEM{ x}\rho = \rho(x)$, \label{cond:var}
+  \item $\SEM{(e_1\APP e_2)}\rho = \SEM{e_1}\rho \cdot \SEM{e_2}\rho$ \label{cond:app},
+  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $\SEM{(\LAM{x}e)}\rho \cdot \SEM{e'}\rho = \SEM{e}[x\by \SEM{e'}\rho]\rho$ \label{cond:R}, \\
+        alternative: $\SEM{(\LAM{x}e)}\rho \cdot d = \SEM{e}[x\by d]\rho$ \label{cond:lam-app}
   \item $\forall x \in \mathrm{FV}(e)$, if  $\rho(x) = \rho'(x)$,
-       then $M\,e\,\rho = M\,e\,\rho'$.
-  \item If $\forall d \in D, M\,e\,[x\by d]\rho = M\,e'\,[x\by d]\rho$,
-       then $M\,(\LAM{x} e)\,\rho = M\,(\LAM{x} e')\,\rho$. \label{cond:lam}
+       then $\SEM{e}\rho = \SEM{e}\rho'$. \label{cond:env}
+  \item If $\forall d \in D, \SEM{e}[x\by d]\rho = \SEM{e'}[x\by d]\rho$,
+       then $\SEM{\LAM{x} e}\rho = \SEM{\LAM{x} e'}\rho$. \label{cond:lam}
   \end{enumerate}
 \end{definition}
 
@@ -1326,7 +1328,50 @@ Figure~\ref{fig:lambda-eq}
   TODO: Prove it!
 \end{example}
 
-\begin{theorem}
+\begin{lemma}
+  \label{lem:change-var}
+  Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $R$-model of the
+  $\lambda$-calculus and $y \notin \mathrm{FV}(e(x))$.
+  \[
+    \SEM{e(x)} [x\by d]\rho
+    = 
+    \SEM{e(y)} [y\by d]\rho
+  \]
+\end{lemma}
+\begin{proof}
+  \begin{align*}
+    \SEM{e(x)} [x\by d]\rho &= \SEM{\LAM{x}e(x)}\rho \cdot d & \text{by condition \ref{cond:lam-app}}\\
+       &= \SEM{\LAM{y}e(y)}\rho \cdot d & \text{$\alpha$ conversion}\\
+       &= \SEM{e(y)} [y\by d]\rho & \text{by condition \ref{cond:lam-app}}
+  \end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:subst-model}
+  Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $R$-model of the
+  $\lambda$-calculus. 
+  \begin{enumerate}
+  \item If $z \notin \mathrm{FV}(e)$, then
+      $\SEM{ [x\by z]e } \rho = \SEM{e}[x\by \SEM{z}\rho]\rho$.
+  \item If $\SEM{ [x\by e']e} \rho = \SEM{e}[x\by \SEM{e'}\rho]\rho$, then
+      $\SEM{ ([x\by e']\LAM{y}e)} \rho = \SEM{(\LAM{y}e)}[x\by \SEM{e'}\rho]\rho$.
+  \item $\SEM{ [x\by e']e} \rho = \SEM{e}[x\by \SEM{e'}\rho]\rho$.
+  \end{enumerate}
+\end{lemma}
+\begin{proof}\ 
+\begin{enumerate}
+\item Assume $z \notin \mathrm{FV}(e)$. Let $e \equiv e(x)$.
+  \begin{align*}
+    \SEM{ e(z) } \rho &= \SEM{e(z)}[z\by \rho(z)]\rho & \text{by condition \ref{cond:env}}\\
+       &= \SEM{e(x)}[x\by \rho(z)]\rho & \text{by Lemma~\ref{lem:change-var}}\\
+       &= \SEM{e(x)}[x\by \SEM{z}\rho]\rho  & \text{by condition \ref{cond:var}}
+  \end{align*}
+\item TODO
+\item  By induction on $e$. TODO
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Soundess of R-models wrt. $\lambda$ theory]
   Suppose $\langle D,\cdot,M\rangle$ is an $R$-model of the
   $\lambda$-calculus.
   \[
@@ -1373,7 +1418,7 @@ Figure~\ref{fig:lambda-eq}
       M\,((\LAM{x}e)\APP e')\,\rho &=
       (M\,(\LAM{x}e)\,\rho) \cdot (M\,e'\,\rho) & \text{condition \ref{cond:app}} \\
       &= M \,e\, [x\by M\,e'\,\rho]\rho & \text{condition \ref{cond:R}} \\
-      &= M\,([x\by e']e)\,\rho & \text{by ???}
+      &= M\,([x\by e']e)\,\rho & \text{by Lemma~\ref{lem:subst-model}}
     \end{align*}
     
   \end{itemize}
