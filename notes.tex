@@ -1344,8 +1344,7 @@ where
 \begin{lemma}
   \label{lem:env-less-model}
   If $\rho_1 \models \rho'$, $\rho_2 \models \rho'$,
-  $\rho_1 \sqsubseteq \rho$, $\rho_2 \sqsubseteq \rho$,
-  then $\rho \models \rho'$.
+  then $\rho_1 \sqcup \rho_2 \models \rho'$.
 \end{lemma}
 \begin{proof}
   TODO This is where we probably need the requirements of
@@ -1389,8 +1388,21 @@ $\beta_v$-model of the $\lambda$-calculus.
     &= (E'\,e_1\,\rho') \cdot (E'\,e_2\,\rho')
   \end{align*}
 \item
-\item
-\item 
+  \begin{align*}
+    E'\,(\LAM{x}e)\,\rho' \cdot D^{*} &=
+    \{ t \mid \exists \rho, \rho\models\rho',
+          \forall (d,d)\in t, d' \in E\,e\,\ext{x}{d}{\rho} \} \cdot D^{*} \\
+   &= \{ d_3 \mid \exists d_2 d d' \rho,
+                  \rho\models\rho',
+                   d' \in E\,e\,\ext{x}{d}{\rho},
+                  d_2 \in D^{*}, d \sqsubseteq d_2, d_3 \sqsubseteq d' \} \\
+   &= \{ d \mid \exists \rho, d \in E\,e\,\rho, \rho \models \ext{x}{D^{*}}{\rho'}\} \\
+   & \qquad\text{because } \ext{x}{d}{\rho}\models\ext{x}{D^{*}}{\rho'},
+      d_3 \in E\,e\,\ext{x}{d}{\rho} \\
+   &= E'\,e\,\ext{x}{D^{*}}{\rho'}
+  \end{align*}
+\item TODO
+\item TODO
 \end{enumerate}
 
 
