@@ -1102,9 +1102,10 @@ approximations of the function.
 The set $\mathbb{D}$ consists of just the natural numbers and finite
 graphs (association tables) of functions.  $\mathbb{D}$ is defined
 inductively, or equivalently, it is the least solution of
-\[
+\begin{equation}
    \mathbb{D} = \mathbb{N} + \mathcal{P}_f(\mathbb{D} \times \mathbb{D})
-\]
+  \label{eq:D}
+\end{equation}
 Let $t$ range over the finite graphs, that is, $t \in
 \mathcal{P}_f(\mathbb{D} \times \mathbb{D})$, $D$ range over finite
 sets of elements from $\mathbb{D}$, and $D^{*}$ range over possibly
@@ -1131,9 +1132,11 @@ $d' \in E\,e\,\ext{x}{ d}{\rho}$.
 
 The semantics of application is defined in terms of the auxilliary
 application operator $D^{*}_1 \cdot D^{*}_2$, which applies all the
-tables in $D^{*}_1$ to all the elements (arguments) in $D^{*}_2$. A
-naive definition of the application operator is just table lookup in a
-non-deterministic setting.
+tables in $D^{*}_1$ to all the elements (arguments) in $D^{*}_2$,
+collecting all of the results into a resulting set.  A naive
+definition of the application operator is given below. The idea is to
+collect up all the results $d'$ that come from matching an argument $d
+\in D^{*}_2$ with an entry $(d,d')$ from a table $t \in D^{*}_1$.
 \begin{align*}
   D^{*}_1 \cdot D^{*}_2 &= 
   \{ d' \mid
@@ -1142,19 +1145,16 @@ non-deterministic setting.
   \}
   & \text{(naive)}
 \end{align*}
-The idea is to collect up all the results $d'$ that come from matching
-up an argument $d \in D^{*}_2$ with an entry $(d,d')$ from a table $t \in
-D^{*}_1$. The problem with this naive version is that it prohibits self
-application, which is an important part of the $\lambda$-calculus.
-For example, it is necessary to define the $Y$ combinator and thereby
-express general recursion. The problem is that in self application,
-one would need a table to be inside itself, that is, $(t,d') \in t$.
-But that can't happen because the domain $\mathbb{D}$ is inductively
-defined. The solution is to allow the argument to be a larger table
-than the input $d$ of the table entry. We define the approximation
-ordering $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for
-argument $d_2 \in D^{*}_2$, we require $d \sqsubseteq d_2$ instead of $d =
-d_2$.
+The problem with this version is that it prohibits self application,
+which is an important part of the $\lambda$-calculus.  For example, it
+is necessary to define the $Y$ combinator and thereby express general
+recursion. The problem is that in self application, one would need a
+table to be inside itself, that is, $(t,d') \in t$.  But that can't
+happen because the domain $\mathbb{D}$ is inductively defined. The
+solution is to allow the argument to be a larger table than the input
+$d$ of the table entry. We define the approximation ordering
+$\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for argument $d_2
+\in D^{*}_2$, we require $d \sqsubseteq d_2$ instead of $d = d_2$.
 
 Say something about $d'$ and $d_3$ to motivate the following.
 
@@ -1252,12 +1252,6 @@ If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 
 UNDER CONSTRUCTION
 
-
-
-
-
-
-
 %% \begin{theorem}
 %%   $\mathcal{P}(\mathbb{D})$ is a reflexive cpo by
 %%   choosing $F=\uplambda x.\uplambda y. x \cdot y$ and
@@ -1283,6 +1277,47 @@ UNDER CONSTRUCTION
 %% \end{align*}
 
 %% \end{proof}
+
+\begin{theorem}[Completeness]
+If $I\,e\,\emptyset = n$, then $E\,e\,\emptyset = E\,n\,\emptyset$.
+\end{theorem}
+
+Toward proving completeness, we introduce a memoizing interpreter,
+that is, an interpreter that records the input and output of every
+function call in a table.
+
+
+\[
+\begin{array}{lrl}
+ \text{fun. id's} & f \in \mathbb{N} \\
+ \text{values} & v \in \mathbb{V} ::= & n \mid f \\
+ \text{env.} & \varrho \in \mathbb{X} \pto \mathbb{V} \\
+             & t ::= & \{ (v_1,v'_1), \ldots, (v_n,v'_n) \}\\
+ \text{memo} & m \in \mathbb{M} ::= & \langle \LAM{x}e, \varrho, t \rangle\\
+ \text{memo table} & T \in & \mathbb{N} \pto \mathbb{M}
+\end{array}
+\]
+
+The following produces cyclic tables. How do we convert
+these into non-cyclic tables? Or can we generate non-cyclic
+tables to begin with? Or put another way, how to we record
+the callee-view of a memo. table? -Jeremy
+\begin{align*}
+  I'\,n\,\varrho\,T &= (n,T) \\
+  I'\,(e_1 + e_2)\,\varrho\,T &= (n_1 + n_2,T_2) \\
+      & \text{if } I'\,e_1\,\varrho\,T = (n_1,T_1), I'\,e_2\,\varrho\,T_1 = (n_2,T_2) \\
+  I'\,(e_1 \times e_2)\,\varrho\,T &= (n_1 n_2,T_2) \\
+      & \text{if } I'\,e_1\,\varrho\,T = (n_1,T_1), I'\,e_2\,\varrho\,T_1 = (n_2,T_2) \\
+  I'\,x\,\varrho\,T &= (\varrho(x),T) \\
+  I'\,(\LAM{x}e)\,\varrho\,T &= (|T|, 
+     \ext{|T|}{\langle \LAM{x}e, \varrho, \emptyset \rangle}{T} \\
+  I'\,(e_1\,e_2)\,\varrho\,T &= (v',\ext{f}{\langle \LAM{x}e,\varrho',\{(v,v')\}\cup t \rangle}{T_3}) \\
+  & \text{if } I'\,e_1\,\varrho\,T = (f,T_1),
+      I'\,e_2\,\varrho\,T_1 = (v,T_2), \\
+    &  T(f) = \langle \LAM{x}e,\varrho',t \rangle,
+      I'\,e\,[x\mapsto v]\varrho'\,T_2 = (v',T_3)
+\end{align*}
+
 
 \subsection{Equational Theory and Models}
 
