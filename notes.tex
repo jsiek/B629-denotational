@@ -1424,7 +1424,7 @@ $\beta_v$-model of the $\lambda$-calculus.
   \end{align*}
 \end{proof}
 
-\begin{lemma}[Substitution]
+\begin{lemma}[Substitution] (5.3.3 of \citet{barendregt84:_lambda_calculus} )
 \label{lem:subst-model}
   Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $R$-model of the
   $\lambda$-calculus. 
@@ -1437,8 +1437,8 @@ $\beta_v$-model of the $\lambda$-calculus.
   \end{enumerate}
 \end{lemma}
 \begin{proof}\
-  We prove parts 1 and 2 independently.
-  Then prove part 3 using 1 and 2.
+  We prove part 1, then part 2 using part 1, and finally part 3 using
+  part 2 of this lemma.
 \begin{enumerate}
 \item Assume $z \notin \mathrm{FV}(e)$. Let $e \equiv e(x)$.
   \begin{align*}
@@ -1454,7 +1454,14 @@ $\beta_v$-model of the $\lambda$-calculus.
   Let $\rho$ be an arbitrary environment.
   We consider two cases, whether $x \in \mathrm{FV}(e')$ or not.
   \begin{itemize}
-  \item Assume $x \in \mathrm{FV}(e')$. TODO
+  \item Assume $x \in \mathrm{FV}(e')$. Let $z$ be a fresh variable.
+    \begin{align*}
+      \SEM{[x\by e']\LAM{y}e}\rho &= \SEM{ [z\by e'][x\by z]\LAM{y}e }\rho\\
+             &= \SEM{[x\by z]\LAM{y}e} \ext{z}{\SEM{e'}\rho}{\rho} & \text{??} \\
+             &= \SEM{\LAM{y}e}\ext{x}{\SEM{e'}\rho}{\ext{z}{\SEM{e'}\rho}{\rho}}& \text{by part 1}\\
+             &= \SEM{\LAM{y}e}\ext{x}{\SEM{e'}\rho}{\rho}
+    \end{align*}
+
   \item Assume $x \notin \mathrm{FV}(e')$.
     Let $d \in D$ be an arbitrary element.
     \begin{align}
