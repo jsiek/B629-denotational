@@ -1170,7 +1170,7 @@ X \vdash \rho \sqsubseteq \rho' \defeq
   then $d' \in E\,e\,\rho'$.
 \end{proposition}
 
-\subsection{Implementation of the $\lambda$-calculus}
+\subsection{Interpreter}
 
 We turn to an implementation of the $\lambda$-calculus, the
 interpreter in Figure~\ref{fig:interp-lambda}. The interpreter is
@@ -1320,7 +1320,11 @@ the callee-view of a memo. table? -Jeremy
 \end{align*}
 
 
-\subsection{Completeness wrt. Reduction Semantics}
+\subsection{Reduction Semantics and Completeness}
+
+
+[TODO: define reduction semantics]
+
 
 \begin{lemma}[Invariance under Substitution]
 \[
@@ -1338,8 +1342,35 @@ E\,e'\,\rho$.
 E\,n\,\emptyset$.
 \end{theorem}
 
+\begin{definition}[Contexts]
+\[
+  C ::= \Box \mid C + e \mid e + C \mid C \times e \mid e \times C \mid
+       \LAM{x} C \mid C \APP e \mid e \APP C
+\]
+\end{definition}
+
+\begin{proposition}[Congruence]\ \\
+  If $\forall \rho, E\,e\,\rho = E\,e'\,\rho$, 
+  then $\forall \rho, E\,C[e]\,\rho = E\,C[e']\,\rho$
+  for any $C$.
+\end{proposition}
+
+We write $e\Downarrow$ to mean that $e$ terminates, i.e., it reaches a
+value or gets stuck after some number of reduction steps.
+
+\begin{theorem}[Sound wrt. contextual equivalence]\ \\
+  If $\forall \rho, E\,e\,rho = E\,e'\,\rho$, 
+  then $C[e]\Downarrow$ iff $C[e']\Downarrow$ for any closing
+  context $C$.
+\end{theorem}
+
 
 \subsection{Equational Theory and Models}
+
+Figure~\ref{fig:lambda-eq} defines the equational theory of two
+variants of the $\lambda$-calculus, the full $\lambda$-calculus with
+the rule $\beta$, and the call-by-value calculus with the rule
+$\beta_v.$
 
 \begin{figure}
 \begin{gather*}
@@ -1359,10 +1390,6 @@ E\,n\,\emptyset$.
 \label{fig:lambda-eq}
 \end{figure}
 
-Figure~\ref{fig:lambda-eq} defines the equational theory of two
-variants of the $\lambda$-calculus, the full $\lambda$-calculus with
-the rule $\beta$, and the call-by-value calculus with the rule
-$\beta_v.$
 
 \paragraph{Direct Proof}
 
@@ -1701,15 +1728,18 @@ of a program.
 There are a large number of different but related intersection type
 systems. \citet{Alessi:2006aa} give a survey of them and prove general
 results that relate them to equational theories of
-$\lambda$-calculi. Here we focus on just one of them, the
-$\mathcal{EHR}$ system for the call-by-value
-$\lambda$-calculus~\citet{Egidi:1992aa}. Figure~\ref{fig:intersection-types}
-defines types and the subtyping and type equivalence rules.  The
-intuition behind the typing rules is that we can think of types as
-sets of values, subtyping acts like set inclusion ($\subseteq$), and
-intersection is just set intersection. Then, for example, the rule
-(incl-L) corresponds to an obviously true statement about sets, that
-$A \cap B \subseteq A$.
+$\lambda$-calculi. Here we focus on just one of them, a variant of the
+$\mathcal{EHR}$ system for the call-by-value $\lambda$-calculus
+of~\citet{Egidi:1992aa}. Figure~\ref{fig:intersection-types} defines
+types and the subtyping and type equivalence rules.  With respect to
+\citet{Egidi:1992aa}, here we have added a singleton type $n$ for
+natural numbers. 
+
+The intuition behind the typing rules for intersection types is that
+if we think of types as sets of values, subtyping acts like set
+inclusion ($\subseteq$), and intersection is like set
+intersection. So, for example, the rule (incl-L) corresponds to an
+obviously true statement about sets, that $A \cap B \subseteq A$.
 
 The type $\nu$ characterizes all functions, so the ($\nu$) subtyping
 rule says that any function type is a subtype of $\nu$. The rule
@@ -1723,7 +1753,7 @@ for function types.
 \begin{figure}
 \[
 \begin{array}{lrl}
-  \text{types} & A,B,C \in \mathbb{T} ::= & \NAT \mid \nu \mid A \to B \mid A \cap B
+  \text{types} & A,B,C \in \mathbb{T} ::= & n \mid \nu \mid A \to B \mid A \cap B
 \end{array}
 \]
 \[
@@ -1753,12 +1783,16 @@ the $\lambda$ is ill typed!  The subsumpton rule (sub), as usual,
 enables implicit up-casts with respect to subtyping.  The rules for
 variables (var), $\lambda$ abstraction ($\to$-intro), and application
 ($\to$-elim), are the same as in the simply-typed $\lambda$-calculus.
+The (nat) rule is typical of singleton types.
 
 \begin{figure}
 \begin{gather*}
 \text{(var)}
 \inference{x:A \in \Gamma}
           {\Gamma \vdash x : A}
+\qquad
+\text{(nat)}
+\inference{}{\Gamma \vdash n : n}
 \qquad
 \text{($\nu$-intro)}
 \inference{}
