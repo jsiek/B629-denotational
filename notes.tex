@@ -991,10 +991,10 @@ Reading: & \citet{Siek:2017ab}
 We now turn to the prototypical functional language, the
 $\lambda$-calculus. The main feature of this language is a function,
 created by lambda abstractions $\LAM{x}e$. The application expression
-$(e_1\,e_2)$ calls the function produced by $e_1$ with the argument
+$(e_1\,e_2)$ applies the function produced by $e_1$ to the argument
 produced by $e_2$. We study here the call-by-value (CBV) version of
-the $\lambda$-calculus.  As a secondary feature, we include
-arithmetic on natural numbers.
+the $\lambda$-calculus.  As a secondary feature, we include arithmetic
+on natural numbers.
 \[
 \begin{array}{lrl}
               & n \in \mathbb{N} \\
@@ -1250,7 +1250,8 @@ If $v \in \mathcal{G}(d)$ and $d' \sqsubseteq d$, then $v \in \mathcal{G}(d')$.
 If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 \end{theorem}
 
-UNDER CONSTRUCTION
+
+{\color{red}[The rest of this subsection is under construction! -Jeremy]}
 
 %% \begin{theorem}
 %%   $\mathcal{P}(\mathbb{D})$ is a reflexive cpo by
@@ -1278,7 +1279,7 @@ UNDER CONSTRUCTION
 
 %% \end{proof}
 
-\begin{theorem}[Completeness]
+\begin{theorem}[Completeness wrt. Interpreter]
 If $I\,e\,\emptyset = n$, then $E\,e\,\emptyset = E\,n\,\emptyset$.
 \end{theorem}
 
@@ -1319,6 +1320,25 @@ the callee-view of a memo. table? -Jeremy
 \end{align*}
 
 
+\subsection{Completeness wrt. Reduction Semantics}
+
+\begin{lemma}[Invariance under Substitution]
+\[
+  E\,[x\by v]e\,\rho = \bigcup_{d' \in E\,v\,\emptyset} E\,e\,\ext{x}{d'}{\rho}
+\]
+\end{lemma}
+
+\begin{proposition}[Invariance under reduction]\ \\
+\noindent If $e \longrightarrow e'$, then $\forall \rho, E\,e\,\rho =
+E\,e'\,\rho$.
+\end{proposition}
+
+\begin{theorem}[Completeness wrt. reduction]\ \\
+\noindent If $e \longrightarrow^{*} n$, then $E\,e\,\emptyset =
+E\,n\,\emptyset$.
+\end{theorem}
+
+
 \subsection{Equational Theory and Models}
 
 \begin{figure}
@@ -1339,8 +1359,22 @@ the callee-view of a memo. table? -Jeremy
 \label{fig:lambda-eq}
 \end{figure}
 
-Figure~\ref{fig:lambda-eq}
+Figure~\ref{fig:lambda-eq} defines the equational theory of two
+variants of the $\lambda$-calculus, the full $\lambda$-calculus with
+the rule $\beta$, and the call-by-value calculus with the rule
+$\beta_v.$
 
+\paragraph{Direct Proof}
+
+[TODO: direct proofs that $E$ satisfies the equational theory based on
+  prior theorems about reduction preserving meaning, congruence,
+  etc..]
+
+\paragraph{Proof via $\lambda$-model}
+
+The following notion of $\lambda$-model is used in the literature that
+captures a set of conditions that are sufficient for a model to
+satisfy the equational theory of the $\lambda$-calculus.
 
 \begin{definition}[$\lambda$-models]
   An \emph{$R$-model of the $\lambda$-calculus} is a triple $\langle
@@ -1365,8 +1399,6 @@ environment maps variables to $\mathbb{D}$ instead of
 $\mathcal{P}(\mathbb{D})$. However, this difference can be bridged
 with the following alternative semantic function.
 \begin{align*}
-  E' &: \mathbb{E} \to (\mathbb{X}\pto \mathcal{P}(\mathbb{D}))
-  \to \mathcal{P}(\mathbb{D}) \\
   E'\,e\,\rho' &=
   \{ d \mid \exists \rho, d \in E\,e\,\rho
   \text{ and } \rho \models \rho' \}
@@ -1375,20 +1407,24 @@ where
 \[
 \rho\models\rho' \defeq \forall x \in\mathrm{dom}(\rho),\rho(x)\in \rho'(x)
 \]
+Actually, for the proof to go through, we can't let environments map
+variables to arbitrary sets, many of which couldn't possibly be the
+denotation of an expression. Such sets are missing two important
+properties of actual denotations; they are 1) downward closed with
+respect to $\sqsubseteq$, and 2) closed under $\sqcup$. A set with
+these closure conditions is called an \emph{ideal}. We write
+$\mathcal{I}(\mathbb{D})$ for the ideals over $\mathbb{D}$.  So $E'$
+has the following type.
+\[
+  E' : \mathbb{E} \to (\mathbb{X}\pto \mathcal{I}(\mathbb{D}))
+  \to \mathcal{I}(\mathbb{D}) 
+\]
 
 \begin{lemma}
-  \label{lem:env-less-model}
-  If $\rho_1 \models \rho'$, $\rho_2 \models \rho'$,
-  then $\rho_1 \sqcup \rho_2 \models \rho'$.
+$\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
+  the $\lambda$-calculus.
 \end{lemma}
-\begin{proof}
-  TODO This is where we probably need the requirements of
-  being closed under union (ideal), dual to filters.
-\end{proof}
-
-
-The triple $\langle \mathcal{P}(\mathbb{D}), \cdot, E')$ is a
-$\beta_v$-model of the $\lambda$-calculus.
+\begin{proof}\ 
 \begin{enumerate}
 \item
   \begin{align*}
@@ -1439,7 +1475,17 @@ $\beta_v$-model of the $\lambda$-calculus.
 \item TODO
 \item TODO
 \end{enumerate}
+\end{proof}
 
+\begin{lemma}
+  \label{lem:env-less-model}
+  If $\rho_1 \models \rho'$, $\rho_2 \models \rho'$,
+  then $\rho_1 \sqcup \rho_2 \models \rho'$.
+\end{lemma}
+\begin{proof}
+  TODO This is where we probably need the requirements of
+  being closed under union (ideal), dual to filters.
+\end{proof}
 
 \begin{lemma}[Replace Variable]
   \label{lem:change-var}
@@ -1564,13 +1610,13 @@ $\beta_v$-model of the $\lambda$-calculus.
 \end{enumerate}
 \end{proof}
 
-\begin{theorem}[Soundess of R-models wrt. $\lambda$ theory]
+\begin{lemma}[Soundess of R-models wrt. $\lambda$ theory]
   Suppose $\langle D,\cdot,\SEM{\ }\rangle$ is an $R$-model of the
   $\lambda$-calculus.
   \[
   \text{if } R \vdash e = e', \text{ then } \forall \rho, \SEM{e}\rho = \SEM{e'}\rho
   \]
-\end{theorem}
+\end{lemma}
 \begin{proof}
   The proof is by induction on $R \vdash e = e'$.
   \begin{itemize}
@@ -1617,6 +1663,17 @@ $\beta_v$-model of the $\lambda$-calculus.
   \end{itemize}
 \end{proof}
 
+
+\begin{theorem}
+$\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a model of the CBV
+  $\lambda$-calculus. That is, 
+  \[
+  \text{if } \beta_v \vdash e = e', 
+  \text{ then } \forall \rho, E'\,e\,\rho = E'\,e'\,\rho
+  \]
+\end{theorem}
+
+
 Resources:
   \citet{barendregt84:_lambda_calculus} (Section 2.1 for
   equational theory and Section 5.3 for (syntactical) $\lambda$-models).
@@ -1630,22 +1687,38 @@ Resources:
 
 \newcommand{\UP}[1]{\mathop{\uparrow}\! #1}
 
-UNDER CONSTRUCTION
-
 \marginnote{
 \begin{tabular}{ll}
 Reading: & \citet{Alessi:2006aa}
 \end{tabular}
 }
 
+The addition of intersection types to a type system dramatically
+increases its precision. In fact, intersection types are fully
+precise; an intersection type system specifies the dynamic semantics
+of a program.
+%
+There are a large number of different but related intersection type
+systems. \citet{Alessi:2006aa} give a survey of them and prove general
+results that relate them to equational theories of
+$\lambda$-calculi. Here we focus on just one of them, the
+$\mathcal{EHR}$ system for the call-by-value
+$\lambda$-calculus~\citet{Egidi:1992aa}. Figure~\ref{fig:intersection-types}
+defines types and the subtyping and type equivalence rules.  The
+intuition behind the typing rules is that we can think of types as
+sets of values, subtyping acts like set inclusion ($\subseteq$), and
+intersection is just set intersection. Then, for example, the rule
+(incl-L) corresponds to an obviously true statement about sets, that
+$A \cap B \subseteq A$.
 
-Our type constants are $\{\NAT,\nu\}$, so our types correspond to
-$\mathbb{T}(\{\NAT,\nu\})$ of \citet{Alessi:2006aa} and the types of
-\citet{Egidi:1992aa}.
-
-Figure~\ref{fig:intersection-types} also defines the subtyping and
-type equivalence rules.
-
+The type $\nu$ characterizes all functions, so the ($\nu$) subtyping
+rule says that any function type is a subtype of $\nu$. The rule
+($\to{-}\cap$) captures the intuition that if you call a function of
+intersection type $(A \to B) \cap (A \to C)$ with an argument of type
+$A$, we can use $A \to B$ to deduce that the result is in $B$ and use
+$A \to C$ to deduce that the result is also in $C$. Thus, the result
+must be in $B \cap C$. The ($\eta$) subtyping rule is the standard one
+for function types.
 
 \begin{figure}
 \[
@@ -1660,7 +1733,7 @@ type equivalence rules.
   \text{(mon)} & \inference{A <: A' & B <: B'}{A \cap B <: A' \cap B'} &
   \text{(trans)} & \inference{A <: B & B <: C}{A <: C} \\[2ex]
   \text{($\nu$)} & A \to B <: \nu \\[1ex]
-  \text{($\to-\cap$)} & (A \to B) \cap (A \to C) <: A \to (B \cap C) &
+  \text{($\to{-}\cap$)} & (A \to B) \cap (A \to C) <: A \to (B \cap C) &
   \text{($\eta$)} & \inference{A' <: A & B <: B'}
        {A \to B <: A' \to B'} \\[1ex]
   & A \sim B \defeq A <: B \text{ and } B <: A
@@ -1669,6 +1742,55 @@ type equivalence rules.
 \caption{Types, subtyping, and equivalence}
 \label{fig:intersection-types}
 \end{figure}
+
+
+Figure~\ref{fig:intersect-type-system} defines the intersection type
+system.  It includes the introduction rule for intersection,
+($\cap$-intro), which assigns expression $e$ the type $A \cap B$ if
+$e$ can be typed with both $A$ and $B$.  The introduction rule for
+$\nu$ says that every $\lambda$ has type $\nu$, even if the body of
+the $\lambda$ is ill typed!  The subsumpton rule (sub), as usual,
+enables implicit up-casts with respect to subtyping.  The rules for
+variables (var), $\lambda$ abstraction ($\to$-intro), and application
+($\to$-elim), are the same as in the simply-typed $\lambda$-calculus.
+
+\begin{figure}
+\begin{gather*}
+\text{(var)}
+\inference{x:A \in \Gamma}
+          {\Gamma \vdash x : A}
+\qquad
+\text{($\nu$-intro)}
+\inference{}
+          {\Gamma \vdash \LAM{x} e : \nu}
+\\[2ex]
+\text{($\to$-intro)}
+\inference{\Gamma,x:A \vdash e : B}
+          {\Gamma \vdash \LAM{x} e : A \to B}
+\qquad
+\text{($\to$-elim)}
+\inference{\Gamma \vdash e_1 : A \to B & \Gamma \vdash e_2 : A}
+          {\Gamma \vdash e_1 \APP e_2 : B}
+\\[2ex]
+\text{($\cap$-intro)}
+\inference{\Gamma \vdash e : A & \Gamma \vdash e : B}
+          {\Gamma \vdash e : A \cap B}
+\qquad
+\text{(sub)}
+\inference{\Gamma \vdash e : A & A <: B}
+          {\Gamma \vdash e : B}
+\end{gather*}
+
+\caption{An Intersection Type System}
+\label{fig:intersect-type-system}
+\end{figure}
+
+
+
+
+
+
+
 
 \begin{definition}[Filter]
   A subset $S$ of types $\mathbb{T}$ is a \emph{filter} if it is
@@ -1691,32 +1813,6 @@ type equivalence rules.
   \end{gather*}
 \end{definition}
 
-\begin{figure}
-\begin{gather*}
-\inference{x:A \in \Gamma}
-          {\Gamma \vdash x : A}
-\qquad
-\inference{}
-          {\Gamma \vdash \LAM{x} e : \nu}
-\\[2ex]
-\inference{\Gamma,x:A \vdash e : B}
-          {\Gamma \vdash \LAM{x} e : A \to B}
-\qquad
-\inference{\Gamma \vdash e_1 : A \to B & \Gamma \vdash e_2 : A}
-          {\Gamma \vdash e_1 \APP e_2 : B}
-\\[2ex]
-\inference{\Gamma \vdash e : A & \Gamma \vdash e : B}
-          {\Gamma \vdash e : A \cap B}
-\qquad
-\inference{\Gamma \vdash e : A & A <: B}
-          {\Gamma \vdash e : B}
-\end{gather*}
-
-\caption{Intersection Type System}
-\label{fig:intersect-type-system}
-\end{figure}
-
-Figure~\ref{fig:intersect-type-system}
 
 
 \begin{definition}
