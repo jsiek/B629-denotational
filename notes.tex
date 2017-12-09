@@ -1320,7 +1320,7 @@ the callee-view of a memo. table? -Jeremy
 \end{align*}
 
 
-\subsection{Reduction Semantics and Completeness}
+\subsection{Reduction Semantics}
 
 
 [TODO: define reduction semantics]
@@ -1359,7 +1359,7 @@ We write $e\Downarrow$ to mean that $e$ terminates, i.e., it reaches a
 value or gets stuck after some number of reduction steps.
 
 \begin{theorem}[Sound wrt. contextual equivalence]\ \\
-  If $\forall \rho, E\,e\,rho = E\,e'\,\rho$, 
+  If $\forall \rho, E\,e\,\rho = E\,e'\,\rho$, 
   then $C[e]\Downarrow$ iff $C[e']\Downarrow$ for any closing
   context $C$.
 \end{theorem}
@@ -1394,8 +1394,7 @@ $\beta_v.$
 \paragraph{Direct Proof}
 
 [TODO: direct proofs that $E$ satisfies the equational theory based on
-  prior theorems about reduction preserving meaning, congruence,
-  etc..]
+  prior theorems about invariance under reduction and congruence.]
 
 \paragraph{Proof via $\lambda$-model}
 
@@ -1424,7 +1423,10 @@ The semantic function $E$ given in Figure~\ref{fig:lambda} does not
 directly fit the above definition of $\lambda$-model because its
 environment maps variables to $\mathbb{D}$ instead of
 $\mathcal{P}(\mathbb{D})$. However, this difference can be bridged
-with the following alternative semantic function.
+with the following alternative semantic function, based on an
+analogous construction for filter models~\citep{Alessi:2006aa}, which
+we discuss in Section~\ref{sec:filter-models}.
+
 \begin{align*}
   E'\,e\,\rho' &=
   \{ d \mid \exists \rho, d \in E\,e\,\rho
@@ -1453,7 +1455,7 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
 \end{lemma}
 \begin{proof}\ 
 \begin{enumerate}
-\item
+\item We need to show that $E'\,x\,\rho' = \rho'(x)$.
   \begin{align*}
     E'\,x\,\rho' &=
     \{ d \mid \exists \rho, d \in E\,x\,\rho, \rho \models \rho'\}\\
@@ -1461,7 +1463,8 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
     &= \{ d \mid d \in \rho'(x) \} \\
     &= \rho'(x)
   \end{align*}
-\item
+\item We need to show that
+      $E'\,(e_1\APP e_2)\,\rho' = (E'\,e_1\,\rho') \cdot (E'\,e_2\,\rho')$.
   \begin{align*}
     E'\,(e_1\APP e_2)\,\rho' &=
     \{ d' \mid \exists \rho, d' \in E\,(e_1\APP e_2)\,\rho,
@@ -1820,11 +1823,20 @@ The (nat) rule is typical of singleton types.
 \end{figure}
 
 
+\begin{proposition}[Subject Reduction and Expansion]\ 
+  \begin{itemize}
+  \item If $e \longrightarrow e'$ and $\Gamma \vdash e : A$,
+    then $\Gamma \vdash e' : A$.
+  \item If $e \longrightarrow e'$ and $\Gamma \vdash e' : A$,
+    then $\Gamma \vdash e : A$.
+  \end{itemize}
+\end{proposition}
 
 
-
-
-
+The intersection type system can be made into a $\lambda$-model
+similar to the way we made $E$ into a $\lambda$-model by constructing
+$E'$. Subtyping plays the same role as $\sqsubseteq$, but inverted.
+So instead of working with ideals, we work with filters.
 
 \begin{definition}[Filter]
   A subset $S$ of types $\mathbb{T}$ is a \emph{filter} if it is
@@ -1848,10 +1860,13 @@ The (nat) rule is typical of singleton types.
 \end{definition}
 
 
-
+\marginnote{Is the upward closure really needed in the definition of
+  application? We are missing that for $E$ and $E'$. TODO: mechanize
+  this $\lambda$-model stuff to make sure one way or the
+  other. -Jeremy}
 \begin{definition}
-  A \emph{filter $\lambda$-structure} is a triple $\langle \mathbb{F},
-  \cdot, F\rangle$ where
+  The \emph{filter $\lambda$-structure} is the triple $\langle
+  \mathbb{F}, \cdot, F\rangle$ where
 \begin{align*}
   \_ \cdot \_ & : \mathbb{F} \times \mathbb{F} \to \mathbb{F}\\
   S_1 \cdot S_2 &\defeq \UP{\{ B \mid \exists A \in S_2, A \to B \in S_1 \}}\\
@@ -1862,7 +1877,19 @@ The (nat) rule is typical of singleton types.
 \end{definition}
 
 
+\begin{lemma}
+  The filter $\lambda$-structure $\langle \mathbb{F}, \cdot, F\rangle$
+  is a $\beta_v$-model of the $\lambda$-calculus.
+\end{lemma}
 
+\begin{theorem}
+  The filter $\lambda$-structure $\langle \mathbb{F}, \cdot, F\rangle$
+  is a model of the CBV $\lambda$-calculus. That is,
+  \[
+  \text{if } \beta_v \vdash e = e', 
+  \text{ then } \forall \rho, F\,e\,\rho = F\,e'\,\rho
+  \]
+\end{theorem}
 
 %===============================================================================
 \subsection{Graph models of $\lambda$-calculus $(T^{*}_C$, $D_A$, and $\mathcal{P}(\omega))$ }
