@@ -1018,16 +1018,21 @@ Type System\\
 \label{fig:stlc}
 \end{figure*}
 
-
+Semantics of Types
+\begin{align*}
+  \SEM{\NAT} &= \mathbb{N} \\
+  \SEM{A \to B} &=  \SEM{B}^{\SEM{A}} 
+\end{align*}
 
 Semantics
 \begin{align*}
+  E\,e\,\rho & : \SEM{A} &\text{if } \Gamma \vdash e : A \text{ and } \rho \models \Gamma\\[2ex]
   E\,n\,\rho &= n \\
   E\,(e_1\oplus e_2)\,\rho &= n_1 \oplus n_2 \\
      & \text{where } n_1 = E\,e_1\,\rho, n_2 = E\,e_2\,\rho \\
   E\,x\,\rho &= \rho(x) \\
-  E\,(\LAM{x\of A}e)\,\rho &= ... \\
-  E\,(e_1 \APP e_2)\,\rho &= 
+  E\,(\LAM{x\of A}e)\,\rho &= \uplambda d.\, E\,e\,\ext{x}{d}{\rho} \\
+  E\,(e_1 \APP e_2)\,\rho &= (E\,e_1\,\rho) \APP (E\,e_2\,\rho)
 \end{align*}
 
 Equational Theory
