@@ -386,7 +386,7 @@ that is, $\{x\mapsto n\} \cup (s|_{\mathrm{dom}(s)-\{x\}})$.
   &      \qquad \WHILE{b}{c} 
 \end{array}
 \]
-Loops
+Meaning of Loops
 \begin{gather*}
   \inference{m_b\,s = \FALSE}
             {(s,s) \in \mathit{loop}(m_b, m_c)}
@@ -594,6 +594,11 @@ The proof is by cases on $k,s \longrightarrow k',s'$.
 \begin{Answer}
 TODO
 \end{Answer}
+
+\marginnote{
+Is the semantic function $C$ sound wrt. contextual equivalence?
+Is it complete? --Jeremy
+}
 
 
 \subsection{Recursive Definitions via Least Fixed Points}
@@ -978,6 +983,78 @@ has a lub~\citep{Davey:2002fj} (Theorem 8.11).
 
 
 \section{The simply-typed $\lambda$-calculus}
+\label{sec:stlc}
+
+
+Figure~\ref{fig:stlc} defines the simply-typed $\lambda$-calculus.
+
+\begin{figure*}
+\noindent Syntax
+\[
+\begin{array}{lrl}
+ \text{types} & A,B ::= & \NAT \mid A \to B \\
+ \text{numbers}& n \in & \mathbb{N}  \\
+ \text{arithmetic} & \oplus ::= & + \mid \times \\
+ \text{expression}& e ::=& n \mid e \oplus e
+   \mid x \mid \LAM{x\of A} e \mid e \APP e
+\end{array}
+\]
+Type System\\
+\begin{gather*}
+  \inference{}{\Gamma \vdash n : \NAT}
+  \quad
+  \inference{\Gamma \vdash e_1 : \NAT & \Gamma \vdash e_2 : \NAT}
+            {\Gamma \vdash e_1 \oplus e_2 : \NAT}
+  \\[2ex]
+  \inference{}{\Gamma \vdash x : \Gamma(x)}
+  \quad
+  \inference{\Gamma,x\of A \vdash e : B}
+            {\Gamma \vdash \LAM{x\of A}e : A \to B}
+  \quad
+  \inference{\Gamma \vdash e_1 : A \to B & \Gamma \vdash e_2 : A}
+            {\Gamma \vdash e_1 \APP e_2 : B}
+\end{gather*}
+\caption{Syntax and types of the simply-typed $\lambda$-calculus}
+\label{fig:stlc}
+\end{figure*}
+
+
+
+Semantics
+\begin{align*}
+  E\,n\,\rho &= n \\
+  E\,(e_1\oplus e_2)\,\rho &= n_1 \oplus n_2 \\
+     & \text{where } n_1 = E\,e_1\,\rho, n_2 = E\,e_2\,\rho \\
+  E\,x\,\rho &= \rho(x) \\
+  E\,(\LAM{x\of A}e)\,\rho &= ... \\
+  E\,(e_1 \APP e_2)\,\rho &= 
+\end{align*}
+
+Equational Theory
+\begin{gather*}
+  \text{(refl)}
+  \inference{}{\vdash e = e}
+  \quad
+  \text{(sym)}
+  \inference{\vdash e_2 = e_1}{\vdash e_1 = e_2}
+  \quad
+  \text{(trans)}
+  \inference{\vdash e_1 = e_2 & \vdash e_2 = e_3}{\vdash e_1 = e_3}  
+  \\[2ex]
+  \text{(cong)}
+  \inference{\vdash e_1 = e_3 & \vdash e_2 = e_4}
+    {\vdash (e_1\APP e_2) = (e_3 \APP e_4)}
+  \quad
+  (\xi)\inference{\vdash e = e'}{\vdash \LAM{x}e = \LAM{x}e'}
+  \\[2ex]
+  (\beta) \inference{}{\vdash (\LAM{x\of A}e)\APP e' = [x\by e']e}
+  \quad
+  (\eta) \inference{x \notin \mathrm{FV}(e)}
+      {\vdash (\LAM{x\of A} e \APP x) = e}
+\end{gather*}
+
+
+
 
 \section{The untyped $\lambda$-calculus}
 \label{sec:lambda}
