@@ -1060,6 +1060,56 @@ Equational Theory
 
 
 
+\begin{theorem}[Soundness of Semantics wrt. Equations]\ \\
+  \noindent
+  If $\vdash e = e'$, then $\forall \rho, E\,e\,\rho = E\,e'\,\rho$.
+\end{theorem}
+\begin{proof}
+  The proof is by induction on the derivation of $\vdash e_1 = e_2$.
+  \begin{itemize}
+  \item (refl), (sym), (trans) are immediate.
+  \item (cong)
+    Let $\rho$ be an arbitrary environment.
+    By the induction hypothesis, we have $E\,e_1\,\rho = E\,e_3\,\rho$
+    and $E\,e_2\,\rho = E\,e_4\,\rho$. Therefore
+    $(E\,e_1\,\rho)\APP(E\,e_2\,\rho) = (E\,e_3\,\rho) \APP (E\,e_4\,\rho)$.
+    
+  \item ($\xi$) Let $\rho$ be an arbitrary environment.  We need to
+    show that $E\,(\LAM{x}e)\,\rho = E\,(\LAM{x}e')\,\rho$. Thus, it
+    suffices to show for an arbitrary $d$ that
+    $E\, e\, \ext{x}{d}{\rho} = E\, e'\, \ext{x}{d}{\rho}$,
+    but that follows from the induction hypothesis.
+    
+  \item ($\beta$) Let $\rho$ be an arbitrary environment.
+    \begin{align*}
+      E\,((\LAM{x\of A}e)\APP e')\,\rho &=
+      (E\,(\LAM{x\of A}e)\,\rho) (E\,e'\,\rho) \\
+      &= \uplambda d.\, 
+    \end{align*}
+    
+  \item ($\eta$) Let $\rho$ be an arbitrary environment.
+    \begin{align*}
+      E\,(\LAM{x} e \APP x)\,\rho &=
+      \uplambda d.\,E\,(e \APP x)\,\ext{x}{d}{\rho} \\
+      &= \uplambda d.\,(E\,e\,\ext{x}{d}{\rho}) \APP d \\
+      &= \uplambda d.\,(E\,e\,\rho) \APP d & \text{because } x \notin \mathrm{FV}(e)\\
+      &= E\,e\,\rho
+    \end{align*}
+    
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}[Substitution]
+  $E\,([x\by e']e)\,\rho = E\,e\,\ext{x}{E\,e'\,\rho}{\rho}$
+\end{lemma}
+\begin{proof}
+  TODO (page 51 of Gunter)
+\end{proof}
+
+Resources:
+\begin{itemize}
+\item \citet{Gunter:1992aa}
+\end{itemize}
 
 \section{The untyped $\lambda$-calculus}
 \label{sec:lambda}
