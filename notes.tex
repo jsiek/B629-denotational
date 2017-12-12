@@ -1084,7 +1084,8 @@ Equational Theory
     \begin{align*}
       E\,((\LAM{x\of A}e)\APP e')\,\rho &=
       (E\,(\LAM{x\of A}e)\,\rho) (E\,e'\,\rho) \\
-      &= \uplambda d.\, 
+      &= E\,e\,\ext{x}{E\,e'\,\rho}{\rho} \\
+      &= E\,[x\by e']e\,\rho  & \text{by Lemma~\ref{lem:stlc-subst}}
     \end{align*}
     
   \item ($\eta$) Let $\rho$ be an arbitrary environment.
@@ -1100,6 +1101,7 @@ Equational Theory
 \end{proof}
 
 \begin{lemma}[Substitution]
+  \label{lem:stlc-subst}
   $E\,([x\by e']e)\,\rho = E\,e\,\ext{x}{E\,e'\,\rho}{\rho}$
 \end{lemma}
 \begin{proof}
