@@ -21,6 +21,25 @@ The lecture notes are in progress at:
 
 [https://github.com/jsiek/B629-denotational/notes.pdf](notes.pdf).
 
+## Assignments
+
+There will be a homework (reading and some exercises) each week and a
+written report at the end of the semester.
+
+- [https://github.com/jsiek/B629-denotational/hw1.md](Homework 1) is due January 15
+- [https://github.com/jsiek/B629-denotational/hw2.md](Homework 2) is due January 22.
+
+## Week-by-week Schedule
+
+1. Basics of denotational semantics
+2. Fixed point semantics
+3. Semantics of the simply-typed lambda calculus
+4. Semantics of the untyped lambda calculus
+5. Graph models of the untyped lambda calculus
+6. Filter models of the untyped lambda calculus
+7. D infinity model of the untyped lambda calculus
+
+
 ## Representative Readings
 
 - Denotational semantics: a methodology for language development, Schmidt 1986.
