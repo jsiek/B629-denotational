@@ -24,6 +24,7 @@ The lecture notes are in progress at:
 ## Representative Readings
 
 - Denotational semantics: a methodology for language development, Schmidt 1986.
+  http://people.cs.ksu.edu/~schmidt/text/densem.html
 - Outline of a Mathematical Theory of Computation, Scott 1970.
 - Data Types as Lattices, Scott 1976.
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
