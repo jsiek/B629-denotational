@@ -15,7 +15,7 @@ some programming.
 
 ## Lectures
 
-9:30-10:45am MW in BH 305
+9:30-10:45am MW in Luddy Hall Room 3069 (not BH 305!)
 
 The lecture notes are in progress at:
 
