@@ -37,13 +37,16 @@ written report at the end of the semester.
 4. Semantics of the untyped lambda calculus
 5. Graph models of the untyped lambda calculus
 6. Filter models of the untyped lambda calculus
-7. D infinity model of the untyped lambda calculus
+7. D-infinity model of the untyped lambda calculus
+8. 
 
 
 ## Representative Readings
 
 - Denotational semantics: a methodology for language development, Schmidt 1986.
-  http://people.cs.ksu.edu/~schmidt/text/densem.html
+   
+   http://people.cs.ksu.edu/~schmidt/text/densem.html
+   
 - Outline of a Mathematical Theory of Computation, Scott 1970.
 - Data Types as Lattices, Scott 1976.
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
