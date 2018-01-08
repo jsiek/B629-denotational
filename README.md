@@ -26,8 +26,8 @@ The lecture notes are in progress at:
 There will be a homework (reading and some exercises) each week and a
 written report at the end of the semester.
 
-- [https://github.com/jsiek/B629-denotational/hw1.md](Homework 1) is due January 15
-- [https://github.com/jsiek/B629-denotational/hw2.md](Homework 2) is due January 22.
+- [Homework 1](https://github.com/jsiek/B629-denotational/hw1.md) is due January 15
+- [Homework 2](https://github.com/jsiek/B629-denotational/hw2.md) is due January 22. UNDER CONSTRUCTION
 
 ## Week-by-week Schedule
 
