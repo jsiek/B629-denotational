@@ -24,7 +24,9 @@ The lecture notes are in progress at:
 ## Assignments
 
 There will be a homework (reading and some exercises) each week and a
-written report at the end of the semester.
+written report and presentations at the end of the semester.  Also,
+each week, one student will give a 30 minute presentation of a paper
+that the class has read.
 
 - [Homework 1](https://github.com/jsiek/B629-denotational/hw1.md) is due January 15
 - [Homework 2](https://github.com/jsiek/B629-denotational/hw2.md) is due January 22. UNDER CONSTRUCTION
@@ -35,10 +37,18 @@ written report at the end of the semester.
 2. Fixed point semantics
 3. Semantics of the simply-typed lambda calculus
 4. Semantics of the untyped lambda calculus
-5. Graph models of the untyped lambda calculus
-6. Filter models of the untyped lambda calculus
-7. D-infinity model of the untyped lambda calculus
-8. 
+5. Scott and Engeler's graph models
+6. Plotkin's graph model
+7. Filter models of the untyped lambda calculus
+8. More on filter models
+9. D-infinity model of the untyped lambda calculus
+10. Category-theoretic solutions to domain equations
+11. More on category-theoretic solutions to domain equations
+12. Semantics of PCF
+13. Full abstraction
+14. Semantics for imperative languages
+15. Monads and effect-handlers
+16. Student Presentations
 
 
 ## Representative Readings
