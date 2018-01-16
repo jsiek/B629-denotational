@@ -30,7 +30,7 @@ roughly each week, one student will give a 30 minute presentation of a
 paper that the class has read.
 
 - [Homework 1](hw1.md) is due January 15
-- [Homework 2](hw2.md) is due January 22. UNDER CONSTRUCTION
+- [Homework 2](hw2.md) is due January 22.
 
 ## Week-by-week Schedule
 
