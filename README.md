@@ -60,8 +60,7 @@ paper that the class has read.
    
 - Outline of a Mathematical Theory of Computation, Scott 1970.
 - The Denotational Semantics of Programming Languages, Tennent 1976.
-
-
+- A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language, Chlipala 2007.
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
 - Graph Models
   - Data Types as Lattices, Scott 1976.

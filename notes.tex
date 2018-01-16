@@ -785,14 +785,13 @@ the upper bounds of $S$, that is, given any upper bound $z$ of $S$, we
 have $\bigsqcup S \sqsubseteq z$.
 \end{definition}
 
-In arbitrary posets, a least upper bound may not exist for an
-arbitrary subset. In particular, for the poset
-$(\mathbb{N}{\pto}\mathbb{N}, \subseteq)$, two partial functions do
-not have a lub if they are inconsistent, that is, if they map the same
-input to different outputs, such as $\{3\mapsto 8\}$ and $\{3 \mapsto
-9\}$. However, the CPO Fixed-Point Theorem will only need to consider
-totally ordered sequences, and all the elements in such a sequence are
-consistent.
+In arbitrary posets, a least upper bound may not exist for a
+subset. In particular, for the poset $(\mathbb{N}{\pto}\mathbb{N},
+\subseteq)$, two partial functions do not have a lub if they are
+inconsistent, that is, if they map the same input to different
+outputs, such as $\{3\mapsto 8\}$ and $\{3 \mapsto 9\}$. However, the
+CPO Fixed-Point Theorem will only need to consider totally ordered
+sequences, and all the elements in such a sequence are consistent.
 
 \begin{definition}
   A \textbf{\emph{complete partial order (cpo)}} has a least upper
@@ -825,7 +824,7 @@ consistent.
 \end{proposition}
 \begin{proof}
   Let $S$ be a totally ordered sequence in $(A\pto B,\subseteq)$.  We
-  claim that the lub of $S$ is just the union of all the elements of
+  claim that the lub of $S$ is the union of all the elements of
   $S$, that is $\bigcup S$. Recall that $\forall x y, (x,y) \in
   \bigcup S$ iff $\exists f \in S, (x,y) \in f$.
 %
@@ -847,16 +846,15 @@ example, if the input to $F$ is itself a function $g$, $F$ should only
 need to apply $g$ to a finite number of different values.  This
 requirement is at the core of what it means for a function to be
 computable~\citep{Gunter:1990aa}.  So applying $F$ to the lub of a
-directed set $X$ (an infinite thing) should be the same as taking the
-lub of the set obtained by mapping $F$ over the elements of $X$
-(finite things).
+sequence $S$ should be the same as taking the lub of the set obtained
+by mapping $F$ over each element of $S$.
 
 \begin{definition}
   A monotonic function $F : A {\to} B$ on a cpo is
-  \textbf{\emph{continuous}} iff for all totally ordered sequences $X$
+  \textbf{\emph{continuous}} iff for all totally ordered sequences $S$
   of $A$
   \[
-  F(\bigsqcup X) = \bigsqcup \{ F(x) \mid x \in X \}
+  F(\bigsqcup S) = \bigsqcup \{ F(x) \mid x \in S \}.
   \]
 \end{definition}
 
