@@ -59,21 +59,30 @@ paper that the class has read.
    http://people.cs.ksu.edu/~schmidt/text/densem.html
    
 - Outline of a Mathematical Theory of Computation, Scott 1970.
-- Data Types as Lattices, Scott 1976.
+- The Denotational Semantics of Programming Languages, Tennent 1976.
+
+
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
+- Graph Models
+  - Data Types as Lattices, Scott 1976.
+  - Set-theoretical and other elementary models of the lambda-calculus,
+    Plotkin 1993.
+  - Algebras and combinators, Engeler 1981.
+  - Revisiting Elementary Denotational Semantics, Siek 2017.
+- Filter Models
+  - Functional characterization of some semantic equalities
+    inside lambda-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
+  - A filter lambda model and the completeness of type assignment,
+    Barendregt, Coppo, Dezani-Ciancaglini 1983.
+  - Intersection Types and Lambda Models
+    Alessi, Barbanera, Dezani-Ciancaglini 2006.
+- Fixed point constructions in order-enriched categories. Wand 1979.
 - The category-theoretic solution of recursive domain equations,
   Smyth and Plotkin, 1982.
-- Set-theoretical and other elementary models of the lambda-calculus,
-  Plotkin 1993.
-- Algebras and combinators, Engeler 1981.
-- Functional characterization of some semantic equalities
-  inside lambda-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
-- A filter lambda model and the completeness of type assignment,
-  Barendregt, Coppo, Dezani-Ciancaglini 1983.
-- Intersection Types and Lambda Models
-  Alessi, Barbanera, Dezani-Ciancaglini 2006.
-- Revisiting Elementary Denotational Semantics, Siek 2017.
+- The Essence of Algol, Reynolds 1981.
 - Notions of computation and monads, Moggi 1991.
 - Observable sequentiality and full abstraction,
   Cartwright, Felleisen 1992.
+- Full abstraction for the second order subset of an Algol-like language,
+  Kurt Sieber, 1996.
 

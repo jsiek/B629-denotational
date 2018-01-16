@@ -2,6 +2,6 @@
 
 * Read chapter 2 of my notes concerning IMP.
 
-* Do exercises 5 and 6.
+* Do exercises 5 and 6 in my notes.
 
-* UNDER CONSTRUCTION: more exercises to be assigned.
+* Do exercises 2(a), 3, 8 in chapter 6 of Schmidt's book.
