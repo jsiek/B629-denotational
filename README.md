@@ -66,20 +66,23 @@ paper that the class has read.
     Plotkin 1993.
   - Algebras and combinators, Engeler 1981.
   - Revisiting Elementary Denotational Semantics, Siek 2017.
-- Filter Models of hte Lambda Calculus
+- Filter Models of the Lambda Calculus
   - Functional characterization of some semantic equalities
     inside lambda-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
   - A filter lambda model and the completeness of type assignment,
     Barendregt, Coppo, Dezani-Ciancaglini 1983.
   - Intersection Types and Lambda Models
     Alessi, Barbanera, Dezani-Ciancaglini 2006.
+- PCF
+  - [A type-theoretic alternative to ISWIM, CUCH, OWHY](https://doi.org/10.1016/0304-3975(93)90095-B), Scott 1993.
 - Fixed point constructions in order-enriched categories. Wand 1979.
 - The category-theoretic solution of recursive domain equations,
   Smyth and Plotkin, 1982.
 - The Essence of Algol, Reynolds 1981.
 - Notions of computation and monads, Moggi 1991.
-- Observable sequentiality and full abstraction,
-  Cartwright, Felleisen 1992.
-- Full abstraction for the second order subset of an Algol-like language,
-  Kurt Sieber, 1996.
+- Full Abstraction
+  - Observable sequentiality and full abstraction,
+	Cartwright, Felleisen 1992.
+  - Full abstraction for the second order subset of an Algol-like language,
+	Kurt Sieber, 1996.
 
