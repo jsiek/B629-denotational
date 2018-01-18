@@ -953,28 +953,6 @@ $e$ is an upper bound of the ascending chain, and therefore
 $\mathrm{fix}\,F \sqsubseteq e$.
 \end{proof}
 
-\begin{marginfigure}
-\[
-P'\,c\,n = (C'\,c\,\{A{\mapsto} n]\})\,Z 
-\]
-\begin{align*}
-C'\,\SKIP\,s &= s \\ 
-C'(\ASSIGN{x}{e})\,s &= [x\mapsto E\,e\,s]s\\
-C'(\SEQ{c_1}{c_2})\,s &=  C'\,c_2(C'\,c_1\,s) \\
-C'\left(\!\!\begin{array}{l}
-  \mathtt{if}\,b\,\mathtt{then}\,c_1\\
-  \mathtt{else}\,c_2
-  \end{array}\!\!\right)\,s
-  &= 
- \begin{cases}
-  C'\,c_1\,s & \text{if } B\,b\,s = \TRUE \\
-  C'\,c_2\,s & \text{if } B\,b\,s = \FALSE
- \end{cases} \\
-C'(\WHILE{b}{c})\,s &= \mathrm{fix}(F_{b,c})\,s
-\end{align*}
-\caption{Least Fixed-Point Semantics of an Imperative Language}
-\label{fig:imperative-fixed-point}
-\end{marginfigure}
 
 Returning to the semantics of the \texttt{while} loop, we give the
 least fixed-point semantics of an imperative language in
@@ -998,6 +976,31 @@ of the \texttt{while} loop as follows.
 \begin{Answer}
 TODO
 \end{Answer}
+
+\begin{marginfigure}
+\begin{align*}
+  \intertext{$P' : \CMD \to \NAT \pto \NAT$}
+  P'\,c\,n &= (C'\,c\,\{A{\mapsto} n]\})\,Z 
+\end{align*}
+\begin{align*}
+  \intertext{$C' : \CMD \to \STORE \pto \STORE$}
+C'\,\SKIP\,s &= s \\ 
+C'(\ASSIGN{x}{e})\,s &= [x\mapsto E\,e\,s]s\\
+C'(\SEQ{c_1}{c_2})\,s &=  C'\,c_2(C'\,c_1\,s) \\
+C'\left(\!\!\begin{array}{l}
+  \mathtt{if}\,b\,\mathtt{then}\,c_1\\
+  \mathtt{else}\,c_2
+  \end{array}\!\!\right)\,s
+  &= 
+ \begin{cases}
+  C'\,c_1\,s & \text{if } B\,b\,s = \TRUE \\
+  C'\,c_2\,s & \text{if } B\,b\,s = \FALSE
+ \end{cases} \\
+C'(\WHILE{b}{c})\,s &= \mathrm{fix}(F_{b,c})\,s
+\end{align*}
+\caption{Least Fixed-Point Semantics of an Imperative Language}
+\label{fig:imperative-fixed-point}
+\end{marginfigure}
 
 In the literature there are two schools of thought regarding how to
 define complete partial orders. There is the one presented above, that
