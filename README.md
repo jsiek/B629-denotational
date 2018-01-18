@@ -54,21 +54,19 @@ paper that the class has read.
 
 ## Representative Readings
 
-- Denotational semantics: a methodology for language development, Schmidt 1986.
-   
-   http://people.cs.ksu.edu/~schmidt/text/densem.html
-   
+- [Denotational semantics: a methodology for language development](http://people.cs.ksu.edu/~schmidt/text/densem.html), Schmidt 1986.
 - Outline of a Mathematical Theory of Computation, Scott 1970.
 - The Denotational Semantics of Programming Languages, Tennent 1976.
-- A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language, Chlipala 2007.
+- Simply Typed Lambda Calculus
+  - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742), Chlipala 2007.
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
-- Graph Models
+- Graph Models of the Lambda Calculus
   - Data Types as Lattices, Scott 1976.
   - Set-theoretical and other elementary models of the lambda-calculus,
     Plotkin 1993.
   - Algebras and combinators, Engeler 1981.
   - Revisiting Elementary Denotational Semantics, Siek 2017.
-- Filter Models
+- Filter Models of hte Lambda Calculus
   - Functional characterization of some semantic equalities
     inside lambda-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
   - A filter lambda model and the completeness of type assignment,

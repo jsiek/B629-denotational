@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{mathtools}
 \usepackage{stmaryrd}
 \usepackage{natbib}
 \usepackage{semantic}
@@ -24,6 +25,8 @@
 \newcommand{\BR}[1]{(#1)}
 \newcommand{\SEM}[1]{\llbracket #1 \rrbracket}
 \newcommand{\LAM}[1]{\lambda #1.\,}
+\newcommand{\SET}[1]{\mathcal{P}(#1)}
+\newcommand{\FSET}[1]{\mathcal{P}_f(#1)}
 \newcommand{\APP}[0]{\,}
 \newcommand{\ASSIGN}[2]{#1 \mathrel{:=} #2}
 \newcommand{\SEQ}[2]{#1 \mathrel{;} #2}
@@ -31,13 +34,21 @@
 \newcommand{\SKIP}[0]{\mathtt{skip}}
 \newcommand{\INPUT}[0]{\mathtt{get}()}
 \newcommand{\IF}[3]{\mathtt{if}\,#1\,\mathtt{then}\,#2\,\mathtt{else}\,#3}
+\newcommand{\If}[3]{\mathit{if}\,#1\,\mathit{then}\,#2\,\mathit{else}\,#3}
 \newcommand{\WHILE}[2]{\mathtt{while}\,#1\,\mathtt{do}\,#2}
 \newcommand{\TRUE}[0]{\mathtt{true}}
 \newcommand{\FALSE}[0]{\mathtt{false}}
 \newcommand{\of}[0]{\!:\!}
 \newcommand{\by}[0]{\!:=\!}
 \newcommand{\pto}[0]{\rightharpoonup}
-\newcommand{\NAT}[0]{\ensuremath{\mathit{Nat}}}
+\newcommand{\BIN}[0]{\ensuremath{\mathit{Bin}}}
+\newcommand{\NAT}[0]{\ensuremath{\mathbb{N}}}
+\newcommand{\BOOL}[0]{\ensuremath{\mathbb{B}}}
+\newcommand{\VAR}[0]{\ensuremath{\mathbb{X}}}
+\newcommand{\EXP}[0]{\ensuremath{\mathbb{E}}}
+\newcommand{\CND}[0]{\ensuremath{\mathit{Cnd}}}
+\newcommand{\CMD}[0]{\ensuremath{\mathit{Cmd}}}
+\newcommand{\STORE}[0]{\ensuremath{\mathit{Store}}}
 \newcommand{\COND}[3]{#1\,\texttt{?}\,#2\,\texttt{:}\,#3}
 \newcommand{\ext}[3]{#3(#1{\mapsto}#2)}
 
@@ -94,19 +105,21 @@ much more familiar with decimal numbers.
 \[
 \begin{array}{lrl}
  \text{digit}& d ::=& 0 \mid 1 \\
- \text{binary numeral}& b ::=& \epsilon \mid bd  \\
- \text{expression}& e ::=& b \mid e + e \mid e \times e
+ \text{binary numeral}& b \in \BIN ::=& \epsilon \mid bd  \\
+ \text{expression}& e \in \EXP ::=& b \mid e + e \mid e \times e
 \end{array}
 \]
 Semantics\\
 \begin{minipage}{0.4\textwidth}
-\begin{align*}
+  \begin{align*}
+ N : & \; \BIN \to \NAT \\
  N\BR{ \epsilon } &= 0 \\
  N\BR{ b d } &= 2 N\BR{ b } + d\\[1ex]
 \end{align*}
 \end{minipage}
 \begin{minipage}{0.6\textwidth}
   \begin{align*}
+    E : & \; \EXP \to \NAT \\
   E\BR{ b } &= N\BR{ b } \\
  E\BR{ e_1 + e_2 } &= 
     E\BR{ e_1 } + E\BR{ e_2 } \\
@@ -144,6 +157,7 @@ learned in grade school, but for binary instead of decimals.
 \begin{figure}
 \noindent Interpreter 
 \begin{align*}
+  I : & \; \EXP \to \BIN \\
 I\BR{ b } &= b \\
 I\BR{ e_1 + e_2 } &=
   \mathit{add}(I\BR{ e_1 }, I\BR{ e_2 },0) \\
@@ -337,6 +351,7 @@ The proof is by induction on $e$.
 %% local, immutable variables??
 
 \section{Loops and Mutable Variables}
+\label{sec:imp}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -363,10 +378,10 @@ more simply.
 
 \subsection{Semantics of IMP}
 
-To give meaning to mutable variables, we use a $\mathit{Store}$ which
-is partial function from variables (identifiers) to numbers.
+To give meaning to mutable variables, we use a $\STORE$ which
+is partial function from variables to numbers.
 \[
-  \mathit{Store} = \mathit{Id} \pto \mathit{Nat}
+  \STORE = \VAR \pto \NAT
 \]
 We write $[x\mapsto n]s$ for removing the entry for $x$ is $s$
 (if there is one) and then adding the entry $x\mapsto n$,
@@ -377,17 +392,17 @@ that is, $\{x\mapsto n\} \cup (s|_{\mathrm{dom}(s)-\{x\}})$.
 \noindent Syntax
 \[
 \begin{array}{ll}
-  \text{variables} & x \in \mathbb{X}  \\
- \text{expressions} & e ::= \ldots \mid x \\
- \text{conditions} & b  ::= \TRUE \mid \FALSE \mid e = e \mid \\
+  \text{variables} & x \in \VAR  \\
+ \text{expressions} & e \in \EXP ::= \ldots \mid x \\
+ \text{conditions} & b \in \CND  ::= \TRUE \mid \FALSE \mid e = e \mid \\
   &   \qquad \neg b \mid b \lor b \mid b \land b \\
- \text{commands}& c ::= \SKIP \mid \ASSIGN{x}{e} \mid \SEQ{c}{c} \mid\\
+ \text{commands}& c \in \CMD ::= \SKIP \mid \ASSIGN{x}{e} \mid \SEQ{c}{c} \mid\\
   &      \qquad \IF{b}{c}{c} \mid \\
   &      \qquad \WHILE{b}{c} 
 \end{array}
 \]
-Meaning of Loops
 \begin{gather*}
+\intertext{$ \mathit{loop} : (\STORE {\to} \BOOL) {\to} \SET{\STORE{\times}\STORE} {\to} \SET{\STORE{\times}\STORE} $}
   \inference{m_b\,s = \FALSE}
             {(s,s) \in \mathit{loop}(m_b, m_c)}
 \\[1ex]
@@ -399,22 +414,32 @@ Meaning of Loops
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 Semantics 
-\[
-P\,c = \{ (n,s'\,\mathtt{Z}) \mid (\{\mathtt{A}{\mapsto} n\},s') \in C\,c \}
-\]
 \begin{align*}
-C\,\SKIP &= \mathit{id} \\ %\{(s,s) \mid s \in \mathit{Store} \}\\
-C(\ASSIGN{x}{e}) &= \{ (s,[x\mapsto E\,e\,s]s) \mid s {\in} \mathit{Store} \}\\
+\shortintertext{$P :  \CMD \to \SET{\NAT \times \NAT}$}
+P\,c & = \{ (n,s'\,\mathtt{Z}) \mid (\{\mathtt{A}{\mapsto} n\},s') \in C\,c \}
+\shortintertext{$ E :  \EXP \to \STORE \to \NAT$}
+  E\,x\,s & = s\,x \\
+    & \vdots 
+\shortintertext{$ B : \CND \to \STORE \to \BOOL$}
+  B\,(e_1 = e_2)\,s &= (E\,e_1\,s) =_{\NAT} (E\,e_2\,s) \\
+  & \vdots 
+\shortintertext{$C : \CMD \to \SET{\STORE \times \STORE}$} 
+C\,\SKIP &= \mathit{id} \\ %\{(s,s) \mid s \in \STORE \}\\
+C(\ASSIGN{x}{e}) &= \{ (s,[x\mapsto E\,e\,s]s) \mid s {\in} \STORE \}\\
 C(\SEQ{c_1}{c_2}) &=  C\,c_2 \circ C\,c_1 \\
 C\left(\!\!\begin{array}{l}
   \mathtt{if}\,b\,\mathtt{then}\,c_1\\
   \mathtt{else}\,c_2
   \end{array}\!\!\right)
-  &= 
- \begin{cases}
-  C\,c_1 & \text{if } B\,b\,s = \TRUE \\
-  C\,c_2 & \text{if } B\,b\,s = \FALSE
- \end{cases} \\
+&= \left\{ (s,s') \middle| \begin{array}{l}
+  \mathit{if}\,B\,b\,s\,\mathit{then}\,(s,s') \in C\,c_1\\
+  \mathit{else}\,(s,s')\in C\,c_2
+\end{array}
+\right\} \\
+ %% \begin{cases}
+ %%  C\,c_1 & \text{if } B\,b\,s = \TRUE \\
+ %%  C\,c_2 & \text{if } B\,b\,s = \FALSE
+ %% \end{cases} \\
 C(\WHILE{b}{c}) &= \mathit{loop}(B\,b, C\,c)
 \end{align*}
 \end{minipage}
@@ -425,21 +450,17 @@ C(\WHILE{b}{c}) &= \mathit{loop}(B\,b, C\,c)
 The syntax of expressions is extended to include variables, so the
 meaning of expressions must be parameterized on the store. The meaning
 of a variable $x$ is the associated number in the store $s$.
-\[
-  E\,x\,s = s\,x
-\]
-%
 A program takes a number as input and it may produce a number or it
 might diverge. Traditional denotational semantics model this behavior
-with a partial function $\mathit{Nat}\pto\mathit{Nat}$. Here we shall
-use the alternate, but equivalent, approach of using a relation
-$\mathit{Nat}\times\mathit{Nat}$. A program is a command and the
-meaning of commands is given by the semantic function $C$, which maps
-a command to a relation on stores, that is, to a subset of
-$\mathit{Store} \times \mathit{Store}$. The meaning of a program is
-given by the function $P$, which initializes the store with the input
-number in variable $\mathtt{A}$.  When the program completes, the
-output is obtained from variable $\mathtt{Z}$.
+with a partial function ($\NAT\pto\NAT$). Here we shall use the
+alternate, but equivalent, approach of using a relation, a subset of
+$\NAT \times \NAT$. A program is a command and the meaning of commands
+is given by the semantic function $C$, which maps a command to a
+relation on stores, that is, to a subset of $\STORE \times
+\STORE$. The meaning of a program is given by the function
+$P$, which initializes the store with the input number in variable
+$\mathtt{A}$.  When the program completes, the output is obtained from
+variable $\mathtt{Z}$.
 
 
 We define the \texttt{while} loop using an auxiliary relation named
@@ -616,7 +637,7 @@ taking the traditional but more complex approach of defining
 to solve it. Recall that the meaning of a command is a partial
 function from stores to stores, or more precisely,
 \[
-C\,c : \mathit{Store} \pto \mathit{Store}
+C\,c : \STORE \pto \STORE
 \]
 The meaning of a loop $(\WHILE{b}{c})$ is a solution to the
 equation
@@ -723,7 +744,7 @@ input improves, that is, require $F$ to be monotonic.
   is monotonic.
 \end{proposition}
 \begin{proof}
-  Let $f, g : \mathit{Store} \pto \mathit{Store}$ such that
+  Let $f, g : \STORE \pto \STORE$ such that
   $f \subseteq g$. We need to show that $F_{b,c}(f) \subseteq
   F_{b,c}(g)$. 
   Let $s$ be an arbitrary state. Suppose $B\,b\,s = \TRUE$.
@@ -742,25 +763,35 @@ input improves, that is, require $F$ to be monotonic.
 \end{proof}
 
 
-\begin{marginfigure}
-\[
-  \bot \sqsubseteq F(\bot) \sqsubseteq F^2(\bot) 
-    \sqsubseteq F^3(\bot) \sqsubseteq \cdots
-\]
-\caption{Ascending sequence of $F$.}
-\label{fig:kleene-chain}
-\end{marginfigure}
-%
 We have $\bot \sqsubseteq F(\bot)$ because $\bot$ is less or equal to
 everything. Then we apply monotonicity to obtain $F(\bot) \sqsubseteq
 F(F(\bot))$.  Continuing in this way we obtain the sequence of
 increasingly better approximations in Figure~\ref{fig:kleene-chain}.
-If at some point the approximation stops improving, but instead $F$
-produces an element that is merely equal to the last one, then we have
-found a fixed point. However, because we are interested in elements
-that are partial functions, which are infinite, the sequences of
-approximations will also be infinite. So we'll need some other way to
-go from the sequences of approximations to the actual fixed point.
+If at some point the approximation stops improving and $F$ produces an
+element that is equal to the last one, then we have found a fixed
+point. However, because we are interested in elements that are partial
+functions, which are infinite, the sequences of approximations will
+also be infinite. So we'll need some other way to go from the
+sequences of approximations to the actual fixed point.
+
+\begin{marginfigure}
+\[
+  \xymatrix@=10pt{
+    \ar@{..}^{\sqsubseteq}[d]\\
+    F^i(\bot) \ar@{..}^{\sqsubseteq}[d]\\
+    F(F(F(\bot))) \ar@{-}^{\sqsubseteq}[d]\\
+    F(F(\bot)) \ar@{-}^{\sqsubseteq}[d]\\
+    F(\bot) \ar@{-}^{\sqsubseteq}[d]\\
+    \bot
+  }
+\]
+%% \[
+%%   \bot \sqsubseteq F(\bot) \sqsubseteq F^2(\bot) 
+%%     \sqsubseteq F^3(\bot) \sqsubseteq \cdots
+%% \]
+\caption{Ascending sequence of $F$.}
+\label{fig:kleene-chain}
+\end{marginfigure}
 
 The solution is to take the union of all the approximations. The
 analogue of union for an arbitrary partial order is least upper bound.
@@ -897,7 +928,7 @@ Suppose $(L,\sqsubseteq)$ is a cpo and let $F:L\to L$ be a continuous
 function. Then $F$ has a least fixed point, written $\mathrm{fix}\,F$,
 which is the least upper bound of the ascending sequence of $F$:
 \[
-  \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
+  \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \NAT \}
 \]
 \end{theorem}
 \begin{proof}
@@ -1130,7 +1161,7 @@ on natural numbers.
 \[
 \begin{array}{lrl}
               & n \in \mathbb{N} \\
- \text{vars.} & x \in \mathbb{X}\\
+ \text{vars.} & x \in \VAR\\
  \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x} e \mid (e \, e)
 \end{array}
 \]
@@ -1179,7 +1210,7 @@ Domain
 \begin{array}{lrl}
                & n \in \mathbb{N} \\
   \text{elts.} & d \in \mathbb{D} ::= &n \mid \{ (d_1,d'_1), \ldots, (d_n,d'_n) \} \\
-  \text{env.} & \rho \in  \mathbb{X} \pto \mathbb{D} 
+  \text{env.} & \rho \in  \VAR \pto \mathbb{D} 
 \end{array}
 \]
 Ordering
@@ -1206,7 +1237,7 @@ Application
 Semantics
 \begin{align*}
   P\,e &\defeq \{ d \mid d \in E\,e\,\emptyset\} \\[1ex]
-  E & : \mathbb{E} \to (\mathbb{X} \pto \mathbb{D}) \to \mathcal{P}(\mathbb{D})\\
+  E & : \mathbb{E} \to (\VAR \pto \mathbb{D}) \to \mathcal{P}(\mathbb{D})\\
   E\, n \, \rho & = \{ n \} \\
   E\, (e_1 + e_2) \, \rho & = \{ n_1 + n_2 \mid n_1 \in E\,e_1\,\rho, 
                                     n_2 \in E\,e_2\,\rho \} \\
@@ -1314,7 +1345,7 @@ definitions from the lexical scope.
 \[
 \begin{array}{lrl}
  \text{values} & v \in \mathbb{V} ::= & n \mid \langle \LAM{x}e, \varrho \rangle \\
- \text{env.} & \varrho \in \mathbb{X} \pto \mathbb{V} 
+ \text{env.} & \varrho \in \VAR \pto \mathbb{V} 
 \end{array}
 \]
 \begin{align*}
@@ -1424,7 +1455,7 @@ function call in a table.
 \begin{array}{lrl}
  \text{fun. id's} & f \in \mathbb{N} \\
  \text{values} & v \in \mathbb{V} ::= & n \mid f \\
- \text{env.} & \varrho \in \mathbb{X} \pto \mathbb{V} \\
+ \text{env.} & \varrho \in \VAR \pto \mathbb{V} \\
              & t ::= & \{ (v_1,v'_1), \ldots, (v_n,v'_n) \}\\
  \text{memo} & m \in \mathbb{M} ::= & \langle \LAM{x}e, \varrho, t \rangle\\
  \text{memo table} & T \in & \mathbb{N} \pto \mathbb{M}
@@ -1537,7 +1568,7 @@ satisfy the equational theory of the $\lambda$-calculus.
 \begin{definition}[$\lambda$-models]
   An \emph{$R$-model of the $\lambda$-calculus} is a triple $\langle
   D, \cdot, \SEM{\ }\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D
-  \to D$, and $\SEM{\_} : \mathbb{E}\to(\mathbb{X}\pto D)\to D$, and the
+  \to D$, and $\SEM{\_} : \mathbb{E}\to(\VAR\pto D)\to D$, and the
   following conditions hold.
   \begin{enumerate}
   \item $\SEM{ x}\rho = \rho(x)$, \label{cond:var}
@@ -1577,7 +1608,7 @@ these closure conditions is called an \emph{ideal}. We write
 $\mathcal{I}(\mathbb{D})$ for the ideals over $\mathbb{D}$.  So $E'$
 has the following type.
 \[
-  E' : \mathbb{E} \to (\mathbb{X}\pto \mathcal{I}(\mathbb{D}))
+  E' : \mathbb{E} \to (\VAR\pto \mathcal{I}(\mathbb{D}))
   \to \mathcal{I}(\mathbb{D}) 
 \]
 
@@ -2005,7 +2036,7 @@ So instead of working with ideals, we work with filters.
   \_ \cdot \_ & : \mathbb{F} \times \mathbb{F} \to \mathbb{F}\\
   S_1 \cdot S_2 &\defeq \UP{\{ B \mid \exists A \in S_2, A \to B \in S_1 \}}\\
   \Gamma \models \rho &\defeq \forall x\of B \in \Gamma, B \in \rho(x) \\
-  F &: \mathbb{E} \to (\mathbb{X} \pto \mathbb{F}) \to \mathbb{F}\\
+  F &: \mathbb{E} \to (\VAR \pto \mathbb{F}) \to \mathbb{F}\\
   F\,e\,\rho &\defeq \{ A \mid \exists \Gamma, \Gamma \models \rho \text{ and } \Gamma \vdash e : A\} 
 \end{align*}
 \end{definition}
@@ -2056,7 +2087,7 @@ So instead of working with ideals, we work with filters.
 %% \PSEM{ n }\rho &= \{ n \} \\
 %% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
 %%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
-\EP&: \mathbb{E} \to (\mathbb{X}\pto T^{*}_C) \to T^{*}_C\\
+\EP&: \mathbb{E} \to (\VAR\pto T^{*}_C) \to T^{*}_C\\
 \PSEM{ x }\rho &= \rho(x) \\
 %\PSEM{ (\LAM{x} e) }\rho &= 
 %  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
@@ -2091,7 +2122,7 @@ So instead of working with ideals, we work with filters.
    \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} \\
    - \cdot_E - &: D_A \to D_A \to D_A \\
    D^{*}_1 \cdot_E D^{*}_2 &= \{ d' \mid \exists D, D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
-\EE &: \mathbb{E} \to (\mathbb{X}\pto D_A) \to D_A\\
+\EE &: \mathbb{E} \to (\VAR\pto D_A) \to D_A\\
 \ESEM{ x }\rho &= \rho(x) \\
 \ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D^{*}.\, \ESEM{e}[x\mapsto D^{*}]\rho)\\
 \ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot_E (\ESEM{ e_2 }\rho) 
@@ -2163,11 +2194,11 @@ $\mathcal{P}(\omega)$ given by \citet{barendregt84:_lambda_calculus}.
 
 \begin{figure}
 \begin{align*}
-     & m,n \in \mathit{Nat} \\
+     & m,n \in \NAT \\
 \langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
 e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
     k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
-\EPo{} & : \mathbb{E} \to (\mathbb{X} \pto \mathcal{P}(\mathit{Nat})) \to \mathcal{P}(\mathit{Nat}) \\
+\EPo{} & : \mathbb{E} \to (\VAR \pto \mathcal{P}(\NAT)) \to \mathcal{P}(\NAT) \\
 \POSEM{x}\rho &= \rho\,x \\  
 \POSEM{(\LAM{x}e)}\rho &= \{ \langle n, m \rangle \mid m \in \POSEM{e}[x\mapsto e_n]\rho \} \\
 \POSEM{(e_1\,e_2)}\rho &= \{ m \mid \exists e_n. \, 
@@ -2398,14 +2429,14 @@ Generalizing from the poset of partial functions, one might think that
 there is always a least upper bound of consistent or directed sets.
 However, this is not always the case because their may not be enough
 elements within the poset. For example, consider the poset
-$(\mathit{Nat},\leq)$. The sequence
+$(\NAT,\leq)$. The sequence
 \[
   0 \leq 1 \leq 2 \leq 3 \leq \cdots
 \]
-does not have a lub in $(\mathit{Nat},\leq)$ because there is no one
+does not have a lub in $(\NAT,\leq)$ because there is no one
 natural number that is greater than all the rest. Of course, if we
-move to the poset $(\mathit{Nat} \cup \{\infty\},\leq)$, where $n \leq
-\infty$ for any $n \in \mathit{Nat}$, then $\infty$ is the lub of the
+move to the poset $(\NAT \cup \{\infty\},\leq)$, where $n \leq
+\infty$ for any $n \in \NAT$, then $\infty$ is the lub of the
 above sequence. So in the abstract setting of partial orders, one must
 separately add the requirement that there exists a lub for any
 directed subset.
@@ -2436,7 +2467,7 @@ let $F:L\to L$ be a continuous function. Then $F$ has a least fixed
 point, written $\mathrm{fix}\,F$, which is the least upper bound of
 the ascending chain of $F$:
 \[
-  \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \mathit{Nat} \}
+  \mathrm{fix}\,F = \bigsqcup \{ F^n(\bot) \mid n \in \NAT \}
 \]
 \end{theorem}
 \begin{proof}
