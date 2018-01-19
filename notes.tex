@@ -10,6 +10,8 @@
 \usepackage{semantic}
 \usepackage{wrapfig}
 \usepackage{xypic}
+\usepackage{marginfix}
+%\usepackage{exercise}
 \usepackage[noanswer]{exercise}
 %\usepackage[answerdelayed]{exercise}
 \usepackage{upgreek}
@@ -41,14 +43,15 @@
 \newcommand{\of}[0]{\!:\!}
 \newcommand{\by}[0]{\!:=\!}
 \newcommand{\pto}[0]{\rightharpoonup}
-\newcommand{\BIN}[0]{\ensuremath{\mathit{Bin}}}
-\newcommand{\NAT}[0]{\ensuremath{\mathbb{N}}}
-\newcommand{\BOOL}[0]{\ensuremath{\mathbb{B}}}
-\newcommand{\VAR}[0]{\ensuremath{\mathbb{X}}}
-\newcommand{\EXP}[0]{\ensuremath{\mathbb{E}}}
-\newcommand{\CND}[0]{\ensuremath{\mathit{Cnd}}}
-\newcommand{\CMD}[0]{\ensuremath{\mathit{Cmd}}}
-\newcommand{\STORE}[0]{\ensuremath{\mathit{Store}}}
+\newcommand{\BIN}[0]{\mathit{Bin}}
+\newcommand{\NAT}[0]{\mathbb{N}}
+\newcommand{\FNAT}[0]{\mathbb{N}_{64}}
+\newcommand{\BOOL}[0]{\mathbb{B}}
+\newcommand{\VAR}[0]{\mathbb{X}}
+\newcommand{\EXP}[0]{\mathbb{E}}
+\newcommand{\CND}[0]{\mathit{Cnd}}
+\newcommand{\CMD}[0]{\mathit{Cmd}}
+\newcommand{\STORE}[0]{\mathit{Store}}
 \newcommand{\COND}[3]{#1\,\texttt{?}\,#2\,\texttt{:}\,#3}
 \newcommand{\ext}[3]{#3(#1{\mapsto}#2)}
 
@@ -88,9 +91,14 @@ Borrowing and combining elements from Chapter 4 of
 specified in Figure~\ref{fig:binary-arithmetic}.  The Syntax defines
 the form of the programs and the Semantics specifies the behavior of
 running the program. In this case, the behavior is simply to output a
-number (in decimal).  Our grammar for binary numerals departs slightly
-from \citet{Schmidt:1986vn}, with $\epsilon$ representing the empty
-string of digits.
+number (in decimal). In our grammar for binary numerals, $\epsilon$
+represents the empty string of digits and $bd$ is a number whose
+least-significant digit is $d$ and whose more-significant digits are
+given by $b$. (This is the reverse of \citet{Schmidt:1986vn} but the
+same direction as \citet{Stoy:1977aa}). We place superscripts on our
+binary numerals to enfore a bound on their maximum length, restricting
+them 64 bits. We ommit the superscripts when their length is not of
+interest.
 
 The main purpose of a semantics is communicate in a precise way with
 other people, primarily language implementers and programmers.  Thus,
@@ -98,33 +106,42 @@ it is incredibly important for the semantics to be written in a way
 that will make it most easily understood, while still being completely
 precise.  Here we have chosen to give the semantics of binary
 arithmetic in terms of decimal numbers because people are generally
-much more familiar with decimal numbers. 
+much more familiar with decimal numbers. We write $\FNAT$ for the set
+of numbers from $0$ to $2^{64}-1$.
 
-\begin{figure}
+\begin{figure}[tbp]
 \noindent Syntax
 \[
 \begin{array}{lrl}
  \text{digit}& d ::=& 0 \mid 1 \\
- \text{binary numeral}& b \in \BIN ::=& \epsilon \mid bd  \\
- \text{expression}& e \in \EXP ::=& b \mid e + e \mid e \times e
+ \text{binary numeral}& b^n \in \BIN^n ::=& \epsilon^n \mid (b^nd)^{n+1} \\
+ \text{expression}& e \in \EXP ::=& b^{64} \mid e + e \mid e \times e
 \end{array}
 \]
 Semantics\\
 \begin{minipage}{0.4\textwidth}
   \begin{align*}
- N : & \; \BIN \to \NAT \\
+ N : & \; \BIN^{64} \to \FNAT \\
  N\BR{ \epsilon } &= 0 \\
- N\BR{ b d } &= 2 N\BR{ b } + d\\[1ex]
+ N\BR{ b d } &= 2 N\BR{ b } + d \\[1ex]
 \end{align*}
 \end{minipage}
 \begin{minipage}{0.6\textwidth}
   \begin{align*}
-    E : & \; \EXP \to \NAT \\
-  E\BR{ b } &= N\BR{ b } \\
- E\BR{ e_1 + e_2 } &= 
-    E\BR{ e_1 } + E\BR{ e_2 } \\
+E : & \; \EXP \pto \FNAT \\
+E\BR{ b } &= N\BR{ b } \\
+E\BR{ e_1 + e_2 } &=
+\begin{cases}
+   n_1 + n_2 & \text{if } n_1 + n_2 < 2^{64}\\
+   \mathrm{undefined} & \text{otherwise}
+\end{cases}\\
+ \text{where } & n_1 = E\BR{ e_1 }, n_2 = E\BR{ e_2 } \\
  E\BR{ e_1 \times e_2 } &= 
-    E\BR{ e_1 } E\BR{ e_2 }
+\begin{cases}
+   n_1 n_2 & \text{if } n_1 n_2 < 2^{64}\\
+   \mathrm{undefined} & \text{otherwise}
+\end{cases}\\
+ \text{where } & n_1 = E\BR{ e_1 }, n_2 = E\BR{ e_2 } 
 \end{align*}
 \end{minipage}
 \caption{Language of binary arithmetic}
@@ -154,10 +171,10 @@ operates on the binary numbers directly. The auxiliary functions
 $\mathit{add}$ and $\mathit{mult}$ implement the algorithms you
 learned in grade school, but for binary instead of decimals.
 
-\begin{figure}
+\begin{figure}[tbp]
 \noindent Interpreter 
 \begin{align*}
-  I : & \; \EXP \to \BIN \\
+  I : & \; \EXP \pto \BIN^{64} \\
 I\BR{ b } &= b \\
 I\BR{ e_1 + e_2 } &=
   \mathit{add}(I\BR{ e_1 }, I\BR{ e_2 },0) \\
@@ -174,31 +191,42 @@ I\BR{ e_1 \times e_2 } &=
 %% \end{align*}
 Auxiliary Functions
 \begin{align*}
-  \mathit{add3}(d_1, d_2, d_3) &= 
-  \text{let } n = d_1 + d_2 + d_3 \text{ in } \\
-  &\quad \begin{cases}
+  \mathit{bin}^2(n) &=
+  \begin{cases}
      00 &  \text{if } n = 0 \\
      01 &  \text{if } n = 1 \\
      10 &  \text{if } n = 2 \\
      11 &  \text{if } n = 3
-  \end{cases}\\
+  \end{cases}
+  \\[2ex]
+  %% \mathit{add3}(d_1, d_2, d_3) &= 
+  %% \text{let } n = d_1 + d_2 + d_3 \text{ in } \\
+  %% &\quad \begin{cases}
+  %%    00 &  \text{if } n = 0 \\
+  %%    01 &  \text{if } n = 1 \\
+  %%    10 &  \text{if } n = 2 \\
+  %%    11 &  \text{if } n = 3
+  %% \end{cases}\\
  \mathit{add}(\epsilon, \epsilon, c) &= 
    \begin{cases}
       \epsilon  & \text{if } c = 0 \\
       \epsilon 1  & \text{if } c = 1
    \end{cases}
    \\
-  \mathit{add}(b_1 d_1 , b_2 d_2, c) &= 
-   \mathit{add}(b_1, b_2, c')\,d_3
-  \qquad \text{if } \mathit{add3}(d_1, d_2, c) = c' d_3 \\
+  \mathit{add}(b_1 d_1 , b_2 d_2, c) &=  b_3\,d_3
+  \text{ if } \mathit{bin}^2(d_1+ d_2+ c) = c' d_3,\\
+  & \qquad  \mathit{add}(b_1, b_2, c') = b^n_3, \text{ and } n < 64 \\
 \mathit{add}(b_1 d_1 , \epsilon, c) &= 
   \mathit{add}(b_1 d_1 , \epsilon 0, c) \\
 \mathit{add}(\epsilon, b_2 d_2, c) &= 
-  \mathit{add}( \epsilon 0, b_2 d_2,c) \\[1ex]
- \mathit{mult}(b_1, \epsilon) &= \epsilon \\
- \mathit{mult}(b_1, b_2 0) &= \mathit{mult}(b_1,b_2) 0 \\
+\mathit{add}( \epsilon 0, b_2 d_2,c)
+\\[2ex]
+\mathit{mult}(b_1, \epsilon) &= \epsilon \\
+\mathit{mult}(b_1, b_2 0) &= b_3 0
+  \text{ if } \mathit{mult}(b_1,b_2) = b^n_3 \text{ and } n < 64 \\
  \mathit{mult}(b_1, b_2 1) &= 
-  \mathit{add}(b_1, \mathit{mult}(b_1,b_2)0, 0) 
+   \mathit{add}(b_1, b_30, 0) \\
+  & \qquad \text{ if } \mathit{mult}(b_1,b_2) = b^n_3 \text{ and } n < 64
 \end{align*}
 \caption{Binary arithmetic interpreter.}
 \label{fig:interp-binary}
@@ -208,20 +236,15 @@ Auxiliary Functions
 \begin{Exercise}
 \label{ex:bit-add}
 Prove that 
-$N (\mathit{add3}(d_1, d_2, d_3)) = d_1 + d_2 + d_3$.
+$N (\mathit{bin}^2(n)) = n$ for any $n < 4$.
 \end{Exercise}
 \begin{Answer}
 \begin{tabular}{l|c|c} 
-    $d_1, d_2, d_3$ & $\mathit{add3}(d_1, d_2, d_3)$ 
-  & $d_1 + d_2 + d_3$ \\ \hline
-  $0,0,0$ & $00$ & $0$ \\
-  $0,0,1$ & $01$ & $1$\\
-  $0,1,0$ & $01$ & $1$ \\
-  $0,1,1$ & $10$ & $2$ \\
-  $1,0,0$ & $01$ & $1$ \\
-  $1,0,1$ & $10$ & $2$ \\
-  $1,1,0$ & $10$ & $2$\\
-  $1,1,1$ & $11$ & $3$
+  $n$ & $\mathit{bin}^2(n)$ & $N(\mathit{bin}^2(n))$ \\ \hline
+  $0$ & $00$ & $2\cdot 0 + 0 = 0$ \\
+  $1$ & $01$ & $2\cdot 0 + 1 = 1$\\
+  $2$ & $10$ & $2\cdot 1 + 0 = 2$ \\
+  $3$ & $11$ & $2\cdot 1 + 1 = 3$ 
 \end{tabular} 
 \end{Answer}
 
@@ -381,7 +404,7 @@ more simply.
 To give meaning to mutable variables, we use a $\STORE$ which
 is partial function from variables to numbers.
 \[
-  \STORE = \VAR \pto \NAT
+  \STORE = \VAR \pto \FNAT
 \]
 We write $[x\mapsto n]s$ for removing the entry for $x$ is $s$
 (if there is one) and then adding the entry $x\mapsto n$,
@@ -415,13 +438,13 @@ that is, $\{x\mapsto n\} \cup (s|_{\mathrm{dom}(s)-\{x\}})$.
 \begin{minipage}{0.5\textwidth}
 Semantics 
 \begin{align*}
-\shortintertext{$P :  \CMD \to \SET{\NAT \times \NAT}$}
+\shortintertext{$P :  \CMD \to \SET{\FNAT \times \FNAT}$}
 P\,c & = \{ (n,s'\,\mathtt{Z}) \mid (\{\mathtt{A}{\mapsto} n\},s') \in C\,c \}
-\shortintertext{$ E :  \EXP \to \STORE \to \NAT$}
+\shortintertext{$ E :  \EXP \to \STORE \to \FNAT$}
   E\,x\,s & = s\,x \\
     & \vdots 
 \shortintertext{$ B : \CND \to \STORE \to \BOOL$}
-  B\,(e_1 = e_2)\,s &= (E\,e_1\,s) =_{\NAT} (E\,e_2\,s) \\
+  B\,(e_1 = e_2)\,s &= (E\,e_1\,s) = (E\,e_2\,s) \\
   & \vdots 
 \shortintertext{$C : \CMD \to \SET{\STORE \times \STORE}$} 
 C\,\SKIP &= \mathit{id} \\ %\{(s,s) \mid s \in \STORE \}\\
@@ -452,9 +475,9 @@ meaning of expressions must be parameterized on the store. The meaning
 of a variable $x$ is the associated number in the store $s$.
 A program takes a number as input and it may produce a number or it
 might diverge. Traditional denotational semantics model this behavior
-with a partial function ($\NAT\pto\NAT$). Here we shall use the
+with a partial function ($\FNAT\pto\FNAT$). Here we shall use the
 alternate, but equivalent, approach of using a relation, a subset of
-$\NAT \times \NAT$. A program is a command and the meaning of commands
+$\FNAT \times \FNAT$. A program is a command and the meaning of commands
 is given by the semantic function $C$, which maps a command to a
 relation on stores, that is, to a subset of $\STORE \times
 \STORE$. The meaning of a program is given by the function
@@ -616,6 +639,18 @@ The proof is by cases on $k,s \longrightarrow k',s'$.
 TODO
 \end{Answer}
 
+\begin{Exercise}
+  Is the IMP language Turing-complete? Why or why not?
+\end{Exercise}
+\begin{Answer}
+  The IMP defined here is not Turing-complete because the amount of
+  memory is limited to a fixed amount because there are a fixed number
+  of variables used in the program and each variable holds 64
+  bits. Most versions of IMP are Turing complete because they
+  ``cheat'': each variable contains a natural number, which has
+  unbounded size.
+\end{Answer}
+
 \marginnote{
 Is the semantic function $C$ sound wrt. contextual equivalence?
 Is it complete? --Jeremy
@@ -668,11 +703,11 @@ abstracting away the recursion into a parameter $r$.
 
 There are quite a few theorems in the literature that guarantee the
 existence of fixed points, but with different assumptions about the
-function and its domain. For our purposes, the CPO Fixed-Point Theorem
-will do the job. The idea of this theorem is to construct an infinite
-sequence that provides increasingly better approximations of the least
-fixed point. The union of this sequence will turn out to be the least
-fixed point.
+function and its domain~\citep{Lassez:1982aa}. For our purposes, the
+CPO Fixed-Point Theorem will do the job. The idea of this theorem is
+to construct an infinite sequence that provides increasingly better
+approximations of the least fixed point. The union of this sequence
+will turn out to be the least fixed point.
 
 The CPO Fixed-Point Theorem is quite general; it is stated in terms of
 a function $F$ over partially ordered sets with a few mild conditions.
@@ -965,8 +1000,6 @@ of the \texttt{while} loop as follows.
   C(\WHILE{b}{c})\,s = \mathrm{fix}(F_{b,c})\,s
 \]
 
-
-
 \begin{Exercise}
   Prove that the semantics in Figure~\ref{fig:imperative} is
   equivalent to the least fixed-point semantics in
@@ -977,7 +1010,7 @@ of the \texttt{while} loop as follows.
 TODO
 \end{Answer}
 
-\begin{marginfigure}
+\begin{figure}[tbp]
 \begin{align*}
   \intertext{$P' : \CMD \to \NAT \pto \NAT$}
   P'\,c\,n &= (C'\,c\,\{A{\mapsto} n]\})\,Z 
@@ -1000,7 +1033,7 @@ C'(\WHILE{b}{c})\,s &= \mathrm{fix}(F_{b,c})\,s
 \end{align*}
 \caption{Least Fixed-Point Semantics of an Imperative Language}
 \label{fig:imperative-fixed-point}
-\end{marginfigure}
+\end{figure}
 
 In the literature there are two schools of thought regarding how to
 define complete partial orders. There is the one presented above, that
@@ -1014,13 +1047,17 @@ element is directed-complete iff every totally ordered sequence in $P$
 has a lub~\citep{Davey:2002fj} (Theorem 8.11).
 
 
-\section{The simply-typed $\lambda$-calculus}
+\section{Simply-Typed Functions}
 \label{sec:stlc}
 
+The appropriately-named simply-typed $\lambda$-calculus (STLC)
+provides a simple setting in which to study first-class functions.
+That is, functions that can be used like any other data.  In the
+limited context of the STLC, this just means that they can be passed
+as parameters and returned from functions.  Figure~\ref{fig:stlc}
+defines the syntax and type system of the STLC.
 
-Figure~\ref{fig:stlc} defines the simply-typed $\lambda$-calculus.
-
-\begin{figure*}
+\begin{figure*}[tbp]
 \noindent Syntax
 \[
 \begin{array}{lrl}
@@ -1050,6 +1087,13 @@ Type System\\
 \label{fig:stlc}
 \end{figure*}
 
+
+UNDER CONSTRUCTION
+
+
+Figure~\ref{fig:sem-stlc}
+
+\begin{figure*}[tbp]
 Semantics of Types
 \begin{align*}
   \SEM{\NAT} &= \mathbb{N} \\
@@ -1066,6 +1110,12 @@ Semantics
   E\,(\LAM{x\of A}e)\,\rho &= \uplambda d.\, E\,e\,\ext{x}{d}{\rho} \\
   E\,(e_1 \APP e_2)\,\rho &= (E\,e_1\,\rho) \APP (E\,e_2\,\rho)
 \end{align*}
+
+\caption{Semantics of the simply-typed $\lambda$-calculus}
+\label{fig:sem-stlc}
+\end{figure*}
+
+
 
 Equational Theory
 \begin{gather*}
