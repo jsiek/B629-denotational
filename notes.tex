@@ -45,8 +45,10 @@
 \newcommand{\pto}[0]{\rightharpoonup}
 \newcommand{\BIN}[0]{\mathit{Bin}}
 \newcommand{\NAT}[0]{\mathbb{N}}
+\newcommand{\NATTY}[0]{\mathit{Nat}}
 \newcommand{\FNAT}[0]{\mathbb{N}_{64}}
 \newcommand{\BOOL}[0]{\mathbb{B}}
+\newcommand{\BOOLTY}[0]{\mathit{Bool}}
 \newcommand{\VAR}[0]{\mathbb{X}}
 \newcommand{\EXP}[0]{\mathbb{E}}
 \newcommand{\CND}[0]{\mathit{Cnd}}
@@ -1055,14 +1057,28 @@ provides a simple setting in which to study first-class functions.
 That is, functions that can be used like any other data.  In the
 limited context of the STLC, this just means that they can be passed
 as parameters and returned from functions.  Figure~\ref{fig:stlc}
-defines the syntax and type system of the STLC.
+defines the syntax and type system of the STLC. The types include
+natural numbers and functions $A \to B$ where $A$ is the type of the
+input (there is just one) and $B$ is the type of the output.  The
+variables in this language are for refering to the parameters of
+functions. The expression $\LAM{x\of A}e$ creates a function of one
+parameter named $x$ of type $A$. The expression $e$ is the body of the
+function and it may refer to parater $x$.  The value of $e$ is the
+return value of the function. The expression $e_1 \APP e_2$
+\emph{applies} the function produced by $e_1$ to the value of $e_2$.
+The type system ensures that we never apply numbers (as if they were
+functions) or perform arithmetic on functions (as if they were
+numbers). The type system also prevents the use of undefined
+variables.
+
 
 \begin{figure*}[tbp]
 \noindent Syntax
 \[
 \begin{array}{lrl}
- \text{types} & A,B ::= & \NAT \mid A \to B \\
+ \text{types} & A,B ::= & \NATTY \mid A \to B \\
  \text{numbers}& n \in & \mathbb{N}  \\
+  \text{variables}& x \in & \VAR  \\
  \text{arithmetic} & \oplus ::= & + \mid \times \\
  \text{expression}& e ::=& n \mid e \oplus e
    \mid x \mid \LAM{x\of A} e \mid e \APP e
@@ -1070,10 +1086,10 @@ defines the syntax and type system of the STLC.
 \]
 Type System\\
 \begin{gather*}
-  \inference{}{\Gamma \vdash n : \NAT}
+  \inference{}{\Gamma \vdash n : \NATTY}
   \quad
-  \inference{\Gamma \vdash e_1 : \NAT & \Gamma \vdash e_2 : \NAT}
-            {\Gamma \vdash e_1 \oplus e_2 : \NAT}
+  \inference{\Gamma \vdash e_1 : \NATTY & \Gamma \vdash e_2 : \NATTY}
+            {\Gamma \vdash e_1 \oplus e_2 : \NATTY}
   \\[2ex]
   \inference{}{\Gamma \vdash x : \Gamma(x)}
   \quad
@@ -1088,21 +1104,29 @@ Type System\\
 \end{figure*}
 
 
-UNDER CONSTRUCTION
+The denotational semantics of the STLC is surprising simple, but does
+have one twist~\citep{Henkin:1950aa}. The set of values tha can be
+produced by an STLC expression depends on the type of the expression.
 
+UNDER CONSTRUCTION
 
 Figure~\ref{fig:sem-stlc}
 
 \begin{figure*}[tbp]
 Semantics of Types
 \begin{align*}
-  \SEM{\NAT} &= \mathbb{N} \\
+  \SEM{\NATTY} &= \mathbb{N} \\
   \SEM{A \to B} &=  \SEM{B}^{\SEM{A}} 
+\end{align*}
+Semantics of Type Environments
+\begin{align*}
+  \SEM{\emptyset} &= \\
+  \SEM{\Gamma,x\of A} &= 
 \end{align*}
 
 Semantics
 \begin{align*}
-  E\,e\,\rho & : \SEM{A} &\text{if } \Gamma \vdash e : A \text{ and } \rho \models \Gamma\\[2ex]
+\intertext{$E : \prod e : \EXP, \SEM{\Gamma} \to \SEM{A} \qquad \text{where } \Gamma \vdash e : A$}
   E\,n\,\rho &= n \\
   E\,(e_1\oplus e_2)\,\rho &= n_1 \oplus n_2 \\
      & \text{where } n_1 = E\,e_1\,\rho, n_2 = E\,e_2\,\rho \\
