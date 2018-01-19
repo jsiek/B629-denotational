@@ -27,6 +27,7 @@
 \newcommand{\BR}[1]{(#1)}
 \newcommand{\SEM}[1]{\llbracket #1 \rrbracket}
 \newcommand{\LAM}[1]{\lambda #1.\,}
+\newcommand{\MLAM}[1]{\boldsymbol\uplambda #1.\,}
 \newcommand{\SET}[1]{\mathcal{P}(#1)}
 \newcommand{\FSET}[1]{\mathcal{P}_f(#1)}
 \newcommand{\APP}[0]{\,}
@@ -46,6 +47,7 @@
 \newcommand{\BIN}[0]{\mathit{Bin}}
 \newcommand{\NAT}[0]{\mathbb{N}}
 \newcommand{\NATTY}[0]{\mathit{Nat}}
+\newcommand{\UNITTY}[0]{\mathit{Unit}}
 \newcommand{\FNAT}[0]{\mathbb{N}_{64}}
 \newcommand{\BOOL}[0]{\mathbb{B}}
 \newcommand{\BOOLTY}[0]{\mathit{Bool}}
@@ -1052,27 +1054,38 @@ has a lub~\citep{Davey:2002fj} (Theorem 8.11).
 \section{Simply-Typed Functions}
 \label{sec:stlc}
 
+\marginnote{
+\begin{tabular}{ll}
+  Reading: & \citet{Gunter:1992aa} Chapter 2, \\
+    & \citet{Chlipala:2007fk}
+\end{tabular}
+}
+
 The appropriately-named simply-typed $\lambda$-calculus (STLC)
 provides a simple setting in which to study first-class functions.
 That is, functions that can be used like any other data.  In the
 limited context of the STLC, this just means that they can be passed
 as parameters and returned from functions.  Figure~\ref{fig:stlc}
-defines the syntax and type system of the STLC. The types include
-natural numbers and functions $A \to B$ where $A$ is the type of the
-input (there is just one) and $B$ is the type of the output.  The
-variables in this language are for refering to the parameters of
-functions. The expression $\LAM{x\of A}e$ creates a function of one
-parameter named $x$ of type $A$. The expression $e$ is the body of the
-function and it may refer to parater $x$.  The value of $e$ is the
-return value of the function. The expression $e_1 \APP e_2$
-\emph{applies} the function produced by $e_1$ to the value of $e_2$.
-The type system ensures that we never apply numbers (as if they were
-functions) or perform arithmetic on functions (as if they were
-numbers). The type system also prevents the use of undefined
+defines the syntax and type system of the STLC. Whenever we discuss
+expression of the STLC, we always assume that they are well-typed,
+that is, that they satisfy the type system defined in
+Figure~\ref{fig:stlc}.  The types include natural numbers and
+functions $A \to B$ where $A$ is the type of the input (there is just
+one) and $B$ is the type of the output.
+
+The purpose of the variables in the STLC is for refering to the
+parameters of functions. The expression $\LAM{x\of A}e$ creates a
+function of one parameter named $x$ of type $A$. The expression $e$ is
+the body of the function and it may refer to parameter $x$.  The value
+of $e$ is the return value of the function. The expression $e_1 \APP
+e_2$ \emph{applies} the function produced by $e_1$ to the value of
+$e_2$.  The type system ensures that we never apply numbers (as if
+they were functions) or perform arithmetic on functions (as if they
+were numbers). The type system also prevents the use of undefined
 variables.
 
 
-\begin{figure*}[tbp]
+\begin{figure}[tbp]
 \noindent Syntax
 \[
 \begin{array}{lrl}
@@ -1080,68 +1093,96 @@ variables.
  \text{numbers}& n \in & \mathbb{N}  \\
   \text{variables}& x \in & \VAR  \\
  \text{arithmetic} & \oplus ::= & + \mid \times \\
- \text{expression}& e ::=& n \mid e \oplus e
-   \mid x \mid \LAM{x\of A} e \mid e \APP e
+ \text{expressions}& e ::=& n \mid e \oplus e
+   \mid x \mid \LAM{x\of A} e \mid e \APP e \\
+ \text{type env.} & \Gamma ::= & \emptyset \mid \Gamma,x\of A
 \end{array}
 \]
-Type System\\
+Type System
 \begin{gather*}
   \inference{}{\Gamma \vdash n : \NATTY}
   \quad
   \inference{\Gamma \vdash e_1 : \NATTY & \Gamma \vdash e_2 : \NATTY}
             {\Gamma \vdash e_1 \oplus e_2 : \NATTY}
-  \\[2ex]
-  \inference{}{\Gamma \vdash x : \Gamma(x)}
+  \\[1ex]
+  \inference{\Gamma_n = x\of A}{\Gamma \vdash x : A}
   \quad
   \inference{\Gamma,x\of A \vdash e : B}
             {\Gamma \vdash \LAM{x\of A}e : A \to B}
   \quad
-  \inference{\Gamma \vdash e_1 : A \to B & \Gamma \vdash e_2 : A}
+  \inference{\Gamma \vdash e_1 : A \to B \\ \Gamma \vdash e_2 : A}
             {\Gamma \vdash e_1 \APP e_2 : B}
 \end{gather*}
 \caption{Syntax and types of the simply-typed $\lambda$-calculus}
 \label{fig:stlc}
-\end{figure*}
+\end{figure}
 
 
-The denotational semantics of the STLC is surprising simple, but does
-have one twist~\citep{Henkin:1950aa}. The set of values tha can be
-produced by an STLC expression depends on the type of the expression.
-
-UNDER CONSTRUCTION
-
-Figure~\ref{fig:sem-stlc}
-
-\begin{figure*}[tbp]
-Semantics of Types
+The denotational semantics of the STLC~\citep{Henkin:1950aa} is simple
+because STLC functions are total, they always terminate with an
+answer. So they can be straightforwardly modeled by mathematical
+(total) functions. But there is one twist, describing the semantics
+function's type is a bit interesting.  The set of values that can be
+produced by an STLC expression \emph{depends} on the type of the
+expression. For example, if an expression has type $\NATTY$, then its
+meaning will be in $\NAT$. If an expression has type $\NATTY \to
+\NATTY$, then its meaning will be in $\NAT^{\NAT}$
+\footnote{The set-theoretic notation $B^A$ refers to the set of all
+  total functions from set $A$ to set $B$.}.  Thus, we define a
+mapping $\SEM{-}$ from each type into a set.
 \begin{align*}
   \SEM{\NATTY} &= \mathbb{N} \\
-  \SEM{A \to B} &=  \SEM{B}^{\SEM{A}} 
+  \SEM{A \to B} &= \SEM{A}\to \SEM{B}
 \end{align*}
-Semantics of Type Environments
+Likewise, we define a mapping from type environments to sets, in
+particular, to a cartesian product of the types of the variables.
 \begin{align*}
-  \SEM{\emptyset} &= \\
-  \SEM{\Gamma,x\of A} &= 
+  \SEM{\emptyset} &= \UNITTY \\
+  \SEM{\Gamma,x\of A} &= \SEM{\Gamma} \times \SEM{A}
 \end{align*}
 
-Semantics
+With these mapping in hand, we can describe the semantic function $E$
+for the STLC. Because of the dependency described above, the type of
+$E$ is interesting. It is a dependent function whose first parameter
+is some well-typed expression $e$, so we have $\Gamma \vdash e : A$.
+The second parameter is a type environment drawn from $\SEM{\Gamma}$
+and the result is in $\SEM{A}$.  The definition of the semantic
+function $E$ is given in Figure~\ref{fig:sem-stlc}.  We interpret each
+$\lambda$ as a total function and we interpret application as
+application. Regarding variables, the environment $\rho$ is a tuple of
+values ( not a mapping from variables to values) so environment lookup
+is performed by consulting the type environment $\Gamma$ to determine
+the position $n$ of a variable $x$, and then selecting the $n$th
+element from $\rho$.
+
+
+\begin{figure}[tbp]
 \begin{align*}
-\intertext{$E : \prod e : \EXP, \SEM{\Gamma} \to \SEM{A} \qquad \text{where } \Gamma \vdash e : A$}
+\intertext{$E : \prod (e : \EXP), \SEM{\Gamma} \to \SEM{A} \qquad \text{where } \Gamma \vdash e : A$}
   E\,n\,\rho &= n \\
   E\,(e_1\oplus e_2)\,\rho &= n_1 \oplus n_2 \\
-     & \text{where } n_1 = E\,e_1\,\rho, n_2 = E\,e_2\,\rho \\
-  E\,x\,\rho &= \rho(x) \\
-  E\,(\LAM{x\of A}e)\,\rho &= \uplambda d.\, E\,e\,\ext{x}{d}{\rho} \\
+     & \text{if } n_1 {=} E\,e_1\,\rho, n_2 {=} E\,e_2\,\rho \\
+  E\,x\,\rho &= \rho_n \quad \text{if } \Gamma_n = x:A \\
+  E\,(\LAM{x\of A}e)\,\rho &= \MLAM{d} E\,e\,(\rho,d) \\
   E\,(e_1 \APP e_2)\,\rho &= (E\,e_1\,\rho) \APP (E\,e_2\,\rho)
 \end{align*}
 
 \caption{Semantics of the simply-typed $\lambda$-calculus}
 \label{fig:sem-stlc}
-\end{figure*}
+\end{figure}
 
 
+\subsection{Equational Theory}
 
-Equational Theory
+
+Another way to specify the meaning of a language is with an equational
+theory. Figure~\ref{fig:stlc-eqns} gives the standard equational rules
+for the STLC, and the equational theory is the set of all equalities
+that can be deduced from these rules.  Note that these rules are
+closely related to the reduction rules of the STLC; they basically
+specify a bi-directional version of those rules.
+
+\begin{figure}[tbp]
 \begin{gather*}
   \text{(refl)}
   \inference{}{\vdash e = e}
@@ -1163,7 +1204,11 @@ Equational Theory
   (\eta) \inference{x \notin \mathrm{FV}(e)}
       {\vdash (\LAM{x\of A} e \APP x) = e}
 \end{gather*}
+\caption{Equational Theory of the simply-typed $\lambda$-calculus}
+\label{fig:stlc-eqns}
+\end{figure}
 
+UNDER CONSTRUCTION
 
 
 \begin{theorem}[Soundness of Semantics wrt. Equations]\ \\
@@ -1214,11 +1259,8 @@ Equational Theory
   TODO (page 51 of Gunter)
 \end{proof}
 
-Resources:
-\begin{itemize}
-\item \citet{Gunter:1992aa}
-\end{itemize}
 
+%===============================================================================
 \section{The untyped $\lambda$-calculus}
 \label{sec:lambda}
 
