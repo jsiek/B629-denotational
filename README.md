@@ -76,6 +76,7 @@ paper that the class has read.
     Alessi, Barbanera, Dezani-Ciancaglini 2006.
 - PCF
   - [A type-theoretic alternative to ISWIM, CUCH, OWHY](https://doi.org/10.1016/0304-3975(93)90095-B), Scott 1993.
+  - [LCF considered as a programming language](https://doi.org/10.1016/0304-3975(77)90044-5), Plotkin 1977.
 - Fixed point constructions in order-enriched categories. Wand 1979.
 - The category-theoretic solution of recursive domain equations,
   Smyth and Plotkin, 1982.
