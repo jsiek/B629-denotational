@@ -1118,15 +1118,15 @@ Type System
 \end{figure}
 
 
-The denotational semantics of the STLC~\citep{Henkin:1950aa} is simple
-because STLC functions are total, they always terminate with an
-answer. So they can be straightforwardly modeled by mathematical
-(total) functions. But there is one twist, describing the semantics
-function's type is a bit interesting.  The set of values that can be
-produced by an STLC expression \emph{depends} on the type of the
-expression. For example, if an expression has type $\NATTY$, then its
-meaning will be in $\NAT$. If an expression has type $\NATTY \to
-\NATTY$, then its meaning will be in $\NAT^{\NAT}$
+The denotational semantics of the STLC is simple because STLC
+functions are total, they always terminate with an answer. So they can
+be straightforwardly modeled by mathematical (total) functions. But
+there is one twist, describing the type of the semantics function is a
+bit interesting.  The set of values that can be produced by an STLC
+expression \emph{depends} on the type of the expression. For example,
+if an expression has type $\NATTY$, then its meaning will be in
+$\NAT$. If an expression has type $\NATTY \to \NATTY$, then its
+meaning will be in $\NAT^{\NAT}$
 \footnote{The set-theoretic notation $B^A$ refers to the set of all
   total functions from set $A$ to set $B$.}.  Thus, we define a
 mapping $\SEM{-}$ from each type into a set.
