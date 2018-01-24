@@ -1132,13 +1132,13 @@ meaning will be in $\NAT^{\NAT}$
 mapping $\SEM{-}$ from each type into a set.
 \begin{align*}
   \SEM{\NATTY} &= \mathbb{N} \\
-  \SEM{A \to B} &= \SEM{A}\to \SEM{B}
+  \SEM{A \to B} &=  \SEM{B}^{\SEM{A}}
 \end{align*}
 Likewise, we define a mapping from type environments to sets, in
 particular, to a cartesian product of the types of the variables.
 \begin{align*}
   \SEM{\emptyset} &= \UNITTY \\
-  \SEM{\Gamma,x\of A} &= \SEM{\Gamma} \times \SEM{A}
+  \SEM{\Gamma,x\of A} &= \SEM{A} \times \SEM{\Gamma}
 \end{align*}
 
 With these mapping in hand, we can describe the semantic function $E$
@@ -1148,12 +1148,14 @@ is some well-typed expression $e$, so we have $\Gamma \vdash e : A$.
 The second parameter is a type environment drawn from $\SEM{\Gamma}$
 and the result is in $\SEM{A}$.  The definition of the semantic
 function $E$ is given in Figure~\ref{fig:sem-stlc}.  We interpret each
-$\lambda$ as a total function and we interpret application as
-application. Regarding variables, the environment $\rho$ is a tuple of
-values ( not a mapping from variables to values) so environment lookup
-is performed by consulting the type environment $\Gamma$ to determine
-the position $n$ of a variable $x$, and then selecting the $n$th
-element from $\rho$.
+$\lambda$ as a function that maps every element $d$ in its domain
+$\SEM{A}$ to the element produced by the body $e$ of the $\lambda$,
+with $d$ bound to parameter $x$. We interpret application as
+mathematical function application. Regarding variables, the
+environment $\rho$ is a tuple of values (not a mapping from variables
+to values) so environment lookup is performed by consulting the type
+environment $\Gamma$ to determine the position $n$ of a variable $x$,
+and then selecting the $n$th element from $\rho$.
 
 
 \begin{figure}[tbp]
@@ -1161,9 +1163,9 @@ element from $\rho$.
 \intertext{$E : \prod (e : \EXP), \SEM{\Gamma} \to \SEM{A} \qquad \text{where } \Gamma \vdash e : A$}
   E\,n\,\rho &= n \\
   E\,(e_1\oplus e_2)\,\rho &= n_1 \oplus n_2 \\
-     & \text{if } n_1 {=} E\,e_1\,\rho, n_2 {=} E\,e_2\,\rho \\
+     & \text{if } n_1 {=} E\,e_1\,\rho \text{ and } n_2 {=} E\,e_2\,\rho \\
   E\,x\,\rho &= \rho_n \quad \text{if } \Gamma_n = x:A \\
-  E\,(\LAM{x\of A}e)\,\rho &= \{ (d,d') \mid d \in \SEM{A} \text{ and } d' = E\,e\,(\rho,d) \} \\
+  E\,(\LAM{x\of A}e)\,\rho &= \{ (d,d') \mid d \in \SEM{A} \text{ and } d' = E\,e\,(d,\rho) \} \\
   E\,(e_1 \APP e_2)\,\rho &= (E\,e_1\,\rho) \APP (E\,e_2\,\rho)
 \end{align*}
 
@@ -1180,7 +1182,7 @@ theory. Figure~\ref{fig:stlc-eqns} gives the standard equational rules
 for the STLC, and the equational theory is the set of all equalities
 that can be deduced from these rules.  Note that these rules are
 closely related to the reduction rules of the STLC; they basically
-specify a bi-directional version of those rules.
+specify a bidirectional version of those rules.
 
 \begin{figure}[tbp]
 \begin{gather*}
@@ -1208,10 +1210,58 @@ specify a bi-directional version of those rules.
 \label{fig:stlc-eqns}
 \end{figure}
 
-UNDER CONSTRUCTION
+
+Next we check whether the equational theory is sound with respect to
+the model. That is, for each equation that holds in the theory, does
+it also hold in the model?
+
+The most intersting of the equations is $\beta$, which involves
+substitution. So we shall need the following lemma regarding the
+interaction between substitution and the semantic function $E$.
+
+\begin{lemma}[Substitution]
+  \label{lem:stlc-subst}
+  Suppose $\Gamma,x \of B \vdash e : A$ and $\Gamma \vdash e' : B$.
+  $E\,([x\by e']e)\,\rho = E\,e\,(E\,e'\,\rho, \rho)$
+\end{lemma}
+\begin{proof}
+   (page 51 of Gunter)
+  The proof is by induction on $e$.
+  \begin{itemize}
+  \item Case $e=n$:
+    \[
+    E\,([x\by e']n)\,\rho = n = E\,n\,(E\,e'\,\rho,\rho)
+    \]
+  \item Case $e=e_1 \oplus e_2$:
+    \begin{align*}
+      E\,([x\by e'](e_1 \oplus e_2))\,\rho 
+      &= E\,([x\by e']e_1 \oplus [x\by e']e_2))\,\rho  & \text{def. substitution}\\
+      &= E\,([x\by e']e_1)\,\rho \oplus E\,([x\by e']e_2)\,\rho  & \text{def. $E$ } \\
+      &= E\,e_1\,(E\,e'\,\rho, \rho) \oplus E\,e_2\,(E\,e'\,\rho, \rho) & \text{I.H.}\\
+      &= E\,(e_1 \oplus e_2)\,(E\,e'\,\rho, \rho) & \text{def. $E$}
+    \end{align*}
+
+  \item Case $e=y$:
+    We consider two cases, whether $y=x$ or not.
+    \begin{itemize}
+    \item Subcase $y=x$:
+      \[
+        E\,([x\by e']x)\,\rho 
+        = E\,e'\,\rho 
+        = (E\,e'\,\rho, \rho)_0
+        = E\,x\,(E\,e'\,\rho, \rho)
+        \]
+    \item Subcase $y\neq x$:
+      
+    \end{itemize}
+
+  \item Case $e=\LAM{y \of A} e'$:
+  \item Case $e=e_1 \APP e_2$:
+  \end{itemize}
+\end{proof}
 
 
-\begin{theorem}[Soundness of Semantics wrt. Equations]\ \\
+\begin{theorem}[Soundness of Theory wrt. the Model]\ \\
   \noindent
   If $\vdash e = e'$, then $\forall \rho, E\,e\,\rho = E\,e'\,\rho$.
 \end{theorem}
@@ -1251,13 +1301,6 @@ UNDER CONSTRUCTION
   \end{itemize}
 \end{proof}
 
-\begin{lemma}[Substitution]
-  \label{lem:stlc-subst}
-  $E\,([x\by e']e)\,\rho = E\,e\,\ext{x}{E\,e'\,\rho}{\rho}$
-\end{lemma}
-\begin{proof}
-  TODO (page 51 of Gunter)
-\end{proof}
 
 
 %===============================================================================
