@@ -1135,10 +1135,10 @@ mapping $\SEM{-}$ from each type into a set.
   \SEM{A \to B} &=  \SEM{B}^{\SEM{A}}
 \end{align*}
 Likewise, we define a mapping from type environments to sets, in
-particular, to a cartesian product of the types of the variables.
+particular, to a cartesian product of the variable bindings.
 \begin{align*}
   \SEM{\emptyset} &= \UNITTY \\
-  \SEM{\Gamma,x\of A} &= \SEM{A} \times \SEM{\Gamma}
+  \SEM{\Gamma,x\of A} &= (\VAR \times \SEM{A}) \times \SEM{\Gamma}
 \end{align*}
 
 With these mapping in hand, we can describe the semantic function $E$
@@ -1152,10 +1152,9 @@ $\lambda$ as a function that maps every element $d$ in its domain
 $\SEM{A}$ to the element produced by the body $e$ of the $\lambda$,
 with $d$ bound to parameter $x$. We interpret application as
 mathematical function application. Regarding variables, the
-environment $\rho$ is a tuple of values (not a mapping from variables
-to values) so environment lookup is performed by consulting the type
-environment $\Gamma$ to determine the position $n$ of a variable $x$,
-and then selecting the $n$th element from $\rho$.
+environment $\rho$ is an association list mapping from variables to
+values, so we use an auxilliary \textsf{lookup} function (like assq)
+to obtain the value of a variable..
 
 
 \begin{figure}[tbp]
@@ -1164,8 +1163,8 @@ and then selecting the $n$th element from $\rho$.
   E\,n\,\rho &= n \\
   E\,(e_1\oplus e_2)\,\rho &= n_1 \oplus n_2 \\
      & \text{if } n_1 {=} E\,e_1\,\rho \text{ and } n_2 {=} E\,e_2\,\rho \\
-  E\,x\,\rho &= \rho_n \quad \text{if } \Gamma_n = x:A \\
-  E\,(\LAM{x\of A}e)\,\rho &= \{ (d,d') \mid d \in \SEM{A} \text{ and } d' = E\,e\,(d,\rho) \} \\
+  E\,x\,\rho &= \mathsf{lookup}\,\rho\,x \\
+  E\,(\LAM{x\of A}e)\,\rho &= \{ (d,d') \mid d \in \SEM{A} \text{ and } d' = E\,e\,\ext{x}{d}{\rho} \} \\
   E\,(e_1 \APP e_2)\,\rho &= (E\,e_1\,\rho) \APP (E\,e_2\,\rho)
 \end{align*}
 
@@ -1222,23 +1221,22 @@ interaction between substitution and the semantic function $E$.
 \begin{lemma}[Substitution]
   \label{lem:stlc-subst}
   Suppose $\Gamma,x \of B \vdash e : A$ and $\Gamma \vdash e' : B$.
-  $E\,([x\by e']e)\,\rho = E\,e\,(E\,e'\,\rho, \rho)$
+  $E\,([x\by e']e)\,\rho = E\,e\,\ext{x}{E\,e'\,\rho}{\rho}$
 \end{lemma}
 \begin{proof}
-   (page 51 of Gunter)
   The proof is by induction on $e$.
   \begin{itemize}
   \item Case $e=n$:
     \[
-    E\,([x\by e']n)\,\rho = n = E\,n\,(E\,e'\,\rho,\rho)
+    E\,([x\by e']n)\,\rho = n = E\,n\,\ext{x}{E\,e'\,\rho}{\rho}
     \]
   \item Case $e=e_1 \oplus e_2$:
     \begin{align*}
       E\,([x\by e'](e_1 \oplus e_2))\,\rho 
       &= E\,([x\by e']e_1 \oplus [x\by e']e_2))\,\rho  & \text{def. substitution}\\
       &= E\,([x\by e']e_1)\,\rho \oplus E\,([x\by e']e_2)\,\rho  & \text{def. $E$ } \\
-      &= E\,e_1\,(E\,e'\,\rho, \rho) \oplus E\,e_2\,(E\,e'\,\rho, \rho) & \text{I.H.}\\
-      &= E\,(e_1 \oplus e_2)\,(E\,e'\,\rho, \rho) & \text{def. $E$}
+      &= E\,e_1\,\ext{x}{E\,e'\,\rho}{\rho} \oplus E\,e_2\,\ext{x}{E\,e'\,\rho}{\rho} & \text{I.H.}\\
+      &= E\,(e_1 \oplus e_2)\,\ext{x}{E\,e'\,\rho}{\rho} & \text{def. $E$}
     \end{align*}
 
   \item Case $e=y$:
@@ -1248,15 +1246,43 @@ interaction between substitution and the semantic function $E$.
       \[
         E\,([x\by e']x)\,\rho 
         = E\,e'\,\rho 
-        = (E\,e'\,\rho, \rho)_0
-        = E\,x\,(E\,e'\,\rho, \rho)
+        = E\,x\,\ext{x}{E\,e'\,\rho}{\rho}
         \]
     \item Subcase $y\neq x$:
-      
+      \[
+      E\,([x\by e']y)\,\rho
+      =
+      E\,y\,\rho
+      = E\,y\,\ext{x}{E\,e'\,\rho}{\rho}
+      \]
     \end{itemize}
 
-  \item Case $e=\LAM{y \of A} e'$:
+  \item Case $e=\LAM{y \of A} e_1$: \\
+    By $\alpha$-conversion we can make sure that $y \notin
+    \mathrm{fv}(e')$ and $y \neq x$.
+    \begin{align*}
+      E\,[x\by e'](\LAM{y \of A} e_1)\,\rho
+      &= E\,(\LAM{y \of A} [x\by e']e_1)\,\rho &\text{by def. substitution} \\
+      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+          d' {=} E \,([x\by e']e_1)\,\ext{y}{d}{\rho} \} & \text{by def. $E$} \\
+      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+          d' {=} E \,e_1\,\ext{x}{E\,e'\,\ext{y}{d}{\rho}}{\ext{y}{d}{\rho}} \} & \text{by I.H.} \\
+      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+          d' {=} E \,e_1\,\ext{x}{E\,e'\,\rho}{\ext{y}{d}{\rho}} \} & y \notin \mathrm{FV}(e') \\
+      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+          d' {=} E \,e_1\,\ext{y}{d}{\ext{x}{E\,e'\,\rho}{\rho}} \} & y \neq x \\
+      &= E\,(\LAM{y \of A} e_1)\,\ext{x}{E\,e'\,\rho}{\rho} & \text{by def. $E$}
+    \end{align*}
+    
   \item Case $e=e_1 \APP e_2$:
+    \begin{align*}
+      E\,[x\by e'](e_1 \APP e_2)\,\rho
+      &= E\,([x\by e']e_1 \APP [x\by e']e_2)\,\rho & \text{by def. substitution}\\
+      &= (E\,[x\by e']e_1\,\rho) \APP (E\,[x\by e']e_2\,\rho) & \text{by def. $E$} \\
+      &= (E\,e_1\,\ext{x}{E\,e'\,\rho}{\rho}) \APP
+      (E\,e_2\,\ext{x}{E\,e'\,\rho}{\rho}) & \text{by I.H.} \\
+      &= E\,(e_1 \APP e_2)\,\ext{x}{E\,e'\,\rho}{\rho} & \text{by def. $E$}
+    \end{align*}
   \end{itemize}
 \end{proof}
 
