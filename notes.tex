@@ -1341,13 +1341,13 @@ according to the theory.
 We also define the equivalence class of expressions of a given type
 that are equal according to the theory.
 \[
-  \mathcal{T}\SEM{A} &= \{ [e] \mid \Gamma \vdash e : A \}
+  \mathcal{T}\SEM{A} = \{ [e] \mid \Gamma \vdash e : A \}
 \]
 
 
 
 %===============================================================================
-\section{The untyped $\lambda$-calculus}
+\section{Untyped Functions}
 \label{sec:lambda}
 
 \marginnote{
@@ -1356,13 +1356,15 @@ Reading: & \citet{Siek:2017ab}
 \end{tabular}
 }
 
-We now turn to the prototypical functional language, the
-$\lambda$-calculus. The main feature of this language is a function,
-created by lambda abstractions $\LAM{x}e$. The application expression
-$(e_1\,e_2)$ applies the function produced by $e_1$ to the argument
-produced by $e_2$. We study here the call-by-value (CBV) version of
-the $\lambda$-calculus.  As a secondary feature, we include arithmetic
-on natural numbers.
+We now turn to an untyped functional language, the $\lambda$-calculus.
+The syntax is nearly the same as that of the simply-typed
+$\lambda$-calculus, except that $\lambda$ abstractions no longer come
+with a type annotation on their parameter.  Because the
+$\lambda$-calculus is untyped, we consider any syntactically
+well-formed expression to be in the language (no type system
+necessary) and any closed expression is a valid program.  We study
+here the call-by-value (CBV) version of the $\lambda$-calculus.  As we
+did for the STLC, we include arithmetic on natural numbers.
 \[
 \begin{array}{lrl}
               & n \in \mathbb{N} \\
