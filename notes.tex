@@ -403,7 +403,7 @@ of continuous functions, which takes some time to explain. However, it
 turns out that the semantics of \texttt{while} loops can be defined
 more simply.
 
-\subsection{Semantics of IMP}
+\subsection{Semantics}
 
 To give meaning to mutable variables, we use a $\STORE$ which
 is partial function from variables to numbers.
@@ -508,7 +508,7 @@ relating $s_2$ to the finishing store $s_3$.
 %%  \end{cases} 
 %% \]
 
-\subsection{Implementation of IMP}
+\subsection{Implementation}
 
 We define an implementation of the imperative language, in terms of an
 abstract machine, in Figure~\ref{fig:imp-impl}. The machine executes
@@ -661,7 +661,7 @@ Is it complete? --Jeremy
 }
 
 
-\subsection{Recursive Definitions via Least Fixed Points}
+\subsection{Semantics via Least Fixed Points}
 
 \marginnote{
 \begin{tabular}{ll}
@@ -1117,6 +1117,7 @@ Type System
 \label{fig:stlc}
 \end{figure}
 
+\subsection{Semantics}
 
 The denotational semantics of the STLC is simple because STLC
 functions are total, they always terminate with an answer. So they can
@@ -1175,7 +1176,6 @@ to obtain the value of a variable..
 
 \subsection{Equational Theory}
 
-
 Another way to specify the meaning of a language is with an equational
 theory. Figure~\ref{fig:stlc-eqns} gives the standard equational rules
 for the STLC, and the equational theory is the set of all equalities
@@ -1209,6 +1209,8 @@ specify a bidirectional version of those rules.
 \label{fig:stlc-eqns}
 \end{figure}
 
+
+\subsection{Soundness of Equational Theory}
 
 Next we check whether the equational theory is sound with respect to
 the model. That is, for each equation that holds in the theory, does
@@ -1331,18 +1333,80 @@ interaction between substitution and the semantic function $E$.
 Next we turn to the question of completeness of the equational theory
 wrt. to the model.
 
-UNDER CONSTRUCTION
+\subsection{Term Model}
 
-We define the equivalence class of all expression that are equal
+We define the equivalence class of expressions that are equal
 according to the theory.
 \[
-  [e] = \{ e' \mid \; \vdash e = e' \}
+  [e] \defeq \{ e' \mid \; \vdash e = e' \}
 \]
-We also define the equivalence class of expressions of a given type
-that are equal according to the theory.
+We also define the equivalence classes of a given type.
+Fix a type environment $\mathcal{G}$ with an infinite number of
+distinct variable bindings for every type.
 \[
-  \mathcal{T}\SEM{A} = \{ [e] \mid \Gamma \vdash e : A \}
+T\,A \defeq \{ [e] \mid \exists \Gamma, \Gamma \subset \mathcal{G}
+  \text{ and } \Gamma \vdash e : A \}
 \]
+Given $[e_1] \in T\,(A\to B)$ and $[e_2] \in T\,A$, we define an
+application operator as follows:
+\[
+    [e_1] \cdot [e_2] \defeq [(e_1\APP e_2)]
+\]
+
+\begin{definition}
+A structure $(T,\cdot)$ is a \emph{pre-frame} when extensionality
+holds, i.e. if two functions map equal arguments to equal results,
+then the two functions are the same function.
+\end{definition}
+
+\begin{lemma}[Term Model is a pre-frame]
+  The term model $(T,\cdot)$ is a pre-frame.
+\end{lemma}
+\begin{proof}
+Let $[f],[g] \in T\,(A\to B)$.  We assume $[f] \cdot [a] = [g] \cdot
+[a]$ for any $[a]\in T\,A$.  We need to show that $[f] = [g]$, so it
+suffices to show $\vdash f = g$.  Find some $x : A \in \mathcal{G}$
+s.t. $x \notin \mathrm{FV}(f) \cup \mathrm{FV}(g)$.  Then
+\[
+  [f \APP x] = [f] \cdot [x] = [g] \cdot [x] = [g \APP x]
+\]
+and so $\vdash f \APP x = g \APP x$. Then by the $\xi$ rule we have
+\[
+\vdash \LAM{x\of A} f \APP x = \LAM{x\of A} g \APP x
+\]
+By the $\eta$ rule we have $\vdash \LAM{x\of A} f \APP x = f$ and
+$\vdash \LAM{x\of A} g \APP x = g$, so we conclude that $\vdash f = g$.
+\end{proof}
+
+\begin{definition}
+A structure $(T,\cdot)$ is a \emph{frame} if $(T,\cdot)$ is a
+pre-frame and $T$ is also a mapping on expressions that satisfies the
+following equations
+\begin{align*}
+  T\,x\,\rho &= \rho(x) \\
+  T\,(e_1\APP e_2)\,\rho &= (T\,e_1\,\rho) \cdot (T\,e_2\,\rho) \\
+  (T\,(\LAM{x\of A} e_1)\,\rho) \cdot d &=
+    T\,e_1\,\ext{x}{d}{\rho}
+\end{align*}
+\end{definition}
+  
+
+In the term model, a $\Gamma$-environment $\rho$ maps each variable $x
+: A \in \Gamma$ to the set $T\,A$. A substitution $\sigma$ maps each
+variable to a single expression. A substitution $\sigma$ represents
+$\rho$ as follows.
+\[
+\Gamma; \rho \vdash \sigma \defeq \forall x : A \in \Gamma,
+   \sigma(x) \in \rho(x)
+\]
+
+The meaning of expressions in the term model is defined as follows.
+\[
+  T\,e\,\rho \defeq [\sigma(e)] \text{ for some } \Gamma;\rho \vdash \sigma
+\]
+
+\subsection{Completeness of the Equational Theory}
+
 
 
 
