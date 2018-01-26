@@ -1402,24 +1402,22 @@ equivalence class of expressions of type $A$.
   \rho \models \Gamma \defeq \forall x:A \in \Gamma, \rho(x) \in T\,A
 \]
 A substitution $\sigma$ maps each variable to a single expression. A
-substitution $\sigma$ represents $\rho$ if it maps each variable to
-the representative in $\rho$.
+substitution $\mathsf{rep}(\rho)$ represents $\rho$ if it maps each
+variable to the representative in $\rho$.
 \[
-\Gamma; \rho \vdash \sigma \defeq \forall x : A \in \Gamma,
-   \rho(x) = [\sigma(x)]
+  \mathsf{rep}(\rho)(x) \defeq e \quad \text{if } \rho(x) = [e]
 \]
 
 The meaning of expressions in the term model is defined as follows.
 \[
-  T\,e\,\rho \defeq [\sigma(e)]
-  \text{ for some $\sigma$ s.t. } \Gamma;\rho \vdash \sigma
+  T\,e\,\rho \defeq [\mathsf{rep}(\rho)(e)]
 \]
 
 
 \begin{lemma}
   The term model $(T,\cdot)$ is a frame.
 \end{lemma}
-\begin{proof} Let $\sigma$ be a substitution that represents $\rho$.
+\begin{proof} Let $\sigma = \mathsf{rep}(\rho)$.
   \begin{itemize}
   \item nts. $T\,x\,\rho = \rho(x)$.
     \[
