@@ -1122,7 +1122,7 @@ Type System
 The denotational semantics of the STLC is simple because STLC
 functions are total, they always terminate with an answer. So they can
 be straightforwardly modeled by mathematical (total) functions. But
-there is one twist, describing the type of the semantics function is a
+there is one twist, describing the type of the semantic function is a
 bit interesting.  The set of values that can be produced by an STLC
 expression \emph{depends} on the type of the expression. For example,
 if an expression has type $\NATTY$, then its meaning will be in
@@ -1335,6 +1335,10 @@ wrt. to the model.
 
 \subsection{Term Model}
 
+In this section we construct a model for STLC that is built from the
+expressions of STLC but modulo the equational theory. We then use this
+model in the next section in the proof of completeness.
+
 We define the equivalence class of expressions that are equal
 according to the theory.
 \[
@@ -1355,11 +1359,12 @@ application operator as follows:
 
 \begin{definition}
 A structure $(T,\cdot)$ is a \emph{pre-frame} when extensionality
-holds, i.e. if two functions map equal arguments to equal results,
-then the two functions are the same function.
+holds, i.e. if two functions $f,g \in T (A \to B)$ map every argument
+$a \in T\,A$ to equal results, $f \cdot a = g \cdot a$, then the two
+functions are the same function, $f = g$.
 \end{definition}
 
-\begin{lemma}[Term Model is a pre-frame]
+\begin{lemma}
   The term model $(T,\cdot)$ is a pre-frame.
 \end{lemma}
 \begin{proof}
@@ -1370,11 +1375,11 @@ s.t. $x \notin \mathrm{FV}(f) \cup \mathrm{FV}(g)$.  Then
 \[
   [f \APP x] = [f] \cdot [x] = [g] \cdot [x] = [g \APP x]
 \]
-and so $\vdash f \APP x = g \APP x$. Then by the $\xi$ rule we have
+and so $\vdash f \APP x = g \APP x$. Then by the ($\xi$) rule we have
 \[
 \vdash \LAM{x\of A} f \APP x = \LAM{x\of A} g \APP x
 \]
-By the $\eta$ rule we have $\vdash \LAM{x\of A} f \APP x = f$ and
+By the ($\eta$) rule we have $\vdash \LAM{x\of A} f \APP x = f$ and
 $\vdash \LAM{x\of A} g \APP x = g$, so we conclude that $\vdash f = g$.
 \end{proof}
 
@@ -1389,21 +1394,81 @@ following equations
     T\,e_1\,\ext{x}{d}{\rho}
 \end{align*}
 \end{definition}
-  
 
 In the term model, a $\Gamma$-environment $\rho$ maps each variable $x
-: A \in \Gamma$ to the set $T\,A$. A substitution $\sigma$ maps each
-variable to a single expression. A substitution $\sigma$ represents
-$\rho$ as follows.
+: A \in \Gamma$ to an element of the set $T\,A$, i.e. to an
+equivalence class of expressions of type $A$.
+\[
+  \rho \models \Gamma \defeq \forall x:A \in \Gamma, \rho(x) \in T\,A
+\]
+A substitution $\sigma$ maps each variable to a single expression. A
+substitution $\sigma$ represents $\rho$ if it maps each variable to
+the representative in $\rho$.
 \[
 \Gamma; \rho \vdash \sigma \defeq \forall x : A \in \Gamma,
-   \sigma(x) \in \rho(x)
+   \rho(x) = [\sigma(x)]
 \]
 
 The meaning of expressions in the term model is defined as follows.
 \[
-  T\,e\,\rho \defeq [\sigma(e)] \text{ for some } \Gamma;\rho \vdash \sigma
+  T\,e\,\rho \defeq [\sigma(e)]
+  \text{ for some $\sigma$ s.t. } \Gamma;\rho \vdash \sigma
 \]
+
+
+\begin{lemma}
+  The term model $(T,\cdot)$ is a frame.
+\end{lemma}
+\begin{proof} Let $\sigma$ be a substitution that represents $\rho$.
+  \begin{itemize}
+  \item nts. $T\,x\,\rho = \rho(x)$.
+    \[
+     T\,x\,\rho = [\sigma(x)] = \rho(x)
+    \]
+    
+  \item nts. $T\,(e_1\APP e_2)\,\rho = (T\,e_1\,\rho) \cdot (T\,e_2\,\rho)$
+    \[
+    T\,(e_1\APP e_2)\,\rho
+    = [\sigma(e_1\APP e_2)]
+    = [\sigma(e_1)] \cdot [\sigma(e_2)]
+    = (T\,e_1\,\rho ) \cdot (T\,e_2\,\rho)
+    \]
+
+  \item nts. $(T\,(\LAM{x\of A} e_1)\,\rho) \cdot d =
+    T\,e_1\,\ext{x}{d}{\rho}$. Let $d=[e]$.
+    \begin{align*}
+    (T\,(\LAM{x\of A} e_1)\,\rho) \cdot [e]
+    &= [\LAM{x\of A}\sigma(e_1)] \cdot [e] & \text{by def. $T$}\\
+    &= [(\LAM{x\of A}\sigma(e_1)) \APP e] & \text{by def. $\cdot$}\\
+    &= [\sigma(x\by e)(e_1)] & \text{by ($\beta$)}\\
+    &= T\,e_1\,\ext{x}{[e]}{\rho} & \text{by def. $T$}
+    \end{align*}
+    
+  \end{itemize}
+  
+\end{proof}
+
+\begin{definition}
+  Suppose $\Gamma \vdash e : A$ and $\Gamma \vdash e' : A$.
+  \[
+  (T,\cdot) \models e = e' \quad \defeq \quad \forall \rho,\;
+  \rho \models \Gamma \implies T\,e\,\rho = T\,e'\,\rho
+  \]
+\end{definition}
+
+\begin{lemma}[Frames are Sound]
+  Suppose $(T,\cdot)$ is a frame.
+  If $\vdash e = e'$, then $(T,\cdot) \models e = e'$
+\end{lemma}
+
+
+\begin{lemma}[Term Model is Sound and Complete]
+    $\vdash e = e'$ iff $(T,\cdot) \models e = e'$.
+\end{lemma}
+\begin{proof}
+  UNDER CONSTRUCTION
+\end{proof}
+
 
 \subsection{Completeness of the Equational Theory}
 
