@@ -1415,6 +1415,7 @@ The meaning of expressions in the term model is defined as follows.
 
 
 \begin{lemma}
+  \label{lem:term-frame}
   The term model $(T,\cdot)$ is a frame.
 \end{lemma}
 \begin{proof} Let $\sigma = \mathsf{rep}(\rho)$.
@@ -1455,16 +1456,39 @@ The meaning of expressions in the term model is defined as follows.
 \end{definition}
 
 \begin{lemma}[Frames are Sound]
-  Suppose $(T,\cdot)$ is a frame.
+  \label{lem:frame-sound}
+  Suppose $(T,\cdot)$ is a frame.\\
   If $\vdash e = e'$, then $(T,\cdot) \models e = e'$
 \end{lemma}
 
 
-\begin{lemma}[Term Model is Sound and Complete]
-    $\vdash e = e'$ iff $(T,\cdot) \models e = e'$.
-\end{lemma}
+\begin{theorem}[Term Model is Sound and Complete wrt. Equational Theory]\ \\
+  Suppose $\Gamma \vdash e : A$ and $\Gamma \vdash e' : A$.\\
+  $\vdash e = e'$ iff $(T,\cdot) \models e = e'$.
+\end{theorem}
 \begin{proof}
-  UNDER CONSTRUCTION
+  We consider each direction of the iff separately.
+  \begin{itemize}
+  \item $\vdash e = e' \implies (T,\cdot) \models e = e'$ \\
+    The term model is a frame (Lemma~\ref{lem:term-frame}),
+    and frames are sound (Lemma~\ref{lem:frame-sound}).
+  \item $(T,\cdot) \models e = e' \implies \vdash e = e'$ \\
+    Wlog. we assume $\Gamma \subset \mathcal{G}$.
+    Let $\rho$ be the identity environment $\{ x \mapsto [x] \mid x
+    \in \mathrm{dom}(\Gamma) \}$. So we have $\rho \models \Gamma$
+    and therefore $T\,e\,\rho = T\,e'\,\rho$. We then calculate
+    \[
+      [e]
+      = [\mathsf{rep}(\rho)(e)]
+      = T\,e\,\rho
+      = T\,e'\,\rho
+      = [\mathsf{rep}(\rho)(e')]
+      = [e']
+    \]
+    Therefore $\vdash e = e'$ 
+    
+  \end{itemize}
+  
 \end{proof}
 
 
