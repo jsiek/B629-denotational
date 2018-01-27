@@ -1130,27 +1130,27 @@ $\NAT$. If an expression has type $\NATTY \to \NATTY$, then its
 meaning will be in $\NAT^{\NAT}$
 \footnote{The set-theoretic notation $B^A$ refers to the set of all
   total functions from set $A$ to set $B$.}.  Thus, we define a
-mapping $\SEM{-}$ from each type into a set.
+mapping $E$ from each type into a set.
 \begin{align*}
-  \SEM{\NATTY} &= \mathbb{N} \\
-  \SEM{A \to B} &=  \SEM{B}^{\SEM{A}}
+  E\,\NATTY &= \mathbb{N} \\
+  E\,(A \to B) &=  E\,B^{E\,A}
 \end{align*}
 Likewise, we define a mapping from type environments to sets, in
 particular, to a cartesian product of the variable bindings.
 \begin{align*}
-  \SEM{\emptyset} &= \UNITTY \\
-  \SEM{\Gamma,x\of A} &= (\VAR \times \SEM{A}) \times \SEM{\Gamma}
+  E\,\emptyset &= \UNITTY \\
+  E\,(\Gamma,x\of A) &= (\VAR \times E\,A) \times E\,\Gamma
 \end{align*}
 
 With these mapping in hand, we can describe the semantic function $E$
 for the STLC. Because of the dependency described above, the type of
 $E$ is interesting. It is a dependent function whose first parameter
 is some well-typed expression $e$, so we have $\Gamma \vdash e : A$.
-The second parameter is a type environment drawn from $\SEM{\Gamma}$
-and the result is in $\SEM{A}$.  The definition of the semantic
+The second parameter is a type environment drawn from $E\,\Gamma$
+and the result is in $E\,A$.  The definition of the semantic
 function $E$ is given in Figure~\ref{fig:sem-stlc}.  We interpret each
 $\lambda$ as a function that maps every element $d$ in its domain
-$\SEM{A}$ to the element produced by the body $e$ of the $\lambda$,
+$E\,A$ to the element produced by the body $e$ of the $\lambda$,
 with $d$ bound to parameter $x$. We interpret application as
 mathematical function application. Regarding variables, the
 environment $\rho$ is an association list mapping from variables to
@@ -1160,12 +1160,12 @@ to obtain the value of a variable..
 
 \begin{figure}[tbp]
 \begin{align*}
-\intertext{$E : \prod (e : \EXP), \SEM{\Gamma} \to \SEM{A} \qquad \text{where } \Gamma \vdash e : A$}
+\intertext{$E : \prod (e : \EXP), E\,\Gamma \to E\,A \qquad \text{where } \Gamma \vdash e : A$}
   E\,n\,\rho &= n \\
-  E\,(e_1\oplus e_2)\,\rho &= n_1 \oplus n_2 \\
+  E\,(e_1\oplus e_2)\,\rho &= \delta(\oplus,n_1, n_2) \\
      & \text{if } n_1 {=} E\,e_1\,\rho \text{ and } n_2 {=} E\,e_2\,\rho \\
   E\,x\,\rho &= \mathsf{lookup}\,\rho\,x \\
-  E\,(\LAM{x\of A}e)\,\rho &= \{ (d,d') \mid d \in \SEM{A} \text{ and } d' = E\,e\,\ext{x}{d}{\rho} \} \\
+  E\,(\LAM{x\of A}e)\,\rho &= \{ (d,d') \mid d \in E\,A \text{ and } d' = E\,e\,\ext{x}{d}{\rho} \} \\
   E\,(e_1 \APP e_2)\,\rho &= (E\,e_1\,\rho) \APP (E\,e_2\,\rho)
 \end{align*}
 
@@ -1204,6 +1204,12 @@ specify a bidirectional version of those rules.
   \quad
   (\eta) \inference{x \notin \mathrm{FV}(e)}
       {\vdash (\LAM{x\of A} e \APP x) = e}
+  \\[2ex]
+  \text{(cong-$\oplus$)}
+  \inference{\vdash e_1 = e_3 & \vdash e_2 = e_4}
+    {\vdash (e_1\oplus e_2) = (e_3 \oplus e_4)}
+  \quad
+  \text{($\delta$)}\inference{n_3 = \delta(\oplus,n_1,n_2)}{n_1\oplus n_2 = n_3}
 \end{gather*}
 \caption{Equational Theory of the simply-typed $\lambda$-calculus}
 \label{fig:stlc-eqns}
@@ -1265,13 +1271,13 @@ interaction between substitution and the semantic function $E$.
     \begin{align*}
       E\,[x\by e'](\LAM{y \of A} e_1)\,\rho
       &= E\,(\LAM{y \of A} [x\by e']e_1)\,\rho &\text{by def. substitution} \\
-      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+      &= \{ (d,d') \mid d \in E\,A \text{ and }
           d' {=} E \,([x\by e']e_1)\,\ext{y}{d}{\rho} \} & \text{by def. $E$} \\
-      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+      &= \{ (d,d') \mid d \in E\,A \text{ and }
           d' {=} E \,e_1\,\ext{x}{E\,e'\,\ext{y}{d}{\rho}}{\ext{y}{d}{\rho}} \} & \text{by I.H.} \\
-      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+      &= \{ (d,d') \mid d \in E\,A \text{ and }
           d' {=} E \,e_1\,\ext{x}{E\,e'\,\rho}{\ext{y}{d}{\rho}} \} & y \notin \mathrm{FV}(e') \\
-      &= \{ (d,d') \mid d \in \SEM{A} \text{ and }
+      &= \{ (d,d') \mid d \in E\,A \text{ and }
           d' {=} E \,e_1\,\ext{y}{d}{\ext{x}{E\,e'\,\rho}{\rho}} \} & y \neq x \\
       &= E\,(\LAM{y \of A} e_1)\,\ext{x}{E\,e'\,\rho}{\rho} & \text{by def. $E$}
     \end{align*}
@@ -1289,11 +1295,32 @@ interaction between substitution and the semantic function $E$.
 \end{proof}
 
 
+\begin{definition}
+Suppose $M$ is a semantic function for the STLC.  A
+$\Gamma$-environment $\rho$ maps each variable $x : A \in \Gamma$ to
+an element of the set $M\,A$, i.e. to an equivalence class of
+expressions of type $A$.
+\[
+  \rho \models \Gamma \defeq \forall x:A \in \Gamma, \rho(x) \in M\,A
+\]
+\end{definition}
+
+\begin{definition}
+  Suppose $\Gamma \vdash e : A$, $\Gamma \vdash e' : A$, and $M$ is a
+  semantic function for STLC.
+  \[
+  M \models e = e' \quad \defeq \quad \forall \rho,\;
+  \rho \models \Gamma \implies M\,e\,\rho = M\,e'\,\rho
+  \]
+\end{definition}
+
 \begin{theorem}[Soundness of Theory wrt. the Model]\ \\
   \noindent
-  If $\vdash e = e'$, then $\forall \rho, E\,e\,\rho = E\,e'\,\rho$.
+  If $\vdash e = e'$, then $E \models e = e'$.
 \end{theorem}
 \begin{proof}
+  Let $\rho$ be an environment such that $\rho \models \Gamma$.
+  We need to show that $E\,e\,\rho = E\,e'\,\rho$.
   The proof is by induction on the derivation of $\vdash e_1 = e_2$.
   \begin{itemize}
   \item (refl), (sym), (trans) are immediate.
@@ -1325,13 +1352,18 @@ interaction between substitution and the semantic function $E$.
       &= \uplambda d.\,(E\,e\,\rho) \APP d & \text{because } x \notin \mathrm{FV}(e)\\
       &= E\,e\,\rho
     \end{align*}
-    
+
+  \item (cong-$\oplus$) TODO
+
+  \item ($\delta$) TODO
+
   \end{itemize}
 \end{proof}
 
 
 Next we turn to the question of completeness of the equational theory
-wrt. to the model.
+wrt. to the model. This is more involved and first requires that we
+construct the so-called term model.
 
 \subsection{Term Model}
 
@@ -1358,9 +1390,9 @@ application operator as follows:
 \]
 
 \begin{definition}
-A structure $(T,\cdot)$ is a \emph{pre-frame} when extensionality
-holds, i.e. if two functions $f,g \in T (A \to B)$ map every argument
-$a \in T\,A$ to equal results, $f \cdot a = g \cdot a$, then the two
+A structure $(M,\cdot)$ is a \emph{pre-frame} when extensionality
+holds, i.e. if two functions $f,g \in M (A \to B)$ map every argument
+$a \in M\,A$ to equal results, $f \cdot a = g \cdot a$, then the two
 functions are the same function, $f = g$.
 \end{definition}
 
@@ -1384,14 +1416,14 @@ $\vdash \LAM{x\of A} g \APP x = g$, so we conclude that $\vdash f = g$.
 \end{proof}
 
 \begin{definition}
-A structure $(T,\cdot)$ is a \emph{frame} if $(T,\cdot)$ is a
-pre-frame and $T$ is also a mapping on expressions that satisfies the
+A structure $(M,\cdot)$ is a \emph{frame} if $(M,\cdot)$ is a
+pre-frame and $M$ is also a mapping on expressions that satisfies the
 following equations
 \begin{align*}
-  T\,x\,\rho &= \rho(x) \\
-  T\,(e_1\APP e_2)\,\rho &= (T\,e_1\,\rho) \cdot (T\,e_2\,\rho) \\
-  (T\,(\LAM{x\of A} e_1)\,\rho) \cdot d &=
-    T\,e_1\,\ext{x}{d}{\rho}
+  M\,x\,\rho &= \rho(x) \\
+  M\,(e_1\APP e_2)\,\rho &= (M\,e_1\,\rho) \cdot (M\,e_2\,\rho) \\
+  (M\,(\LAM{x\of A} e_1)\,\rho) \cdot d &=
+    M\,e_1\,\ext{x}{d}{\rho}
 \end{align*}
 \end{definition}
 
@@ -1447,35 +1479,30 @@ The meaning of expressions in the term model is defined as follows.
   
 \end{proof}
 
-\begin{definition}
-  Suppose $\Gamma \vdash e : A$ and $\Gamma \vdash e' : A$.
-  \[
-  (T,\cdot) \models e = e' \quad \defeq \quad \forall \rho,\;
-  \rho \models \Gamma \implies T\,e\,\rho = T\,e'\,\rho
-  \]
-\end{definition}
-
 \begin{lemma}[Frames are Sound]
   \label{lem:frame-sound}
-  Suppose $(T,\cdot)$ is a frame.\\
-  If $\vdash e = e'$, then $(T,\cdot) \models e = e'$
+  Suppose $(M,\cdot)$ is a frame.\\
+  If $\vdash e = e'$, then $M \models e = e'$
 \end{lemma}
 
 
-\begin{theorem}[Term Model is Sound and Complete wrt. Equational Theory]\ \\
+\begin{theorem}[Term Model is Sound \& Complete wrt. Eqn. Theory]\ \\
   Suppose $\Gamma \vdash e : A$ and $\Gamma \vdash e' : A$.\\
-  $\vdash e = e'$ iff $(T,\cdot) \models e = e'$.
+  $\vdash e = e'$ iff $T \models e = e'$.
 \end{theorem}
 \begin{proof}
   We consider each direction of the iff separately.
   \begin{itemize}
-  \item $\vdash e = e' \implies (T,\cdot) \models e = e'$ \\
+  \item $\vdash e = e' \implies T \models e = e'$ \\
     The term model is a frame (Lemma~\ref{lem:term-frame}),
     and frames are sound (Lemma~\ref{lem:frame-sound}).
-  \item $(T,\cdot) \models e = e' \implies \vdash e = e'$ \\
+  \item $T \models e = e' \implies \vdash e = e'$ \\
     Wlog. we assume $\Gamma \subset \mathcal{G}$.
-    Let $\rho$ be the identity environment $\{ x \mapsto [x] \mid x
-    \in \mathrm{dom}(\Gamma) \}$. So we have $\rho \models \Gamma$
+    Let $\rho$ be the identity environment
+    \[
+    \rho = \{ x \mapsto [x] \mid x \in \mathrm{dom}(\Gamma) \}
+    \]
+    So we have $\rho \models \Gamma$
     and therefore $T\,e\,\rho = T\,e'\,\rho$. We then calculate
     \[
       [e]
@@ -1485,7 +1512,7 @@ The meaning of expressions in the term model is defined as follows.
       = [\mathsf{rep}(\rho)(e')]
       = [e']
     \]
-    Therefore $\vdash e = e'$ 
+    from which we conclude that $\vdash e = e'$ .
     
   \end{itemize}
   
@@ -1495,6 +1522,60 @@ The meaning of expressions in the term model is defined as follows.
 \subsection{Completeness of the Equational Theory}
 
 
+The model $E$
+
+\[
+   f \cdot d \defeq d' \qquad \text{if } (d,d) \in f
+\]
+
+
+\begin{definition}
+  Suppose $(M_1,\cdot)$ and $(M_2,\cdot)$ are frames.
+  A \emph{partial homomorphism} $h : M_1 \to M_2$
+  is a type-indexed set of partial functions $h_A : M_1\,A \rightharpoonup M_2\,A$
+  such that for every $A,B$ and $f \in M_1(A \to B)$,
+  either
+  \begin{itemize}
+  \item there exists $g \in M_2(A\to B)$ such that $h_{A\to B}(f) = g$
+    and for all $x$ in the domain of $h_A$
+    \[
+    h_B( f \cdot x ) = g \cdot h_A(x)
+    \]
+    
+  \item or $h^{A\to B}(f)$ is undefined and there is no $g \in
+    M_2\,(A\to B)$ that satisfies the above equation.
+  \end{itemize}
+\end{definition}
+
+
+\begin{lemma}[Homomorphisms from $E$ to other frames]
+\label{lem:homo-model-frame}
+  Suppose $(M,\cdot)$ is a frame. Then there exists a partial
+  homomorphism $h : E \to M$.
+\end{lemma}
+\begin{proof}
+  UNDER CONSTRUCTION
+\end{proof}
+
+\begin{lemma}
+\label{lem:homo-models}
+Suppose there is a partial homomorphism $h : M_1 \to M_2$.\\
+If $M_1 \models e = e'$, then $M_2 \models e = e'$.
+\end{lemma}
+\begin{proof}
+  UNDER CONSTRUCTION
+\end{proof}
+
+\begin{theorem}[Completeness of Theory wrt. the Model]\ \\
+  If $E \models e = e'$, then $\vdash e = e'$.
+\end{theorem}
+\begin{proof}
+  There is a partial homomorphism $h : E \to T$
+  (Lemma~\ref{lem:homo-model-frame}).  Then because $E \models e = e'$
+  we also have $T \models e = e'$ (Lemma~\ref{lem:homo-models}).
+  
+
+\end{proof}
 
 
 %===============================================================================
