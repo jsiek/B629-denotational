@@ -1368,7 +1368,7 @@ In this section we construct a model for STLC that is built from sets
 of expressions of STLC modulo the equational theory. We then use this
 model in the next section in the proof of completeness.
 
-We define the equivalence class of expressions that are equal
+We define the equivalence classes of expressions that are equal
 according to the theory.
 \[
   [e] \defeq \{ e' \mid \; \vdash e = e' \}
@@ -1387,7 +1387,7 @@ application operator as follows:
 \]
 
 \begin{definition}
-A structure $(M,\cdot)$ is a \emph{pre-frame} when extensionality
+A structure $(M,\cdot)$ is a \emph{pre-frame} if extensionality
 holds, i.e. if two functions $f,g \in M (A \to B)$ map every argument
 $a \in M\,A$ to equal results, $f \cdot a = g \cdot a$, then the two
 functions are the same function, $f = g$.
@@ -1539,10 +1539,9 @@ The structure $(E,\cdot)$ is a frame.
   such that for every $A,B$ and $f \in M_1(A \to B)$,
   either
   \begin{itemize}
-  \item there exists $g \in M_2(A\to B)$ such that $h_{A\to B}(f) = g$
-    and for all $x$ in the domain of $h_A$
+  \item for all $a$ in the domain of $h_A$
     \[
-    h_B( f \cdot x ) = g \cdot h_A(x)
+    h_B( f \cdot a ) = h_{A\to B}(f) \cdot h_A(a)
     \]
     
   \item or $h^{A\to B}(f)$ is undefined and there is no $g \in
@@ -1561,12 +1560,36 @@ The structure $(E,\cdot)$ is a frame.
 \end{proof}
 
 \begin{lemma}
-\label{lem:homo-models}
-Suppose there is a partial homomorphism $h : M_1 \to M_2$.\\
-If $M_1 \models e = e'$, then $M_2 \models e = e'$.
+\label{lem:homo-equal}
+  Suppose $h : M_1 \to M_2$ is a partial homomorphism, $\Gamma \vdash
+  e : A$, $\rho \models \Gamma$, $\rho' \models \Gamma$, and
+  $h(\rho(x)) = \rho'(x)$ for every $x \in \mathrm{dom}(\Gamma)$.
+  \[
+    h(M_1\,e\,\rho) = M_2\,e\,\rho'
+  \]
 \end{lemma}
 \begin{proof}
   UNDER CONSTRUCTION
+\end{proof}
+
+
+\begin{lemma}
+\label{lem:homo-models}
+Suppose there is a partial homomorphism $h : M_1 \to M_2$.
+Also, suppose $\Gamma \vdash e : A$ and $\Gamma \vdash e' : A$.
+If $M_1 \models e = e'$, then $M_2 \models e = e'$.
+\end{lemma}
+\begin{proof}
+  Let $\rho'$ be an environment s.t. $\rho' \models \Gamma$.
+  We need to show that $M_2\,e\,\rho' = M_2\,e'\,\rho'$.
+  Define $\rho(x) = h^{-1}(\rho'(x))$, so $\rho'(x) = h(\rho(x))$.
+  ($h$ is a surjection, so $h^{-1}$ is total.)
+  \begin{align*}
+    M_2\,e\,\rho' 
+    &= h(M_1\,e\,\rho) & \text{by Lemma~\ref{lem:homo-equal}}\\
+    &= h(M_1\,e'\,\rho) \\
+    &= M_2\,e'\,\rho' & \text{by Lemma~\ref{lem:homo-equal}}
+  \end{align*}
 \end{proof}
 
 \begin{theorem}[Completeness of Theory wrt. the Model]\ \\
