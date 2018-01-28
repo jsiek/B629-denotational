@@ -1164,7 +1164,7 @@ to obtain the value of a variable..
   E\,n\,\rho &= n \\
   E\,(e_1\oplus e_2)\,\rho &= \delta(\oplus,n_1, n_2) \\
      & \text{if } n_1 {=} E\,e_1\,\rho \text{ and } n_2 {=} E\,e_2\,\rho \\
-  E\,x\,\rho &= \mathsf{lookup}\,\rho\,x \\
+  E\,x\,\rho &= \rho(x) \\
   E\,(\LAM{x\of A}e)\,\rho &= \{ (d,d') \mid d \in E\,A \text{ and } d' = E\,e\,\ext{x}{d}{\rho} \} \\
   E\,(e_1 \APP e_2)\,\rho &= (E\,e_1\,\rho) \APP (E\,e_2\,\rho)
 \end{align*}
