@@ -1417,6 +1417,8 @@ A structure $(M,\cdot)$ is a \emph{frame} if $(M,\cdot)$ is a
 pre-frame and $M$ is also a mapping on expressions that satisfies the
 following equations
 \begin{align*}
+  M\,n\,\rho &= n \\
+  M\,(e_1 \oplus e_2)\,\rho &= M\,e_1\,\rho \oplus M\,e_2\,\rho \\
   M\,x\,\rho &= \rho(x) \\
   M\,(e_1\APP e_2)\,\rho &= (M\,e_1\,\rho) \cdot (M\,e_2\,\rho) \\
   (M\,(\LAM{x\of A} e_1)\,\rho) \cdot d &=
@@ -1547,6 +1549,11 @@ The structure $(E,\cdot)$ is a frame.
   \item or $h^{A\to B}(f)$ is undefined and there is no $g \in
     M_2\,(A\to B)$ that satisfies the above equation.
   \end{itemize}
+  and for every $a,b \in M_1\,\NATTY$
+  \[
+  h_{\NATTY}(a \oplus b) = h_{\NATTY}(a) \oplus h_{\NATTY}(b)
+  \]
+
 \end{definition}
 
 
@@ -1561,7 +1568,7 @@ The structure $(E,\cdot)$ is a frame.
 
 \begin{lemma}
 \label{lem:homo-equal}
-  Suppose $h : M_1 \to M_2$ is a partial homomorphism, $\Gamma \vdash
+  Suppose $h : M_1 \to M_2$ is a partial homomorphism (p.h.morph), $\Gamma \vdash
   e : A$, $\rho \models \Gamma$, $\rho' \models \Gamma$, and
   $h(\rho(x)) = \rho'(x)$ for every $x \in \mathrm{dom}(\Gamma)$.
   \[
@@ -1569,7 +1576,25 @@ The structure $(E,\cdot)$ is a frame.
   \]
 \end{lemma}
 \begin{proof}
-  UNDER CONSTRUCTION
+  The proof is by induction on $e$.
+  \begin{itemize}
+  \item Case $e=n$:\\
+  \item Case $e=e_1 \oplus e_2$:
+    \begin{align*}
+    h(M_1\,(e_1 \oplus e_2)\,\rho) 
+    &= h(M_1\,e_1\,\rho \oplus M_1\,e_2\,\rho) & \text{$M_1$ is a frame} \\
+    &= h(M_1\,e_1\,\rho) \oplus h(M_1\,e_2\,\rho) & \text{$h$ is a partial homomorphism}\\
+    &= M_2\,e_1\,\rho' \oplus M_2\,e_2\,\rho' & \text{by I.H.}\\
+    &= M_2\,(e_1 \oplus ,e_2)\,\rho' & \text{$M_2$ is a frame}
+    \end{align*}
+
+  \item Case $e=x$:\\
+    \[
+      h(M_1\,x\,\rho) = h(\rho(x)) = \rho'(x) = M_2\,x\,\rho'
+    \]
+  \item Case $e=\LAM{y \of A} e_1$: \\
+  \item Case $e=e_1 \APP e_2$:\\
+  \end{itemize}
 \end{proof}
 
 
@@ -1580,14 +1605,14 @@ Also, suppose $\Gamma \vdash e : A$ and $\Gamma \vdash e' : A$.
 If $M_1 \models e = e'$, then $M_2 \models e = e'$.
 \end{lemma}
 \begin{proof}
-  Let $\rho'$ be an environment s.t. $\rho' \models \Gamma$.
-  We need to show that $M_2\,e\,\rho' = M_2\,e'\,\rho'$.
-  Define $\rho(x) = h^{-1}(\rho'(x))$, so $\rho'(x) = h(\rho(x))$.
-  ($h$ is a surjection, so $h^{-1}$ is total.)
+  Let $\rho'$ be an environment s.t. $\rho' \models \Gamma$.  We need
+  to show that $M_2\,e\,\rho' = M_2\,e'\,\rho'$.  Define $\rho(x) =
+  h^{-1}(\rho'(x))$, so $\rho'(x) = h(\rho(x))$.  ($h$ is a
+  surjection, so $h^{-1}$ is total.) Note that $\rho \models \Gamma$.
   \begin{align*}
     M_2\,e\,\rho' 
     &= h(M_1\,e\,\rho) & \text{by Lemma~\ref{lem:homo-equal}}\\
-    &= h(M_1\,e'\,\rho) \\
+    &= h(M_1\,e'\,\rho) & \text{because } M_1 \models e = e'\\
     &= M_2\,e'\,\rho' & \text{by Lemma~\ref{lem:homo-equal}}
   \end{align*}
 \end{proof}
