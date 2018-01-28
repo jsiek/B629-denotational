@@ -1146,17 +1146,14 @@ With these mapping in hand, we can describe the semantic function $E$
 for the STLC. Because of the dependency described above, the type of
 $E$ is interesting. It is a dependent function whose first parameter
 is some well-typed expression $e$, so we have $\Gamma \vdash e : A$.
-The second parameter is a type environment drawn from $E\,\Gamma$
-and the result is in $E\,A$.  The definition of the semantic
-function $E$ is given in Figure~\ref{fig:sem-stlc}.  We interpret each
-$\lambda$ as a function that maps every element $d$ in its domain
-$E\,A$ to the element produced by the body $e$ of the $\lambda$,
-with $d$ bound to parameter $x$. We interpret application as
-mathematical function application. Regarding variables, the
-environment $\rho$ is an association list mapping from variables to
-values, so we use an auxilliary \textsf{lookup} function (like assq)
-to obtain the value of a variable..
-
+The second parameter is a type environment drawn from $E\,\Gamma$ and
+the result is in $E\,A$.  The definition of the semantic function $E$
+is given in Figure~\ref{fig:sem-stlc}.  We interpret each $\lambda$ as
+a function that maps every element $d$ in its domain $E\,A$ to the
+element produced by the body $e$ of the $\lambda$, with $d$ bound to
+parameter $x$. We interpret application as mathematical function
+application. Regarding variables, their meaning is given by the
+environment $\rho$.
 
 \begin{figure}[tbp]
 \begin{align*}
