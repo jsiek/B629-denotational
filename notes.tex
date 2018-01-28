@@ -1133,7 +1133,7 @@ meaning will be in $\NAT^{\NAT}$
 mapping $E$ from each type into a set.
 \begin{align*}
   E\,\NATTY &= \mathbb{N} \\
-  E\,(A \to B) &=  E\,B^{E\,A}
+  E\,(A \to B) &=  (E\,B)^{E\,A}
 \end{align*}
 Likewise, we define a mapping from type environments to sets, in
 particular, to a cartesian product of the variable bindings.
@@ -1301,7 +1301,7 @@ $\Gamma$-environment $\rho$ maps each variable $x : A \in \Gamma$ to
 an element of the set $M\,A$, i.e. to an equivalence class of
 expressions of type $A$.
 \[
-  \rho \models \Gamma \defeq \forall x:A \in \Gamma, \rho(x) \in M\,A
+  \rho \models \Gamma \quad\defeq\quad \forall x:A \in \Gamma, \rho(x) \in M\,A
 \]
 \end{definition}
 
@@ -1367,8 +1367,8 @@ construct the so-called term model.
 
 \subsection{Term Model}
 
-In this section we construct a model for STLC that is built from the
-expressions of STLC but modulo the equational theory. We then use this
+In this section we construct a model for STLC that is built from sets
+of expressions of STLC modulo the equational theory. We then use this
 model in the next section in the proof of completeness.
 
 We define the equivalence class of expressions that are equal
@@ -1376,9 +1376,9 @@ according to the theory.
 \[
   [e] \defeq \{ e' \mid \; \vdash e = e' \}
 \]
-We also define the equivalence classes of a given type.
-Fix a type environment $\mathcal{G}$ with an infinite number of
-distinct variable bindings for every type.
+We also define the equivalence classes of a given type.  Fix a type
+environment $\mathcal{G}$ with an infinite number of distinct variable
+bindings for every type.
 \[
 T\,A \defeq \{ [e] \mid \exists \Gamma, \Gamma \subset \mathcal{G}
   \text{ and } \Gamma \vdash e : A \}
@@ -1522,12 +1522,18 @@ The meaning of expressions in the term model is defined as follows.
 \subsection{Completeness of the Equational Theory}
 
 
-The model $E$
-
+The application operator for the model $E$ is
 \[
-   f \cdot d \defeq d' \qquad \text{if } (d,d) \in f
+   f \cdot d \defeq d' \qquad \text{if } (d,d') \in f
 \]
 
+\begin{lemma}
+\label{lem:E-frame}
+The structure $(E,\cdot)$ is a frame.
+\end{lemma}
+\begin{proof}
+  UNDER CONSTRUCTION
+\end{proof}
 
 \begin{definition}
   Suppose $(M_1,\cdot)$ and $(M_2,\cdot)$ are frames.
