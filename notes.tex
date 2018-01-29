@@ -1357,34 +1357,59 @@ expressions of type $A$.
   \end{itemize}
 \end{proof}
 
+\subsection{Completeness of the Equational Theory}
 
 Next we turn to the question of completeness of the equational theory
-wrt. to the model. This is more involved and first requires that we
-construct the so-called term model.
+with respect to the model. That is, we seek to prove that
+\[
+    E \models e = e' \implies \vdash e = e'
+\]
+We shall prove this in two steps, with a detour through another model
+of STLC, the Term Model $T$.
+\[
+\xymatrix@=15pt{
+  E \models e = e' \ar@{=>}[d]^{\;1} \\
+  T \models e = e' \ar@{=>}[d]^{\;2} \\
+  \vdash e = e'
+}
+\]
+The Term Model is built from the equational theory, so the proof of
+step 2 is straightforward. The proof of step 1 will be accomplished on
+constructing a homomorphism between $E$ and $T$ and then using the
+fact that equality is preserved by homomorphism.
 
-\subsection{Term Model}
 
-In this section we construct a model for STLC that is built from sets
-of expressions of STLC modulo the equational theory. We then use this
-model in the next section in the proof of completeness.
+
+\paragraph{Term Model}
+
+We construct a model for STLC that is built from sets of expressions
+of STLC modulo the equational theory.
 
 We define the equivalence classes of expressions that are equal
-according to the theory.
+according to the theory as follows.
 \[
   [e] \defeq \{ e' \mid \; \vdash e = e' \}
 \]
-We also define the equivalence classes of a given type.  Fix a type
-environment $\mathcal{G}$ with an infinite number of distinct variable
-bindings for every type.
+We define the meaning function $T$ on types as follows.
 \[
 T\,A \defeq \{ [e] \mid \exists \Gamma, \Gamma \subset \mathcal{G}
   \text{ and } \Gamma \vdash e : A \}
 \]
+The purpose of the type environment $\mathcal{G}$ is to make sure that
+each variable is used at a single type. So throughout this discussion,
+we choose a particular $\mathcal{G}$ that contains an infinite number
+of distinct variable bindings, including an finite number of variables
+for a given type.
+
 Given $[e_1] \in T\,(A\to B)$ and $[e_2] \in T\,A$, we define an
 application operator as follows:
 \[
     [e_1] \cdot [e_2] \defeq [(e_1\APP e_2)]
 \]
+
+We shall formalize part of what it means to be a model of the STLC
+with the notions of pre-frame and frame. Then we will speak of
+homomorphisms between frames.
 
 \begin{definition}
 A structure $(M,\cdot)$ is a \emph{pre-frame} if extensionality
@@ -1518,7 +1543,7 @@ The meaning of expressions in the term model is defined as follows.
 \end{proof}
 
 
-\subsection{Completeness of the Equational Theory}
+
 
 
 The application operator for the model $E$ is
@@ -1548,17 +1573,17 @@ The structure $(E,\cdot)$ is a frame.
       h_B( f \cdot a ) = h_{A\to B}(f) \cdot h_A(a)
       \]
       
-    \item or $h^{A\to B}(f)$ is undefined and there is no $g \in
+    \item or $h_{A\to B}(f)$ is undefined and there is no $g \in
       M_2\,(A\to B)$ that satisfies the above equation.
     \end{itemize}
-  %% \item for every $a,b \in M_1\,\NATTY$
-  %%   \[
-  %%   h_{\NATTY}(a \oplus b) = h_{\NATTY}(a) \oplus h_{\NATTY}(b)
-  %%   \]
-  \item for every $a \in M_1\,\NATTY$
+  \item for every $a,b \in M_1\,\NATTY$
     \[
-    h_{\NATTY}(a) = a
+    h_{\NATTY}(a \oplus b) = h_{\NATTY}(a) \oplus h_{\NATTY}(b)
     \]
+  %% \item for every $a \in M_1\,\NATTY$
+  %%   \[
+  %%   h_{\NATTY}(a) = a
+  %%   \]
   \end{enumerate}
 
 \end{definition}
