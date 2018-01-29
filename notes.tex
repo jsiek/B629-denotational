@@ -1312,7 +1312,7 @@ expressions of type $A$.
 \end{definition}
 
 \begin{theorem}[Soundness of Theory wrt. the Model]\ \\
-  \noindent
+  \noindent \label{thm:sound-E}
   If $\vdash e = e'$, then $E \models e = e'$.
 \end{theorem}
 \begin{proof}
@@ -1378,9 +1378,7 @@ step 2 is straightforward. The proof of step 1 will be accomplished on
 constructing a homomorphism between $E$ and $T$ and then using the
 fact that equality is preserved by homomorphism.
 
-
-
-\paragraph{Term Model}
+\paragraph{The Term Model and Frames}
 
 We construct a model for STLC that is built from sets of expressions
 of STLC modulo the equational theory.
@@ -1503,14 +1501,37 @@ The meaning of expressions in the term model is defined as follows.
   
 \end{proof}
 
+\begin{lemma}
+\label{lem:E-frame}
+The structure $(E,\cdot)$ is a frame, where the application operator
+is just mathematical function application:
+\[
+   f \cdot d \defeq d' \qquad \text{if } (d,d') \in f
+\]
+\end{lemma}
+\begin{proof}
+  UNDER CONSTRUCTION
+\end{proof}
+
 \begin{lemma}[Frames are Sound]
   \label{lem:frame-sound}
   Suppose $(M,\cdot)$ is a frame.\\
   If $\vdash e = e'$, then $M \models e = e'$
 \end{lemma}
+\begin{proof}
+    The proof is similar to the one for Theorem~\ref{thm:sound-E}.
+\end{proof}
 
+The following theorem establishes step 2 of our proof (and more)
+\[
+\xymatrix@=15pt{
+  T \models e = e' \ar@{=>}[d]^{\;2} \\
+  \vdash e = e'
+}
+\]
 
 \begin{theorem}[Term Model is Sound \& Complete wrt. Eqn. Theory]\ \\
+  \label{thm:term-sound-complete}
   Suppose $\Gamma \vdash e : A$ and $\Gamma \vdash e' : A$.\\
   $\vdash e = e'$ iff $T \models e = e'$.
 \end{theorem}
@@ -1545,29 +1566,53 @@ The meaning of expressions in the term model is defined as follows.
 
 
 
+\paragraph{Homomorphisms Between Frames}
 
-The application operator for the model $E$ is
+Step 1 of the proof of completeness relies on the construction of a
+homomorphism between the models $E$ and $T$. But first we review the
+general notion of homomorphism.
+
+A homomorphism is a function between two instances of an algebraic
+structure that respects the operations of the structure. For example,
+a monoid is an algebraic structure that consists of some set $D$ plus
+a binary operator $\bullet : D \times D \to D$ and an identity element
+$\mathit{id} \in D$. The binary operator must be associative:
 \[
-   f \cdot d \defeq d' \qquad \text{if } (d,d') \in f
+(a \bullet b) \bullet c = a \bullet (b \bullet c)
 \]
+and the identity element must act like one:
+\[
+  a \bullet \mathit{id} = a = \mathit{id} \bullet a
+\]
+A monoid homomorphism is a function $h$ from one monoid
+$(D_1,\bullet_1,\mathit{id}_1)$ to another one
+$(D_2,\bullet_2,\mathit{id}_2)$ such that
+\begin{align*}
+  h(\mathit{id}_1) &= \mathit{id}_2 \\
+  h(a \bullet_1 b) &= h(a) \bullet_2 h(b) 
+\end{align*}
 
-\begin{lemma}
-\label{lem:E-frame}
-The structure $(E,\cdot)$ is a frame.
-\end{lemma}
-\begin{proof}
-  UNDER CONSTRUCTION
-\end{proof}
+Consider the two instances of monoid:
+\begin{itemize}
+  \item lists of Booleans with concatenation $(\mathbb{B}^{*}, @,
+    \epsilon)$, and
+  \item integers with addition $(\mathbb{Z}, +, 0)$.
+\end{itemize}
+Then the length function defined as follows is a monoid homomorphism
+between lists and integers.
+\begin{align*}
+  \mathit{length}(\epsilon) &= 0 \\
+  \mathit{length}(ls_1 @ ls_2) &= \mathit{length}(ls_1) + \mathit{length}(ls_2)
+\end{align*}
 
-[TODO: discuss the general notion of homomorphism in other,
-simpler settings. --Jeremy]
-
+For our present purposes, we are interested in homomorphisms between
+frames.
 
 \begin{definition}
   Suppose $(M_1,\cdot)$ and $(M_2,\cdot)$ are frames.  A \emph{partial
-    homomorphism} $h : M_1 \to M_2$ is a type-indexed set of
-  surjective partial functions $h_A : M_1\,A \rightharpoonup M_2\,A$
-  such that
+    homomorphism} $h : M_1 \to M_2$ (morphism for short) is a
+  type-indexed set of surjective partial functions $h_A : M_1\,A
+  \rightharpoonup M_2\,A$ such that
   \begin{enumerate}
   \item for every $A,B$ and $f \in M_1(A \to B)$,
     either
@@ -1580,59 +1625,36 @@ simpler settings. --Jeremy]
     \item or $h_{A\to B}(f)$ is undefined and there is no $g \in
       M_2\,(A\to B)$ that satisfies the above equation.
     \end{itemize}
+  \item For any $n \in \mathbb{N}$ and any $\rho,\rho'$
+    \[
+      h_{\NATTY}(M_1\,n\,\rho) = M_2\,n\,\rho'
+    \]
   \item for every $a,b \in M_1\,\NATTY$
     \[
     h_{\NATTY}(a \oplus b) = h_{\NATTY}(a) \oplus h_{\NATTY}(b)
     \]
-  %% \item for every $a \in M_1\,\NATTY$
-  %%   \[
-  %%   h_{\NATTY}(a) = a
-  %%   \]
   \end{enumerate}
-
 \end{definition}
 
-
-\begin{lemma}[Homomorphisms from $E$ to other frames]
-\label{lem:homo-model-frame}
-  Suppose $(M,\cdot)$ is a frame. Then there exists a partial
-  homomorphism $h : E \to M$.
-\end{lemma}
-\begin{proof}
-  We defined $h$ as follows.
-  \begin{align*}
-    h_{\NATTY}(n) &= n \\
-    h_{A \to B}(f) &= 
-    \begin{cases}
-      g & \text{if } \forall a \in \mathrm{dom}(h_A), g \cdot h_A(a) = h_B(f \cdot a)\\
-      \bot & \text{otherwise }
-    \end{cases}
-  \end{align*}
-  Note that the above definition of $h_{A \to B}$ immediately satisfies
-  the requirement that, for any $f \in E(A\to B)$ and $a \in E\,A$
-  \[
-  h_B(f \cdot a) = h_{A \to B}(f) \cdot h_A(a)
-  \]
-
-  But we still need to prove that $h$ is a surjection. We proceed by
-  induction on its type index.  It is trivial for $\NATTY$.  Next we
-  consider $A \to B$.  Suppose $g \in M\,(A \to B)$. We need to show
-  that $h_{A\to B}(g') = g$ for some $g' \in E\,(A\to B)$.  Let $g'$
-  be defined as follows.
-  \[
-  g'(a) = h^{-1}_B(g \cdot h_A(a))
-  \]
-  The inverse $h^{-1}_B$ is total because, by the induction hypothesis,
-  we may assume that $h_B$ is a surjection.
-  Now for any $a' \in E\,A$ we have
-  \[
-  h(g') \cdot h(a') = h(g' \cdot a')
-   = h(h^{-1}(g \cdot h(a'))
-   = g \cdot h(a')
-  \]
-  so by extensionality, we conclude that $h_{A\to B}(g') = g$.
-
-\end{proof}
+Recall that step 1 of our proof is to show that
+\[
+\xymatrix@=15pt{
+  E \models e = e' \ar@{=>}[d]^{\;1} \\
+  T \models e = e'
+}
+\]
+We shall accomplish this by showing that whenever there is a partial
+homomorphism from one frame to another, then equality in the first
+frame implies equality in the second frame.  But first we require a
+lemma that says applying $M_1$ to any expression $e$ and then a
+morphism $h$ is the same as just applying $M_2$ to $e$. In other
+words, the following diagram commutes.
+\[
+\xymatrix@=30pt{
+  \mathbb{E} \ar[r]^{M_1}\ar[dr]_{M_2} & M_1\,A \ar[d]^{h}\\
+   & M_2\,A
+}
+\]
 
 \begin{lemma}
 \label{lem:homo-equal}
@@ -1647,14 +1669,14 @@ simpler settings. --Jeremy]
   The proof is by induction on $e$.
   \begin{itemize}
   \item Case $e=n$:\\
-    \[
-    h(M_1\,n\,\rho) = h(n) = n = M_2\,n\,\rho'
-    \]
+    \begin{align*}
+    h(M_1\,n\,\rho) &= M_2\,n\,\rho' & \text{$h$ is a morphism}
+    \end{align*}
   \item Case $e=e_1 \oplus e_2$:
     \begin{align*}
     h(M_1\,(e_1 \oplus e_2)\,\rho) 
     &= h(M_1\,e_1\,\rho \oplus M_1\,e_2\,\rho) & \text{$M_1$ is a frame} \\
-    &= h(M_1\,e_1\,\rho) \oplus h(M_1\,e_2\,\rho) & \text{$h$ is a partial homomorphism}\\
+    &= h(M_1\,e_1\,\rho) \oplus h(M_1\,e_2\,\rho) & \text{$h$ is a morphism}\\
     &= M_2\,e_1\,\rho' \oplus M_2\,e_2\,\rho' & \text{by I.H.}\\
     &= M_2\,(e_1 \oplus e_2)\,\rho' & \text{$M_2$ is a frame}
     \end{align*}
@@ -1676,7 +1698,7 @@ simpler settings. --Jeremy]
     Let $d = h^{-1}(d')$. 
     \begin{align*}
       h(M_1\,(\LAM{y \of A_1} e_1)\,\rho) \cdot h(d)
-      &= h(M_1\,(\LAM{y \of A_1} e_1)\,\rho \cdot d) & \text{$h$ is a partial homomorphism}\\
+      &= h(M_1\,(\LAM{y \of A_1} e_1)\,\rho \cdot d) & \text{$h$ is a morphism}\\
       &= h(M_1\,e_1\,\ext{y}{d}{\rho}) & \text{$M_1$ is a frame}\\
       &= M_2\,e_1\,\ext{y}{d'}{\rho'} & \text{by I.H.} \\
       &= M_2\,(\LAM{y \of A_1} e_1)\,\rho' \cdot d' & \text{$M_2$ is a frame}
@@ -1686,7 +1708,7 @@ simpler settings. --Jeremy]
     \begin{align*}
     h(M_1\,(e_1 \APP e_2)\,\rho) 
     &= h(M_1\,e_1\,\rho \cdot M_1\,e_2\,\rho) & \text{$M_1$ is a frame} \\
-    &= h(M_1\,e_1\,\rho) \cdot h(M_1\,e_2\,\rho) & \text{$h$ is a partial homomorphism}\\
+    &= h(M_1\,e_1\,\rho) \cdot h(M_1\,e_2\,\rho) & \text{$h$ is a morphism}\\
     &= M_2\,e_1\,\rho' \cdot M_2\,e_2\,\rho' & \text{by I.H.}\\
     &= M_2\,(e_1 \APP e_2)\,\rho' & \text{$M_2$ is a frame}
     \end{align*}
@@ -1694,6 +1716,10 @@ simpler settings. --Jeremy]
   \end{itemize}
 \end{proof}
 
+
+With Lemma~\ref{lem:homo-equal} in hand it is now straightforward to
+prove that if there is a morphism from one frame to another, then
+equality in the source frame implies equality in the target frame.
 
 \begin{lemma}
 \label{lem:homo-models}
@@ -1714,15 +1740,95 @@ If $M_1 \models e = e'$, then $M_2 \models e = e'$.
   \end{align*}
 \end{proof}
 
+
+We have proved a lemma about morphisms between arbitrary frames, but
+we are particularly interested in $E$ and $T$. In the following we
+show how to construct a homomorphism from $E$ to any other frame,
+including $T$.
+
+\begin{lemma}[Homomorphisms from $E$ to other frames]
+\label{lem:homo-model-frame}
+  Suppose $(M,\cdot)$ is a frame. Then there exists a partial
+  homomorphism $h : E \to M$.
+\end{lemma}
+\begin{proof}
+  For natural numbers, the definition of $h$ is straightforward.
+  Recall that $E\,\NATTY = \mathbb{N}$.
+  \begin{align*}
+    h_{\NATTY} : \; & E\,\NATTY \pto M\,\NATTY \\
+    h_{\NATTY}(n) &= M\,n\,\emptyset 
+  \end{align*}
+
+  For $h$ on a function type $A\to B$, we have the following signature
+  \[
+  h_{A \to B} : E\,(A \to B) \pto M\,(A \to B)
+  \]
+  We need to satisfy the following equation, for any $a \in E\,A$
+  and $f \in E\,(A \to B)$.
+  \[
+    h_B(f \cdot a) = h_{A \to B}(f) \cdot h_A(a)
+  \]
+  As a first step, let us construct a function $g : M\,A \to M\,B$
+  that satisfies the equation
+  \begin{equation}\label{eq:gha}
+    h_B(f \cdot a) = g(h_A(a))
+  \end{equation}
+  We define $g$ in terms of $f$ as follows
+  \[
+    g(d) = h_B(f \cdot h^{-1}_A(d))
+  \]
+  The inverse $h^{-1}_A$ is a total function because $h_A$ is
+  surjective (see below).  Now it is easy to check that $g$ satisfies
+  equation \eqref{eq:gha}.
+  \[
+  g(h_A(a)) = h_B(f \cdot h^{-1}_A(h_A(a))) = h_B(f \cdot a)
+  \]
+
+  We have a function $g : M\,A \to M\,B$, but $h_{A\to B}$ needs to
+  map each $f \in E\,(A \to B)$ into $M\,(A \to B)$. So we rummage
+  around in $M\,(A \to B)$ until we find some $g'$ that behaves just
+  like $g$, or we fail to find such $g'$, in which case $h(f)$ is
+  undefined. If there is such a $g'$, then we know it is unique
+  because of extensionality.
+  \begin{align*}
+    h_{A \to B}(f) &= 
+    \begin{cases}
+      g' & \text{if } \forall a \in \mathrm{dom}(h_A), g' \cdot h_A(a) = h_B(f \cdot a)\\
+      \bot & \text{there is no such $g'$}
+    \end{cases}
+  \end{align*}
+
+  But we still need to prove that $h$ is surjective. We proceed by
+  induction on its type index.  It is trivial for $\NATTY$, so we
+  consider $A \to B$.  Suppose $g' \in M\,(A \to B)$. We need to show
+  that $h_{A\to B}(f) = g'$ for some $f \in E\,(A\to B)$.  Let $f$ be
+  defined as follows.
+  \[
+  f(a) = h^{-1}_B(g' \cdot h_A(a))
+  \]
+  The inverse $h^{-1}_B$ is total because, by the induction hypothesis,
+  we may assume that $h_B$ is a surjection.
+  Now for any $a' \in E\,A$ we have
+  \[
+  h(f) \cdot h(a') = h(f \cdot a')
+   = h(h^{-1}(g' \cdot h(a')))
+   = g' \cdot h(a')
+  \]
+  so by extensionality, we conclude that $h_{A\to B}(f) = g'$.
+
+\end{proof}
+
+As promised, we prove completeness in two steps.
+
 \begin{theorem}[Completeness of Theory wrt. the Model]\ \\
   If $E \models e = e'$, then $\vdash e = e'$.
 \end{theorem}
 \begin{proof}
   There is a partial homomorphism $h : E \to T$
-  (Lemma~\ref{lem:homo-model-frame}).  Then because $E \models e = e'$
-  we also have $T \models e = e'$ (Lemma~\ref{lem:homo-models}).
-  
-
+  (Lemma~\ref{lem:homo-model-frame}), so from $E \models e = e'$ we
+  have $T \models e = e'$ (Lemma~\ref{lem:homo-models}).  And then
+  from $T \models e = e'$ we conclude $\vdash e = e'$
+  (Theorem~\ref{thm:term-sound-complete}).
 \end{proof}
 
 
