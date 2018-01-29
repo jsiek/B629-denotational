@@ -1535,24 +1535,31 @@ The structure $(E,\cdot)$ is a frame.
 \end{proof}
 
 \begin{definition}
-  Suppose $(M_1,\cdot)$ and $(M_2,\cdot)$ are frames.
-  A \emph{partial homomorphism} $h : M_1 \to M_2$
-  is a type-indexed set of partial functions $h_A : M_1\,A \rightharpoonup M_2\,A$
-  such that for every $A,B$ and $f \in M_1(A \to B)$,
-  either
-  \begin{itemize}
-  \item for all $a$ in the domain of $h_A$
+  Suppose $(M_1,\cdot)$ and $(M_2,\cdot)$ are frames.  A \emph{partial
+    homomorphism} $h : M_1 \to M_2$ is a type-indexed set of
+  surjective partial functions $h_A : M_1\,A \rightharpoonup M_2\,A$
+  such that
+  \begin{enumerate}
+  \item for every $A,B$ and $f \in M_1(A \to B)$,
+    either
+    \begin{itemize}
+    \item for all $a$ in the domain of $h_A$
+      \[
+      h_B( f \cdot a ) = h_{A\to B}(f) \cdot h_A(a)
+      \]
+      
+    \item or $h^{A\to B}(f)$ is undefined and there is no $g \in
+      M_2\,(A\to B)$ that satisfies the above equation.
+    \end{itemize}
+  %% \item for every $a,b \in M_1\,\NATTY$
+  %%   \[
+  %%   h_{\NATTY}(a \oplus b) = h_{\NATTY}(a) \oplus h_{\NATTY}(b)
+  %%   \]
+  \item for every $a \in M_1\,\NATTY$
     \[
-    h_B( f \cdot a ) = h_{A\to B}(f) \cdot h_A(a)
+    h_{\NATTY}(a) = a
     \]
-    
-  \item or $h^{A\to B}(f)$ is undefined and there is no $g \in
-    M_2\,(A\to B)$ that satisfies the above equation.
-  \end{itemize}
-  and for every $a,b \in M_1\,\NATTY$
-  \[
-  h_{\NATTY}(a \oplus b) = h_{\NATTY}(a) \oplus h_{\NATTY}(b)
-  \]
+  \end{enumerate}
 
 \end{definition}
 
@@ -1563,12 +1570,44 @@ The structure $(E,\cdot)$ is a frame.
   homomorphism $h : E \to M$.
 \end{lemma}
 \begin{proof}
-  UNDER CONSTRUCTION
+  We defined $h$ as follows.
+  \begin{align*}
+    h_{\NATTY}(n) &= n \\
+    h_{A \to B}(f) &= 
+    \begin{cases}
+      g & \text{if } \forall a \in \mathrm{dom}(h_A), g \cdot h_A(a) = h_B(f \cdot a)\\
+      \bot & \text{otherwise }
+    \end{cases}
+  \end{align*}
+  Note that the above definition of $h_{A \to B}$ immediately satisfies
+  the requirement that, for any $f \in E(A\to B)$ and $a \in E\,A$
+  \[
+  h_B(f \cdot a) = h_{A \to B}(f) \cdot h_A(a)
+  \]
+
+  But we still need to prove that $h$ is a surjection. We proceed by
+  induction on its type index.  It is trivial for $\NATTY$.  Next we
+  consider $A \to B$.  Suppose $g \in M\,(A \to B)$. We need to show
+  that $h_{A\to B}(g') = g$ for some $g' \in E\,(A\to B)$.  Let $g'$
+  be defined as follows.
+  \[
+  g'(a) = h^{-1}_B(g \cdot h_A(a))
+  \]
+  The inverse $h^{-1}_B$ is total because, by the induction hypothesis,
+  we may assume that $h_B$ is a surjection.
+  Now for any $a' \in E\,A$ we have
+  \[
+  h(g') \cdot h(a') = h(g' \cdot a')
+   = h(h^{-1}(g \cdot h(a'))
+   = g \cdot h(a')
+  \]
+  so by extensionality, we conclude that $h_{A\to B}(g') = g$.
+
 \end{proof}
 
 \begin{lemma}
 \label{lem:homo-equal}
-  Suppose $h : M_1 \to M_2$ is a partial homomorphism (p.h.morph), $\Gamma \vdash
+  Suppose $h : M_1 \to M_2$ is a partial homomorphism, $\Gamma \vdash
   e : A$, $\rho \models \Gamma$, $\rho' \models \Gamma$, and
   $h(\rho(x)) = \rho'(x)$ for every $x \in \mathrm{dom}(\Gamma)$.
   \[
@@ -1579,21 +1618,50 @@ The structure $(E,\cdot)$ is a frame.
   The proof is by induction on $e$.
   \begin{itemize}
   \item Case $e=n$:\\
+    \[
+    h(M_1\,n\,\rho) = h(n) = n = M_2\,n\,\rho'
+    \]
   \item Case $e=e_1 \oplus e_2$:
     \begin{align*}
     h(M_1\,(e_1 \oplus e_2)\,\rho) 
     &= h(M_1\,e_1\,\rho \oplus M_1\,e_2\,\rho) & \text{$M_1$ is a frame} \\
     &= h(M_1\,e_1\,\rho) \oplus h(M_1\,e_2\,\rho) & \text{$h$ is a partial homomorphism}\\
     &= M_2\,e_1\,\rho' \oplus M_2\,e_2\,\rho' & \text{by I.H.}\\
-    &= M_2\,(e_1 \oplus ,e_2)\,\rho' & \text{$M_2$ is a frame}
+    &= M_2\,(e_1 \oplus e_2)\,\rho' & \text{$M_2$ is a frame}
     \end{align*}
 
-  \item Case $e=x$:\\
+  \item Case $e=x$:
     \[
       h(M_1\,x\,\rho) = h(\rho(x)) = \rho'(x) = M_2\,x\,\rho'
     \]
-  \item Case $e=\LAM{y \of A} e_1$: \\
+  \item Case $e=\LAM{y \of A_1} e_1$ and $A = A_1 \to A_2$: \\
+    We need to prove
+    \[
+    h(M_1\,(\LAM{y \of A_1} e_1)\,\rho) = M_2\,(\LAM{y \of A_1} e_1)\,\rho'
+    \]
+    but because $M_2$ is a pre-frame, we have extensionality, so it suffices to
+    show that for any $d' \in M_2\,A_1$
+    \[
+    h(M_1\,(\LAM{y \of A_1} e_1)\,\rho) \cdot d' = (M_2\,(\LAM{y \of A_1} e_1)\,\rho') \cdot d'
+    \]
+    Let $d = h^{-1}(d')$. 
+    \begin{align*}
+      h(M_1\,(\LAM{y \of A_1} e_1)\,\rho) \cdot h(d)
+      &= h(M_1\,(\LAM{y \of A_1} e_1)\,\rho \cdot d) & \text{$h$ is a partial homomorphism}\\
+      &= h(M_1\,e_1\,\ext{y}{d}{\rho}) & \text{$M_1$ is a frame}\\
+      &= M_2\,e_1\,\ext{y}{d'}{\rho'} & \text{by I.H.} \\
+      &= M_2\,(\LAM{y \of A_1} e_1)\,\rho' \cdot d' & \text{$M_2$ is a frame}
+    \end{align*}
+    
   \item Case $e=e_1 \APP e_2$:\\
+    \begin{align*}
+    h(M_1\,(e_1 \APP e_2)\,\rho) 
+    &= h(M_1\,e_1\,\rho \cdot M_1\,e_2\,\rho) & \text{$M_1$ is a frame} \\
+    &= h(M_1\,e_1\,\rho) \cdot h(M_1\,e_2\,\rho) & \text{$h$ is a partial homomorphism}\\
+    &= M_2\,e_1\,\rho' \cdot M_2\,e_2\,\rho' & \text{by I.H.}\\
+    &= M_2\,(e_1 \APP e_2)\,\rho' & \text{$M_2$ is a frame}
+    \end{align*}
+
   \end{itemize}
 \end{proof}
 
