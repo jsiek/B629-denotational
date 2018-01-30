@@ -62,11 +62,11 @@ paper that the class has read.
   - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742), Chlipala 2007.
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
 - Graph Models of the Lambda Calculus
-  - Data Types as Lattices, Scott 1976.
+  - [Data Types as Lattices](https://www.dropbox.com/s/ikfyrwkizooah3q/data_types_as_lattices.pdf?dl=1), Scott 1976.
   - Set-theoretical and other elementary models of the lambda-calculus,
     Plotkin 1993.
   - Algebras and combinators, Engeler 1981.
-  - Revisiting Elementary Denotational Semantics, Siek 2017.
+  - [Revisiting Elementary Denotational Semantics](https://arxiv.org/abs/1707.03762), Siek 2017.
 - Filter Models of the Lambda Calculus
   - Functional characterization of some semantic equalities
     inside lambda-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.

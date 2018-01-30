@@ -1883,7 +1883,8 @@ did for the STLC, we include arithmetic on natural numbers.
 \begin{array}{lrl}
               & n \in \mathbb{N} \\
  \text{vars.} & x \in \VAR\\
- \text{expr.}& e \in\mathbb{E} ::=& n \mid e + e \mid e \times e \mid x \mid \LAM{x} e \mid (e \, e)
+ \text{arithmetic} & \oplus ::= & + \mid \times \\
+ \text{expr.}& e \in\mathbb{E} ::=& n \mid e \oplus e \mid x \mid \LAM{x} e \mid (e \, e)
 \end{array}
 \]
 
@@ -1921,8 +1922,9 @@ $\mathcal{P}(\omega)$ of \citet{Scott:1976lq} and the simpler $D_A$ of
 \citet{Engeler:1981aa}. We shall study these three models in
 Section~\ref{sec:graph-models}. But first, we study perhaps the most
 straightforward of the graph models, the recent one by yours
-truly~\citep{Siek:2017ab}. (todo: What about filter models? And isn't
-Siek's in some sense closer to the filter models?)
+truly~\citep{Siek:2017ab}.
+%%  (todo: What about filter models? And isn't
+%% Siek's in some sense closer to the filter models?)
 
 \begin{figure*}
 \begin{minipage}{0.5\textwidth}
@@ -1960,9 +1962,7 @@ Semantics
   P\,e &\defeq \{ d \mid d \in E\,e\,\emptyset\} \\[1ex]
   E & : \mathbb{E} \to (\VAR \pto \mathbb{D}) \to \mathcal{P}(\mathbb{D})\\
   E\, n \, \rho & = \{ n \} \\
-  E\, (e_1 + e_2) \, \rho & = \{ n_1 + n_2 \mid n_1 \in E\,e_1\,\rho, 
-                                    n_2 \in E\,e_2\,\rho \} \\
-  E\, (e_1 \times e_2) \, \rho & = \{ n_1 n_2 \mid n_1 \in E\,e_1\,\rho, 
+  E\, (e_1 \oplus e_2) \, \rho & = \{ n_1 \oplus n_2 \mid n_1 \in E\,e_1\,\rho, 
                                     n_2 \in E\,e_2\,\rho \} \\
   E\, x \,\rho &= \{ d \mid d \sqsubseteq \rho\,x \} \\
   E\, (\LAM{x}e)\,\rho &= 
@@ -2040,7 +2040,7 @@ $d$ of the table entry. We define the approximation ordering
 $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for argument $d_2
 \in D^{*}_2$, we require $d \sqsubseteq d_2$ instead of $d = d_2$.
 
-Say something about $d'$ and $d_3$ to motivate the following.
+%Say something about $d'$ and $d_3$ to motivate the following.
 
 \[
 X \vdash \rho \sqsubseteq \rho' \defeq
@@ -2071,9 +2071,7 @@ definitions from the lexical scope.
 \]
 \begin{align*}
   I\,n\,\varrho &= n \\
-  I\,(e_1 + e_2)\,\varrho &= n_1 + n_2 \\
-      & \text{if } I\,e_1\,\varrho = n_1, I\,e_2\,\varrho = n_2 \\
-  I\,(e_1 \times e_2)\,\varrho &= n_1 n_2 \\
+  I\,(e_1 \oplus e_2)\,\varrho &= n_1 \oplus n_2 \\
       & \text{if } I\,e_1\,\varrho = n_1, I\,e_2\,\varrho = n_2 \\
   I\,x\,\varrho &= \varrho(x) \\
   I\,(\LAM{x}e)\,\varrho &= \langle \LAM{x}e, \varrho \rangle \\
@@ -2135,7 +2133,7 @@ If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 \end{theorem}
 
 
-{\color{red}[The rest of this subsection is under construction! -Jeremy]}
+%{\color{red}[The rest of this subsection is under construction! -Jeremy]}
 
 %% \begin{theorem}
 %%   $\mathcal{P}(\mathbb{D})$ is a reflexive cpo by
@@ -2163,52 +2161,74 @@ If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 
 %% \end{proof}
 
-\begin{theorem}[Completeness wrt. Interpreter]
-If $I\,e\,\emptyset = n$, then $E\,e\,\emptyset = E\,n\,\emptyset$.
-\end{theorem}
+%% \begin{theorem}[Completeness wrt. Interpreter]
+%% If $I\,e\,\emptyset = n$, then $E\,e\,\emptyset = E\,n\,\emptyset$.
+%% \end{theorem}
 
-Toward proving completeness, we introduce a memoizing interpreter,
-that is, an interpreter that records the input and output of every
-function call in a table.
+%% Toward proving completeness, we introduce a memoizing interpreter,
+%% that is, an interpreter that records the input and output of every
+%% function call in a table.
 
 
-\[
-\begin{array}{lrl}
- \text{fun. id's} & f \in \mathbb{N} \\
- \text{values} & v \in \mathbb{V} ::= & n \mid f \\
- \text{env.} & \varrho \in \VAR \pto \mathbb{V} \\
-             & t ::= & \{ (v_1,v'_1), \ldots, (v_n,v'_n) \}\\
- \text{memo} & m \in \mathbb{M} ::= & \langle \LAM{x}e, \varrho, t \rangle\\
- \text{memo table} & T \in & \mathbb{N} \pto \mathbb{M}
-\end{array}
-\]
+%% \[
+%% \begin{array}{lrl}
+%%  \text{fun. id's} & f \in \mathbb{N} \\
+%%  \text{values} & v \in \mathbb{V} ::= & n \mid f \\
+%%  \text{env.} & \varrho \in \VAR \pto \mathbb{V} \\
+%%              & t ::= & \{ (v_1,v'_1), \ldots, (v_n,v'_n) \}\\
+%%  \text{memo} & m \in \mathbb{M} ::= & \langle \LAM{x}e, \varrho, t \rangle\\
+%%  \text{memo table} & T \in & \mathbb{N} \pto \mathbb{M}
+%% \end{array}
+%% \]
 
-The following produces cyclic tables. How do we convert
-these into non-cyclic tables? Or can we generate non-cyclic
-tables to begin with? Or put another way, how to we record
-the callee-view of a memo. table? -Jeremy
-\begin{align*}
-  I'\,n\,\varrho\,T &= (n,T) \\
-  I'\,(e_1 + e_2)\,\varrho\,T &= (n_1 + n_2,T_2) \\
-      & \text{if } I'\,e_1\,\varrho\,T = (n_1,T_1), I'\,e_2\,\varrho\,T_1 = (n_2,T_2) \\
-  I'\,(e_1 \times e_2)\,\varrho\,T &= (n_1 n_2,T_2) \\
-      & \text{if } I'\,e_1\,\varrho\,T = (n_1,T_1), I'\,e_2\,\varrho\,T_1 = (n_2,T_2) \\
-  I'\,x\,\varrho\,T &= (\varrho(x),T) \\
-  I'\,(\LAM{x}e)\,\varrho\,T &= (|T|, 
-     \ext{|T|}{\langle \LAM{x}e, \varrho, \emptyset \rangle}{T} \\
-  I'\,(e_1\,e_2)\,\varrho\,T &= (v',\ext{f}{\langle \LAM{x}e,\varrho',\{(v,v')\}\cup t \rangle}{T_3}) \\
-  & \text{if } I'\,e_1\,\varrho\,T = (f,T_1),
-      I'\,e_2\,\varrho\,T_1 = (v,T_2), \\
-    &  T(f) = \langle \LAM{x}e,\varrho',t \rangle,
-      I'\,e\,[x\mapsto v]\varrho'\,T_2 = (v',T_3)
-\end{align*}
+%% The following produces cyclic tables. How do we convert
+%% these into non-cyclic tables? Or can we generate non-cyclic
+%% tables to begin with? Or put another way, how to we record
+%% the callee-view of a memo. table? -Jeremy
+%% \begin{align*}
+%%   I'\,n\,\varrho\,T &= (n,T) \\
+%%   I'\,(e_1 + e_2)\,\varrho\,T &= (n_1 + n_2,T_2) \\
+%%       & \text{if } I'\,e_1\,\varrho\,T = (n_1,T_1), I'\,e_2\,\varrho\,T_1 = (n_2,T_2) \\
+%%   I'\,(e_1 \times e_2)\,\varrho\,T &= (n_1 n_2,T_2) \\
+%%       & \text{if } I'\,e_1\,\varrho\,T = (n_1,T_1), I'\,e_2\,\varrho\,T_1 = (n_2,T_2) \\
+%%   I'\,x\,\varrho\,T &= (\varrho(x),T) \\
+%%   I'\,(\LAM{x}e)\,\varrho\,T &= (|T|, 
+%%      \ext{|T|}{\langle \LAM{x}e, \varrho, \emptyset \rangle}{T} \\
+%%   I'\,(e_1\,e_2)\,\varrho\,T &= (v',\ext{f}{\langle \LAM{x}e,\varrho',\{(v,v')\}\cup t \rangle}{T_3}) \\
+%%   & \text{if } I'\,e_1\,\varrho\,T = (f,T_1),
+%%       I'\,e_2\,\varrho\,T_1 = (v,T_2), \\
+%%     &  T(f) = \langle \LAM{x}e,\varrho',t \rangle,
+%%       I'\,e\,[x\mapsto v]\varrho'\,T_2 = (v',T_3)
+%% \end{align*}
 
 
 \subsection{Reduction Semantics}
 
 
-[TODO: define reduction semantics]
+\begin{figure}[tbp]
+\[
+\begin{array}{lccl}
+  \text{values} & v &::=& n \mid \LAM{x}e \\
+  \text{eval. frames} & F &::=& \Box \oplus e \mid v \oplus \Box \mid (\Box \APP e) 
+     \mid (v \APP \Box)
+\end{array}
+\]
+\begin{gather*}
+  \inference[($\delta$)]{\delta(\oplus,n_1,n_2) = n_3}
+            {n_1 \oplus n_2 \longrightarrow n_3} 
+  \qquad
+  \inference[($\beta_v$)]{}
+            {(\LAM{x}e)\APP v \longrightarrow [x\by v]e} \\[2ex]
+  \inference[(cong)]{e \longrightarrow e'}
+                    {F[e] \longrightarrow F[e']}
+\end{gather*}
 
+\caption{Reduction semantics of the CBV $\lambda$-calculus}
+\label{fig:lambda-reduce}
+\end{figure}
+
+Figure~\ref{fig:lambda-reduce} defines the reduction semantics
+for the $\lambda$-calculus.
 
 \begin{lemma}[Invariance under Substitution]
 \[
@@ -2275,12 +2295,12 @@ $\beta_v.$
 \end{figure}
 
 
-\paragraph{Direct Proof}
+%% \paragraph{Direct Proof}
 
-[TODO: direct proofs that $E$ satisfies the equational theory based on
-  prior theorems about invariance under reduction and congruence.]
+%% [TODO: direct proofs that $E$ satisfies the equational theory based on
+%%   prior theorems about invariance under reduction and congruence.]
 
-\paragraph{Proof via $\lambda$-model}
+%\paragraph{Proof via $\lambda$-model}
 
 The following notion of $\lambda$-model is used in the literature that
 captures a set of conditions that are sufficient for a model to
