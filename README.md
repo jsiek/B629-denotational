@@ -89,8 +89,6 @@ paper that the class has read.
 - Full Abstraction
   - [Observable sequentiality and full abstraction](https://doi.org/10.1145/143165.143232),
 	Cartwright, Felleisen 1992.
-  - [The semantics of local storage, or what makes the free-list free?](https://doi.org/10.1145/800017.800536).
-        Joseph Y. Halpern, Albert R. Meyer, B. A. Trakhtenbrot
   - [Full abstraction for the second order subset of an Algol-like language](https://doi.org/10.1016/S0304-3975(96)00066-7).
 	Kurt Sieber, 1996.
 
