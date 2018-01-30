@@ -78,14 +78,16 @@ paper that the class has read.
 - PCF
   - [A type-theoretic alternative to ISWIM, CUCH, OWHY](https://doi.org/10.1016/0304-3975(93)90095-B), Scott 1993.
   - [LCF considered as a programming language](https://doi.org/10.1016/0304-3975(77)90044-5), Plotkin 1977.
-- Fixed point constructions in order-enriched categories. Wand 1979.
-- The category-theoretic solution of recursive domain equations,
+- [Fixed point constructions in order-enriched categories](https://doi.org/10.1016/0304-3975(79)90053-7). Wand 1979.
+- [The category-theoretic solution of recursive domain equations](http://homepages.inf.ed.ac.uk/gdp/publications/Category_Theoretic_Solution.pdf),
   Smyth and Plotkin, 1982.
-- The Essence of Algol, Reynolds 1981.
-- Notions of computation and monads, Moggi 1991.
+- [The Essence of Algol](https://www.cs.cmu.edu/~crary/819-f09/Reynolds81.ps), Reynolds 1981.
+- [Notions of computation and monads](https://doi.org/10.1016/0890-5401(91)90052-4), Moggi 1991.
 - Full Abstraction
-  - Observable sequentiality and full abstraction,
+  - [Observable sequentiality and full abstraction](https://doi.org/10.1145/143165.143232),
 	Cartwright, Felleisen 1992.
-  - Full abstraction for the second order subset of an Algol-like language,
+  - [The semantics of local storage, or what makes the free-list free?](https://doi.org/10.1145/800017.800536).
+        Joseph Y. Halpern, Albert R. Meyer, B. A. Trakhtenbrot
+  - [Full abstraction for the second order subset of an Algol-like language](https://doi.org/10.1016/S0304-3975(96)00066-7).
 	Kurt Sieber, 1996.
 
