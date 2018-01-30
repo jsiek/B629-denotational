@@ -66,7 +66,7 @@ paper that the class has read.
   - [Data Types as Lattices](https://www.dropbox.com/s/ikfyrwkizooah3q/data_types_as_lattices.pdf?dl=1), Scott 1976.
   - [Set-theoretical and other elementary models of the lambda-calculus](https://doi.org/10.1016/0304-3975(93)90094-A),
     Plotkin 1993.
-  - Algebras and combinators, Engeler 1981.
+  - [Algebras and combinators](https://doi.org/10.1007/BF02483849), Engeler 1981.
   - [Revisiting Elementary Denotational Semantics](https://arxiv.org/abs/1707.03762), Siek 2017.
 - Filter Models of the Lambda Calculus
   - [Functional characterization of some semantic equalities
