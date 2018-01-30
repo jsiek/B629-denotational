@@ -57,8 +57,8 @@ paper that the class has read.
 ## Representative Readings
 
 - [Denotational semantics: a methodology for language development](http://people.cs.ksu.edu/~schmidt/text/densem.html), Schmidt 1986.
-- Outline of a Mathematical Theory of Computation, Scott 1970.
-- The Denotational Semantics of Programming Languages, Tennent 1976.
+- [Outline of a Mathematical Theory of Computation](https://www.cs.ox.ac.uk/publications/publication3720-abstract.html), Scott 1970.
+- [The Denotational Semantics of Programming Languages](https://doi.org/10.1145/360303.360308), Tennent 1976.
 - Simply Typed Lambda Calculus
   - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742), Chlipala 2007.
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
