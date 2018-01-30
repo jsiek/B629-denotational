@@ -69,11 +69,11 @@ paper that the class has read.
   - Algebras and combinators, Engeler 1981.
   - [Revisiting Elementary Denotational Semantics](https://arxiv.org/abs/1707.03762), Siek 2017.
 - Filter Models of the Lambda Calculus
-  - Functional characterization of some semantic equalities
-    inside lambda-calculus, Coppo, Dezani-Ciancaglini, Salle 1979.
-  - A filter lambda model and the completeness of type assignment,
+  - [Functional characterization of some semantic equalities
+    inside lambda-calculus](https://doi.org/10.1007/3-540-09510-1_11). Coppo, Dezani-Ciancaglini, Salle 1979.
+  - [A filter lambda model and the completeness of type assignment](https://www.jstor.org/stable/2273659).
     Barendregt, Coppo, Dezani-Ciancaglini 1983.
-  - Intersection Types and Lambda Models
+  - [Intersection Types and Lambda Models](https://doi.org/10.1016/j.tcs.2006.01.004).
     Alessi, Barbanera, Dezani-Ciancaglini 2006.
 - PCF
   - [A type-theoretic alternative to ISWIM, CUCH, OWHY](https://doi.org/10.1016/0304-3975(93)90095-B), Scott 1993.
