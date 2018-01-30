@@ -1375,20 +1375,22 @@ through another model of STLC, the Term Model $T$.
 \]
 The Term Model is built from the equational theory, so the proof of
 step 2 is straightforward. The proof of step 1 will be accomplished by
-constructing a homomorphism between $E$ and $T$ and then using the
-fact that equality is preserved by homomorphism.
+constructing a homomorphism from $E$ to $T$ and proving that equality
+is preserved from the source to the target of a homomorphism.
 
-\paragraph{The Term Model and Frames}
+\paragraph{The Term Model}
 
 We construct a model for STLC that is built from sets of expressions
 of STLC modulo the equational theory.
 
-We define the equivalence classes of expressions that are equal
-according to the theory as follows.
+We partition the expressions into equivalence classes, each of which
+contains all the expressions that are equal to each other according to
+the equational theory. Each equivalence class is identified by a
+representative expression as follows.
 \[
   [e] \defeq \{ e' \mid \; \vdash e = e' \}
 \]
-We define the meaning function $T$ on types as follows.
+We define the semantic function $T$ on types as follows.
 \[
 T\,A \defeq \{ [e] \mid \exists \Gamma, \Gamma \subset \mathcal{G}
   \text{ and } \Gamma \vdash e : A \}
@@ -1404,6 +1406,25 @@ application operator as follows:
 \[
     [e_1] \cdot [e_2] \defeq [(e_1\APP e_2)]
 \]
+
+In the term model, a $\Gamma$-environment $\rho$ maps each variable $x
+: A \in \Gamma$ to an element of the set $T\,A$, i.e. to an
+equivalence class of expressions of type $A$.
+\[
+  \rho \models \Gamma \defeq \forall x:A \in \Gamma, \rho(x) \in T\,A
+\]
+A substitution $\sigma$ maps each variable to a single expression. A
+substitution $\mathsf{rep}(\rho)$ represents $\rho$ if it maps each
+variable to the representative in $\rho$.
+\[
+  \mathsf{rep}(\rho)(x) \defeq e \quad \text{if } \rho(x) = [e]
+\]
+The meaning of expressions in the term model is defined as follows.
+\[
+  T\,e\,\rho \defeq [\mathsf{rep}(\rho)(e)]
+\]
+
+\paragraph{Frames}
 
 We shall formalize part of what it means to be a model of the STLC
 with the notions of pre-frame and frame. Then we will speak of
@@ -1449,23 +1470,6 @@ following equations
 \end{align*}
 \end{definition}
 
-In the term model, a $\Gamma$-environment $\rho$ maps each variable $x
-: A \in \Gamma$ to an element of the set $T\,A$, i.e. to an
-equivalence class of expressions of type $A$.
-\[
-  \rho \models \Gamma \defeq \forall x:A \in \Gamma, \rho(x) \in T\,A
-\]
-A substitution $\sigma$ maps each variable to a single expression. A
-substitution $\mathsf{rep}(\rho)$ represents $\rho$ if it maps each
-variable to the representative in $\rho$.
-\[
-  \mathsf{rep}(\rho)(x) \defeq e \quad \text{if } \rho(x) = [e]
-\]
-
-The meaning of expressions in the term model is defined as follows.
-\[
-  T\,e\,\rho \defeq [\mathsf{rep}(\rho)(e)]
-\]
 
 
 \begin{lemma}
@@ -1506,11 +1510,32 @@ The meaning of expressions in the term model is defined as follows.
 The structure $(E,\cdot)$ is a frame, where the application operator
 is just mathematical function application:
 \[
-   f \cdot d \defeq d' \qquad \text{if } (d,d') \in f
+   f \cdot d \defeq f(d)
 \]
 \end{lemma}
 \begin{proof}
-  UNDER CONSTRUCTION
+ First, to show that $(E,\cdot)$ is a pre-frame, we need to prove that
+ functions in the model are extensional. But this is straightforward
+ because the elements of $E\,(A\to B)$ are just functions, i.e.,
+ elements of $(E\,B)^{E\,A}$. Suppose $f,g \in (E\,B)^{E\,A}$ and $f
+ \cdot a = g \cdot a$ for any $a \in E\,A$.  We need to show that $f =
+ g$. By extensionality of functions, it suffices to show that $f(a) =
+ g(a)$ for all $a \in E\,A$. We conclude by unfolding application in
+ the assumption $f \cdot a = g \cdot a$.
+
+ Next we show that $(E,\cdot)$ satisfies the frame equations.
+ \begin{align*}
+  E\,n\,\rho &= n & \text{by def. of $E$} \\
+  E\,(e_1 \oplus e_2)\,\rho &= E\,e_1\,\rho \oplus E\,e_2\,\rho 
+    & \text{by def. of $E$} \\
+  E\,x\,\rho &= \rho(x) & \text{by def. of $E$} \\
+  E\,(e_1\APP e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
+    & \text{by def. of $E$} \\[1ex]
+      (M\,(\LAM{x\of A} e_1)\,\rho) \cdot d 
+      &= \{ (d,d') \mid d \in E\,A,
+            d' = E\,e_1\,\ext{x}{d}{\rho}\} \cdot d & \text{by def. of $E$}\\
+      &= E\,e_1\,\ext{x}{d}{\rho} & \text{by def. of $\cdot$}
+ \end{align*}
 \end{proof}
 
 \begin{lemma}[Frames are Sound]
