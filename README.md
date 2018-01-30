@@ -60,7 +60,10 @@ paper that the class has read.
 - [Outline of a Mathematical Theory of Computation](https://www.cs.ox.ac.uk/publications/publication3720-abstract.html), Scott 1970.
 - [The Denotational Semantics of Programming Languages](https://doi.org/10.1145/360303.360308), Tennent 1976.
 - Simply Typed Lambda Calculus
-  - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742), Chlipala 2007.
+  - Chapter 2 of Semantics of Programming Languages: Structures and Techniques. 
+    Gunter 1992.
+  - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742). Chlipala 2007.
+  - [Cartesian closed categories and typed λ-calculi](https://doi.org/10.1007/3-540-17184-3_44). J. Lambek 1985.
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
 - Graph Models of the Lambda Calculus
   - [Data Types as Lattices](https://www.dropbox.com/s/ikfyrwkizooah3q/data_types_as_lattices.pdf?dl=1), Scott 1976.
