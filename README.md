@@ -11,16 +11,22 @@ some programming.
 
 ## Instructor
 
-**Jeremy Siek** LH 230D [jsiek@indiana.edu](mailto:jsiek@indiana.edu)
+**Jeremy Siek** Luddy 3016 [jsiek@indiana.edu](mailto:jsiek@indiana.edu)
 
 ## Lectures
 
 9:30-10:45am MW in Luddy Hall Room 3069 (not BH 305!), 
-  backup location Luddy Hall Room 3014.
+  backup location Luddy Hall Room 4069.
 
 The lecture notes are in progress at:
 
 [https://github.com/jsiek/B629-denotational/notes.pdf](notes.pdf).
+
+## Office Hours
+
+- 11:00am-12 Thursdays in my office Luddy 3016,
+
+- or by appointment
 
 ## Assignments
 
