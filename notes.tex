@@ -1877,16 +1877,23 @@ with a type annotation on their parameter.  Because the
 $\lambda$-calculus is untyped, we consider any syntactically
 well-formed expression to be in the language (no type system
 necessary) and any closed expression is a valid program.  We study
-here the call-by-value (CBV) version of the $\lambda$-calculus.  As we
-did for the STLC, we include arithmetic on natural numbers.
+here the call-by-value (CBV) version of the $\lambda$-calculus; its
+syntax is presented in Figure~\ref{fig:lambda-syntax} .  As we did for
+the STLC, we include arithmetic on natural numbers.
+
+\begin{figure}[tbp]
 \[
 \begin{array}{lrl}
-              & n \in \mathbb{N} \\
- \text{vars.} & x \in \VAR\\
+ \text{numbers}   & n \in \mathbb{N} \\
+ \text{variables} & x \in \VAR\\
  \text{arithmetic} & \oplus ::= & + \mid \times \\
- \text{expr.}& e \in\mathbb{E} ::=& n \mid e \oplus e \mid x \mid \LAM{x} e \mid (e \, e)
+ \text{expressions}& e \in\mathbb{E} ::=& n \mid e \oplus e \mid x \mid \LAM{x} e \mid (e \, e)
 \end{array}
 \]
+\caption{Syntax of the $\lambda$-calculus with arithmetic.}
+\label{fig:lambda-syntax}
+\end{figure}
+
 
 \subsection{Semantics}
 
@@ -1895,9 +1902,10 @@ can be passed to other functions and returned from them. This
 introduces a difficulty in trying to give a semantics in terms of
 regular mathematical sets and functions. It seems that we need a set
 $\mathbb{D}$ that solves the following equation.
-\[
+\begin{equation}
+  \label{eq:D-lambda}
    \mathbb{D} = \mathbb{N} + (\mathbb{D} \pto \mathbb{D})
-\]
+\end{equation}
 But such a set cannot exist because the size of $\mathbb{D} \pto
 \mathbb{D}$ is necessarily larger than $\mathbb{D}$!
 
@@ -1907,33 +1915,302 @@ make it possible to solve the equation. The first model of the
 $\lambda$-calculus, $D_\infty$ of \citet{Scott:1970dp}, takes this
 approach. We shall study $D_\infty$ in Section~\ref{sec:D-infinity}.
 
-Another approach does not require solving the above equation, but
-recognizes that when passing a function to another function, one
-doesn't need to pass the entirety of the function (which is infinite),
-but one can instead pass a finite subset of the function's graph.  The
-trouble of deciding which finite subset to pass can be sidestepped by
-trying all possible subsets. This would of course be prohibitive if
-our current goal was to implement the $\lambda$-calculus, but this
-``inefficiency'' does not pose a problem for a semantics, a
-\emph{specification}, of the $\lambda$-calculus. The various semantics
-that take this approach are called \emph{graph models}. This first
-such model was $T^{*}_C$ of \citet{Plotkin:1972aa}. Then came
-$\mathcal{P}(\omega)$ of \citet{Scott:1976lq} and the simpler $D_A$ of
+There is a different approach that does not require solving the above
+equation, but recognizes that when passing a function to another
+function, one doesn't need to pass the entirety of the function (which
+is infinite), but one can instead pass a finite subset of the
+function's graph.  The trouble of deciding which finite subset to pass
+can be sidestepped by trying all possible subsets. This would of
+course be prohibitive if our current goal was to implement the
+$\lambda$-calculus, but this ``inefficiency'' does not pose a problem
+for a semantics, a \emph{specification}, of the
+$\lambda$-calculus. The various semantics that take this approach are
+called \emph{graph models}. This first such model was $T^{*}_C$ of
+\citet{Plotkin:1972aa}. Then came $\mathcal{P}(\omega)$ of
+\citet{Scott:1976lq} and the simplified $D_A$ of
 \citet{Engeler:1981aa}. We shall study these three models in
-Section~\ref{sec:graph-models}. But first, we study perhaps the most
-straightforward of the graph models, the recent one by yours
-truly~\citep{Siek:2017ab}.
+Section~\ref{sec:graph-models}. The discussion of
+$\mathcal{P}(\omega)$ will also show how to recover a solution to
+Equation~\eqref{eq:D-lambda}.  But first, we study the graph model
+that I discovered~\citep{Siek:2017ab}.
 %%  (todo: What about filter models? And isn't
 %% Siek's in some sense closer to the filter models?)
 
-\begin{figure*}
-\begin{minipage}{0.5\textwidth}
-Domain
+As mentioned above, the graph models work with finite subsets of a
+function's graph, which enables the use of finite values (or
+elements). For my model, the elements are literally just the integers
+and finite graphs (association tables), so they can be defined by the
+following grammar:\footnote{This definition of element originates from
+  the work on semantic subtyping of \citet{Frisch:2008aa}.}
+\[
+   d \in \mathbb{D} ::= n \mid \{ (d_1,d'_1), \ldots, (d_n,d'_n) \}
+\]
+Equivalently, we can defined $\mathbb{D}$ as the least solution of the
+following equation
+\[
+   \mathbb{D} = \mathbb{Z} + \mathcal{P}_f(\mathbb{D} \times \mathbb{D})
+\]
+Let $t$ range over the finite graphs, that is, $t \in
+\mathcal{P}_f(\mathbb{D} \times \mathbb{D})$ and $D$ range over
+subsets of $\mathbb{D}$ (sometimes finite, sometimes infinite
+depending, on the cirmcumstances).
+
+
+\paragraph{Relational Semantics}
+
+We shall study several different presentations of my graph model.  We
+start with the relational semantics because it is similar to a
+big-step operational semantics (aka. natural
+semantics~\citep{Kahn:1987aa}), which hopefully is familiar to many
+readers. We shall see that an important difference is that, unlike
+big-step semantics, this semantics is not operational, i.e., it is not
+suggestive of an implementation.
+
+We write $\rho \vdash e \Rightarrow d$ for the relation that holds
+when $e$ evaluates to $d$ in environment $\rho$. An environment $\rho$
+is a mapping of variables to elements and $\emptyset$ is the empty
+environment. The following is an example and counterexample 
+\begin{align*}
+   \emptyset \vdash (20 + 1) \times 2 \Rightarrow 42 \quad\text{and}\quad
+   \neg\; \emptyset \vdash 21 \times (2 + 3) \Rightarrow 42.
+\end{align*}
+
+We represent a function by a finite table, which means that the user
+of the semantics can ask whether a function maps certain inputs to
+certain outputs. For example, we have
+\[
+  \emptyset\vdash \LAM{x} x+1 \Rightarrow 
+    \{ (41,42), (-10,-9) \},
+  \;
+  \emptyset\vdash \LAM{x} x+1 \Rightarrow  
+    \{ (1,2), (41,42) \}, \text{ and}
+  \;
+  \neg\; \emptyset\vdash \LAM{x} x+1 \Rightarrow \{ (1,1) \}.
+\]
+For deterministic programming languages, a relational semantics
+typically specifies a unique output value for a program. As you can
+see here, our declarative semantics instead relates a $\lambda$
+abstraction to many different tables. The tables should be interpreted
+as providing only positive information and not negative, that is, the
+absence of an entry in a table does not mean anything.
+
+For programs whose output is a function, as in the above example, it
+helps to think of the parameter of the function as a query to the user
+of the semantics.  In the above, the semantics asks for a value of $x$
+and gets several different responses from the user ($41$, $-10$, and
+$1$). So the query-response nature of the semantics gets flipped when
+dealing with functions.
+%
+%% Because we represent queries about functions as finite graphs, the
+%% user of the semantics can only ask a finite number of questions about
+%% a function per query.\footnote{If the user has an infinite number of
+%%   questions, then they must have the patience to submit an infinite
+%%   number of queries.}
+
+One of the main features of the $\lambda$-calculus is that functions
+are first class and can therefore be passed to other functions. For
+example, if we let $t_0 = \{ (1,2) \}$ and $t_1
+= \{ (0,1), (1,2) \}$, then we have
+\[
+  \emptyset \vdash \LAM{x} x \Rightarrow \{  (t_0, t_0), (t_1,t_1) \} 
+  \;\;\text{and}\;\;
+  \neg\; \emptyset \vdash \LAM{x} x \Rightarrow \{ (t_0, t_1) \}.
+\]
+The way in which this program can return a function brings up an
+interesting question. What if instead of asking whether, given input
+$t_1$, the output is a function that maps $0$ to $1$ and $1$ to $2$,
+we only ask if the output maps $1$ to $2$.
+\[
+  \emptyset \vdash \LAM{x} x \Rightarrow
+     \{  (t_1,t_0) \} 
+\]
+One would think that the answer should still be ``yes''.  It turns out
+the answer had better be yes! Otherwise the semantics cannot handle
+self application, which would be a deal breaker for the
+$\lambda$-calculus. Consider the following example of self application.
+Is there a table $t_3$ such that we get $1$ as a response.
+\[
+  \emptyset \vdash \LAM{f} f \APP f \Rightarrow
+     \{ (t_3,1) \})
+\]
+It seems that the application of $f$ to itself would require that
+$(t_3,1) \in t_3$, but such circularity is not possible because we
+have inductively defined our values\footnote{Could we instead
+  coinductively define the values?}.
+%
+But if we allow a ``yes'' response when the query is a subset of the
+answer, then for example, we could let $t_3 = \{ (\emptyset,1) \}$ and
+then answering $t_3$ for the query $\emptyset$ is fine because
+$\emptyset \subseteq t_3$. This can be thought of as a kind of
+subsumption: one can use a more-defined table in places where a
+less-defined table is expected.
+
+To make our definitions uniform, we lift the subset operation to all
+values, writing $v \sqsubseteq v'$, which we define as follows:
+\[
+    n \sqsubseteq n
+    \qquad
+    \inference{t \subseteq t'}{t \sqsubseteq t'}
+\]
+
+\begin{proposition}[$\sqsubseteq$ is a partial order]\ 
+\label{prop:val-le-refl}\label{prop:val-le-trans}
+\begin{enumerate}
+\item $v \sqsubseteq v$ (reflexive) and 
+\item if $v_1 \sqsubseteq v_2$ and $v_2 \sqsubseteq v_3$,
+  then $v_1 \sqsubseteq v_3$ (transitive). 
+\item if $v_1 \sqsubseteq v_2$ and $v_2 \sqsubseteq v_1$,
+  then $v_1 = v_2$ (antisymmetric).
+\end{enumerate}
+\end{proposition}
+
+\begin{figure}[tbp]
+\hfill\fbox{$\rho \vdash e \Rightarrow v$}
+\begin{gather*}
+  \inference{}{\rho \vdash n \Rightarrow n}
+  \quad
+  \inference
+      {\rho \vdash e_1 \Rightarrow n_1 &
+       \rho \vdash e_2 \Rightarrow n_2}
+      {\rho \vdash e_1 \oplus e_2 \Rightarrow n_1 \oplus n_2}
+  \quad
+  \inference
+      {v \sqsubseteq \rho(x)}
+      {\rho \vdash x \Rightarrow v}
+  \\[2ex]
+  \inference
+      {\forall (v,v'){\in} t.\; \rho(x{:=}v) \vdash e \Rightarrow v'}
+      {\rho \vdash \LAM{x}e \Rightarrow t}
+  \quad
+  \inference
+      {\rho \vdash e_1 \Rightarrow t &
+       \rho \vdash e_2 \Rightarrow v_2 \\
+      (v_3,v'_3) \in t & v_3 \sqsubseteq v_2 & v \sqsubseteq v'_3}
+      {\rho \vdash (e_1\APP e_2) \Rightarrow v}
+  %% \\[2ex]
+  %% \inference{\rho \vdash e_1 \Rightarrow n & n \neq 0 &
+  %%   \rho \vdash e_2 \Rightarrow v}
+  %%           {\rho \vdash \IF{e_1}{e_2}{e_3} \Rightarrow v}
+  %% \quad
+  %% \inference{\rho \vdash e_1 \Rightarrow 0 & 
+  %%   \rho \vdash e_3 \Rightarrow v}
+  %%           {\rho \vdash \IF{e_1}{e_2}{e_3} \Rightarrow v}
+\end{gather*}
+\caption{A relational semantics for CBV $\lambda$-calculus.}
+\label{fig:denot-relation}
+\end{figure}
+
+
+Motivated by the above discussion, we give an inductive definition of
+the relation $\rho \vdash e \Rightarrow v$ in
+Figure~\ref{fig:denot-relation}. The rules for $\lambda$ abstraction
+and application are the most important and quite different from prior
+relational semantics.
+%
+The rule for $\LAM{x} e$ states that the result is some table $t$ if,
+for every input-output pair $(v,v')$ in $t$, extending the environment
+with $x\by v$ and evaluating the body $e$ results in $v'$.  We like to
+think of the table $t$ as being produced by an oracle that looks into
+the future and chooses a table whose domain is big enough to handle
+all of the subsequent uses of it in the program execution. The premise
+of the rule makes sure that the table $t$ is a subset of the function
+described by $\LAM{x} e$.
+%
+The rule for a function application $(e_1 \APP e_2)$ performs table
+lookup. Expression $e_1$ evaluates to a table $t$ and $e_2$ evaluates
+to $v_2$. The rule then finds a match for the argument $v_2$ in the
+table $t$ and obtains the associated output value. The twist is that
+when finding a match, instead of using equality on values we use
+$\sqsubseteq$ to allow for the subsumption that we discussed above.
+Also, we use $\sqsubseteq$ a second time to relate the output value
+from the table and the result value $v$, to make sure that
+subsumption is admissible (Proposition~\ref{prop:change-env-le}).
+%
+The rules for integers, arithmetic, and the conditional \textbf{if}
+expression are straightforward. Regarding variables, the twist is that
+a variable evaluates to any value $v$ such that $v \sqsubseteq
+\rho(x)$, again to make sure that subsumption is admissible.
+
+
+
+\paragraph{Example of Recursion}
+
+In our earlier discussion we showed how the declarative semantics can
+support self application, but the reader may yet be wondering whether
+it supports recursion. We ultimately answer the question in
+Section~\ref{sec:correct}, by proving that the declarative semantics
+is equivalent to the operational semantics. Nevertheless, it may be
+helpful to see an example of a recursive function to see how it works.
+The main idea is that of a Matryoshka doll: we shall nest ever-smaller
+versions of a recursive function inside of itself.
+
+Recall the $Z$ combinator (the version of the $Y$ combinator for
+strict languages):
+\[
+  M  \equiv \LAM{x} f \APP (\LAM{v} (x\APP x) \APP v) \qquad
+  Z  \equiv \LAM{f} M \APP M 
+\]
+The factorial function is defined as follows, with a parameter $r$ for
+calling itself recusively. We give names ($F$ and $H$) to the
+$\lambda$ abstractions because we shall define tables for each of
+them.
+\[
+  F  \equiv \LAM{n} \IF{n=0}{1}{n} \times r \APP (n-1) \qquad
+  H \equiv \LAM{r} F \qquad
+  \mathit{fact} \equiv Z\APP H
+\]
+We begin with the tables for $F$: we define a function $F_t$ that
+gives the table for just one input $n$; it simply maps $n$ to $n$
+factorial.
+\[
+  F_t(n) = \{ (n,n!) \}
+\]
+The tables for $H$ map a factorial table for $n-1$ to a table for $n$.
+We invite the reader to check that
+$\emptyset \vdash H \Rightarrow H_t(n)$ for any $n$.
+\[
+H_t(n) = \{ (\emptyset, F_t(0)), (F_t(0), F_t(1)), \ldots, (F_t(n-1), F_t(n))\}
+\]
+Next we come to the most important part: describing the tables for
+$M$. Recall that $M$ is applied to itself; this is where the
+analogy to Matryoshka dolls comes in.  We define $M_t$ by recursion on
+$n$. Each $M_t(n)$ extends the smaller version of itself, $M_t(n-1)$,
+with one more entry that maps the smaller version of itself to the
+table for factorial of $n-1$.
+\begin{align*}
+  M_t(0) &= \emptyset \\
+  M_t(n) &= M_t(n-1) \cup \{ (M_t(n-1), F_t(n-1)) \}
+\end{align*}
+The tables $M_t$ are valid meanings for $M$ because $f{:=}H_t(k)
+\vdash M \Rightarrow M_t(n+1)$ for any $n \leq k$.
+The application of $M$ to itself is OK, that is,
+$f{:=}H_t(k) \vdash M\APP M \Rightarrow F_t(n)$,
+because we have
+$(M_t(n),F_t(n)) \in M_t(n+1)$, 
+$M_t(n)\sqsubseteq M_t(n+1)$, and
+$F_t(n) \sqsubseteq F_t(n)$.
+
+To finish things up, the tables for $Z$ map the $H_t$'s to the
+factorial tables.
+\[
+  Z_t(n) = \{ (H_t(n), F_t(n)) \}
+\]
+Then we have $\emptyset \vdash Z \Rightarrow Z_t(n)$ for all $n$.  So
+$\emptyset \vdash Z\APP H \Rightarrow F_t(n)$ for any $n$ and
+therefore $\emptyset \vdash \mathit{fact}\,n \Rightarrow n!$.
+
+
+
+
+
+
+
+
+\begin{figure*}[tbp]
+  \begin{minipage}{0.5\textwidth}
 \[
 \begin{array}{lrl}
-               & n \in \mathbb{N} \\
-  \text{elts.} & d \in \mathbb{D} ::= &n \mid \{ (d_1,d'_1), \ldots, (d_n,d'_n) \} \\
-  \text{env.} & \rho \in  \VAR \pto \mathbb{D} 
+  \text{environments} & \rho \in  \VAR \pto \mathbb{D} 
 \end{array}
 \]
 Ordering
@@ -1947,10 +2224,10 @@ Application
   %% \uplambda^S f &\defeq
   %%     \{ t \mid \forall (d,d') \in t, d' \in f\, d \} \\[1ex]
   \_ \cdot \_ &: \mathcal{P}(\mathbb{D}) \times \mathcal{P}(\mathbb{D})\to \mathcal{P}(\mathbb{D}) \\
-  D^{*}_1 \cdot D^{*}_2 & \defeq
+  D_1 \cdot D_2 & \defeq
     \left\{ d_3 \middle|
     \begin{array}{l}
-      \exists t d_2 d d', t \in D^{*}_1,  d_2 \in D^{*}_2, \\
+      \exists t d_2 d d', t \in D_1,  d_2 \in D_2, \\
       (d,d') \in t, d \sqsubseteq d_2, d_3 \sqsubseteq d'
     \end{array}
     \right\}
@@ -1974,26 +2251,15 @@ Semantics
 \label{fig:lambda}
 \end{figure*}
 
-Figure~\ref{fig:lambda} defines the syntax and semantics of a CBV
+Figure~\ref{fig:lambda} defines the semantics of a CBV
 $\lambda$-calculus. To enable trying all possible finite subsets of a
-function's graph, the semantics is non-deterministic. That is, the
-semantic function $E$ maps programs to sets of elements, instead of a
-single element. In the case when an expression produces a natural
-number, the set is just a singleton of that number. However, when the
-expression produces a function, the set contains all finite
-approximations of the function.
+function's graph, the semantics is set-valued. That is, the semantic
+function $E$ maps programs to sets of elements, instead of a single
+element. In the case when an expression produces a natural number, the
+set is just a singleton of that number. However, when the expression
+produces a function, the set contains all finite approximations of the
+function.
 
-The set $\mathbb{D}$ consists of just the natural numbers and finite
-graphs (association tables) of functions.  $\mathbb{D}$ is defined
-inductively, or equivalently, it is the least solution of
-\begin{equation}
-   \mathbb{D} = \mathbb{N} + \mathcal{P}_f(\mathbb{D} \times \mathbb{D})
-  \label{eq:D}
-\end{equation}
-Let $t$ range over the finite graphs, that is, $t \in
-\mathcal{P}_f(\mathbb{D} \times \mathbb{D})$, $D$ range over finite
-sets of elements from $\mathbb{D}$, and $D^{*}$ range over possibly
-infinite sets of elements from $\mathbb{D}$.
 
 The semantics in Figure~\ref{fig:lambda} says the meaning of an
 abstraction $(\LAM{x}e)$ is the set of all tables $t$ such that each
