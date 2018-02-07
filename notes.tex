@@ -1979,15 +1979,13 @@ relation.
 We represent a function by a finite table, which means that the user
 of the semantics can ask whether a function maps certain inputs to
 certain outputs. For example, we have
-\[
-  \emptyset\vdash \LAM{x} x+1 \Rightarrow 
-    \{ (41,42), (-10,-9) \},
-  \;
-  \emptyset\vdash \LAM{x} x+1 \Rightarrow  
-    \{ (1,2), (41,42) \}, \text{ and}
-  \;
-  \neg\; \emptyset\vdash \LAM{x} x+1 \Rightarrow \{ (1,1) \}.
-\]
+\begin{align*}
+  \emptyset\vdash \LAM{x} x+1 &\Rightarrow 
+    \{ (41,42), (-10,-9) \}, \\
+  \emptyset\vdash \LAM{x} x+1 &\Rightarrow  
+    \{ (1,2), (41,42) \}, \text{ and}\\
+  \neg\; \emptyset\vdash \LAM{x} x+1 &\Rightarrow \{ (1,1) \}.
+\end{align*}
 For deterministic programming languages, a relational semantics
 typically specifies a unique output value for a program. As you can
 see here, our declarative semantics instead relates a $\lambda$
@@ -2047,7 +2045,7 @@ subsumption: one can use a more-defined table in places where a
 less-defined table is expected.
 
 To make our definitions uniform, we lift the subset operation to all
-values, writing $v \sqsubseteq v'$, which we define as follows:
+elements, writing $d \sqsubseteq d'$, which we define as follows:
 \[
     n \sqsubseteq n
     \qquad
@@ -2057,16 +2055,16 @@ values, writing $v \sqsubseteq v'$, which we define as follows:
 \begin{proposition}[$\sqsubseteq$ is a partial order]\ 
 \label{prop:val-le-refl}\label{prop:val-le-trans}
 \begin{enumerate}
-\item $v \sqsubseteq v$ (reflexive) and 
-\item if $v_1 \sqsubseteq v_2$ and $v_2 \sqsubseteq v_3$,
-  then $v_1 \sqsubseteq v_3$ (transitive). 
-\item if $v_1 \sqsubseteq v_2$ and $v_2 \sqsubseteq v_1$,
-  then $v_1 = v_2$ (antisymmetric).
+\item $d \sqsubseteq d$ (reflexive) and 
+\item if $d_1 \sqsubseteq d_2$ and $d_2 \sqsubseteq d_3$,
+  then $d_1 \sqsubseteq d_3$ (transitive). 
+\item if $d_1 \sqsubseteq d_2$ and $d_2 \sqsubseteq d_1$,
+  then $d_1 = d_2$ (antisymmetric).
 \end{enumerate}
 \end{proposition}
 
 \begin{figure}[tbp]
-\hfill\fbox{$\rho \vdash e \Rightarrow v$}
+\hfill\fbox{$\rho \vdash e \Rightarrow d$}
 \begin{gather*}
   \inference{}{\rho \vdash n \Rightarrow n}
   \quad
@@ -2076,79 +2074,80 @@ values, writing $v \sqsubseteq v'$, which we define as follows:
       {\rho \vdash e_1 \oplus e_2 \Rightarrow n_1 \oplus n_2}
   \quad
   \inference
-      {v \sqsubseteq \rho(x)}
-      {\rho \vdash x \Rightarrow v}
+      {d \sqsubseteq \rho(x)}
+      {\rho \vdash x \Rightarrow d}
   \\[2ex]
   \inference
-      {\forall (v,v'){\in} t.\; \rho(x{:=}v) \vdash e \Rightarrow v'}
+      {\forall (d,d'){\in} t.\; \rho(x{:=}d) \vdash e \Rightarrow d'}
       {\rho \vdash \LAM{x}e \Rightarrow t}
   \quad
   \inference
       {\rho \vdash e_1 \Rightarrow t &
-       \rho \vdash e_2 \Rightarrow v_2 \\
-      (v_3,v'_3) \in t & v_3 \sqsubseteq v_2 & v \sqsubseteq v'_3}
-      {\rho \vdash (e_1\APP e_2) \Rightarrow v}
+       \rho \vdash e_2 \Rightarrow d_2 \\
+      (d_1,d_1') \in t & d_1 \sqsubseteq d_2 & d \sqsubseteq d_1'}
+      {\rho \vdash (e_1\APP e_2) \Rightarrow d}
   %% \\[2ex]
   %% \inference{\rho \vdash e_1 \Rightarrow n & n \neq 0 &
-  %%   \rho \vdash e_2 \Rightarrow v}
-  %%           {\rho \vdash \IF{e_1}{e_2}{e_3} \Rightarrow v}
+  %%   \rho \vdash e_2 \Rightarrow d}
+  %%           {\rho \vdash \IF{e_1}{e_2}{e_3} \Rightarrow d}
   %% \quad
   %% \inference{\rho \vdash e_1 \Rightarrow 0 & 
-  %%   \rho \vdash e_3 \Rightarrow v}
-  %%           {\rho \vdash \IF{e_1}{e_2}{e_3} \Rightarrow v}
+  %%   \rho \vdash e_3 \Rightarrow d}
+  %%           {\rho \vdash \IF{e_1}{e_2}{e_3} \Rightarrow d}
 \end{gather*}
-\caption{A relational semantics for CBV $\lambda$-calculus.}
+\caption{A relational semantics for CBV $\lambda$-calculus
+  with arithmetic.}
 \label{fig:denot-relation}
 \end{figure}
 
 
 Motivated by the above discussion, we give an inductive definition of
-the relation $\rho \vdash e \Rightarrow v$ in
+the relation $\rho \vdash e \Rightarrow d$ in
 Figure~\ref{fig:denot-relation}. The rules for $\lambda$ abstraction
 and application are the most important and quite different from prior
 relational semantics.
 %
 The rule for $\LAM{x} e$ states that the result is some table $t$ if,
-for every input-output pair $(v,v')$ in $t$, extending the environment
-with $x\by v$ and evaluating the body $e$ results in $v'$.  We like to
+for every input-output pair $(d,d')$ in $t$, extending the environment
+with $x\by d$ and evaluating the body $e$ results in $d'$.  We like to
 think of the table $t$ as being produced by an oracle that looks into
 the future and chooses a table whose domain is big enough to handle
-all of the subsequent uses of it in the program execution. The premise
-of the rule makes sure that the table $t$ is a subset of the function
-described by $\LAM{x} e$.
-%
+all of the subsequent applications of it in the program execution.
+The premise of the rule makes sure that the table $t$ is a subset of
+the function described by $\LAM{x} e$.
+
 The rule for a function application $(e_1 \APP e_2)$ performs table
 lookup. Expression $e_1$ evaluates to a table $t$ and $e_2$ evaluates
-to $v_2$. The rule then finds a match for the argument $v_2$ in the
+to $d_2$. The rule then finds a match for the argument $d_2$ in the
 table $t$ and obtains the associated output value. The twist is that
 when finding a match, instead of using equality on values we use
 $\sqsubseteq$ to allow for the subsumption that we discussed above.
 Also, we use $\sqsubseteq$ a second time to relate the output value
-from the table and the result value $v$, to make sure that
-subsumption is admissible (Proposition~\ref{prop:change-env-le}).
-%
-The rules for integers, arithmetic, and the conditional \textbf{if}
-expression are straightforward. Regarding variables, the twist is that
-a variable evaluates to any value $v$ such that $v \sqsubseteq
-\rho(x)$, again to make sure that subsumption is admissible.
+from the table and the result value $d$, to make sure that
+subsumption is admissible (Proposition~\ref{prop:sub}).
 
+The rules for integers and arithmetic are straightforward. Regarding
+variables, the twist is that a variable evaluates to any value $d$
+such that $d \sqsubseteq \rho(x)$, again to make sure that subsumption
+is admissible.
 
 
 \paragraph{Example of Recursion}
 
 In our earlier discussion we showed how the declarative semantics can
 support self application, but the reader may yet be wondering whether
-it supports recursion. We ultimately answer the question in
-Section~\ref{sec:correct}, by proving that the declarative semantics
-is equivalent to the operational semantics. Nevertheless, it may be
-helpful to see an example of a recursive function to see how it works.
-The main idea is that of a Matryoshka doll: we shall nest ever-smaller
-versions of a recursive function inside of itself.
+it supports recursion. We ultimately answer the question by proving
+that the semantics is equivalent to the operational semantics
+(Theorem~\ref{thm:E-adequacy} and
+\ref{thm:E-complete-reduction}). Nevertheless, it may be helpful to
+see an example of a recursive function to see how it works.  The main
+idea is that of a Matryoshka doll: we shall nest ever-smaller versions
+of a recursive function inside of itself.
 
 Recall the $Z$ combinator (the version of the $Y$ combinator for
 strict languages):
 \[
-  M  \equiv \LAM{x} f \APP (\LAM{v} (x\APP x) \APP v) \qquad
+  M  \equiv \LAM{x} f \APP (\LAM{y} (x\APP x) \APP y) \qquad
   Z  \equiv \LAM{f} M \APP M 
 \]
 The factorial function is defined as follows, with a parameter $r$ for
@@ -2252,20 +2251,32 @@ Semantics
 \label{fig:lambda}
 \end{figure*}
 
-Figure~\ref{fig:lambda} defines the semantics of a CBV
-$\lambda$-calculus. To enable trying all possible finite subsets of a
-function's graph, the semantics is set-valued. That is, the semantic
-function $E$ maps programs to sets of elements, instead of a single
-element. In the case when an expression produces a natural number, the
-set is just a singleton of that number. However, when the expression
-produces a function, the set contains all finite approximations of the
-function.
 
+\paragraph{Denotational Semantics}
 
-The semantics in Figure~\ref{fig:lambda} says the meaning of an
-abstraction $(\LAM{x}e)$ is the set of all tables $t$ such that each
-input-output entry $(d,d')$ makes sense for the $\lambda$. That is,
-$d' \in E\,e\,\ext{x}{ d}{\rho}$. 
+Next we present a second semantics based on the graph model, but this
+time it is a function and not a relation. That is, it is a
+denotational semantics. This denotational semantics is straightforward
+to derive from the relational semantics because it is well known that
+relations are isomorphic to set-valued functions. In particular
+\[
+  \SET{\mathbb{E} \times (\mathbb{X}\rightharpoonup \mathbb{V}) \times \mathbb{V}}
+  \quad\cong\quad
+  \mathbb{E} \to (\mathbb{X}\rightharpoonup \mathbb{V}) \to \SET{\mathbb{V}}
+\]
+Figure~\ref{fig:lambda} shows the results of converting the semantics
+from a relation into a function.
+%
+%% To enable trying all possible finite subsets of a function's graph,
+%% the semantics is set-valued. That is, the semantic function $E$ maps
+%% programs to sets of elements, instead of a single element. In the case
+%% when an expression produces a natural number, the set is just a
+%% singleton of that number. However, when the expression produces a
+%% function, the set contains all finite approximations of the function.
+%
+The meaning of an abstraction $(\LAM{x}e)$ is the set of all tables
+$t$ such that each input-output entry $(d,d')\in t$ makes sense for
+the $\lambda$. That is, $d' \in E\,e\,\ext{x}{ d}{\rho}$.
 %% While this is straightforward to
 %% express directly, we make use of an auxilliary function $\uplambda^S$,
 %% also defined in Figure~\ref{fig:lambda}, which is useful in connecting
@@ -2280,46 +2291,37 @@ $d' \in E\,e\,\ext{x}{ d}{\rho}$.
 %% notation we use for defining a good-old mathematical function.  (The
 %% author thinks in HOL, so he really has the lambda of
 %% HOL~\cite{Nipkow:2002jl} in mind.)
+%
+To define the meaning of application, we introduce an auxilliary
+application operator $D_1 \cdot D_2$, which applies all the tables in
+$D_1$ to all the elements (arguments) in $D_2$, collecting all of the
+results into a set.
 
-The semantics of application is defined in terms of the auxilliary
-application operator $D^{*}_1 \cdot D^{*}_2$, which applies all the
-tables in $D^{*}_1$ to all the elements (arguments) in $D^{*}_2$,
-collecting all of the results into a resulting set.  A naive
-definition of the application operator is given below. The idea is to
-collect up all the results $d'$ that come from matching an argument $d
-\in D^{*}_2$ with an entry $(d,d')$ from a table $t \in D^{*}_1$.
-\begin{align*}
-  D^{*}_1 \cdot D^{*}_2 &= 
-  \{ d' \mid
-  \exists t d.\, t \in D^{*}_1, d \in D^{*}_2, 
-    (d,d') \in t
-  \}
-  & \text{(naive)}
-\end{align*}
-The problem with this version is that it prohibits self application,
-which is an important part of the $\lambda$-calculus.  For example, it
-is necessary to define the $Y$ combinator and thereby express general
-recursion. The problem is that in self application, one would need a
-table to be inside itself, that is, $(t,d') \in t$.  But that can't
-happen because the domain $\mathbb{D}$ is inductively defined. The
-solution is to allow the argument to be a larger table than the input
-$d$ of the table entry. We define the approximation ordering
-$\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for argument $d_2
-\in D^{*}_2$, we require $d \sqsubseteq d_2$ instead of $d = d_2$.
+%% A naive definition of the application operator is given below. The
+%% idea is to collect up all the results $d'$ that come from matching an
+%% argument $d \in D_2$ with an entry $(d,d')$ from a table $t \in D_1$.
+%% \begin{align*}
+%%   D_1 \cdot D_2 &= 
+%%   \{ d' \mid
+%%   \exists t d.\, t \in D_1, d \in D_2, 
+%%     (d,d') \in t
+%%   \}
+%%   & \text{(naive)}
+%% \end{align*}
+%% The problem with this version is that it prohibits self application,
+%% which is an important part of the $\lambda$-calculus.  For example, it
+%% is necessary to define the $Y$ combinator and thereby express general
+%% recursion. The problem is that in self application, one would need a
+%% table to be inside itself, that is, $(t,d') \in t$.  But that can't
+%% happen because the domain $\mathbb{D}$ is inductively defined. The
+%% solution is to allow the argument to be a larger table than the input
+%% $d$ of the table entry. We define the approximation ordering
+%% $\sqsubseteq$ in Figure~\ref{fig:lambda}.  So then, for argument $d_2
+%% \in D_2$, we require $d \sqsubseteq d_2$ instead of $d = d_2$.
 
 %Say something about $d'$ and $d_3$ to motivate the following.
 
-\[
-X \vdash \rho \sqsubseteq \rho' \defeq
-  \forall x, x \in X \implies \rho(x) \sqsubseteq \rho'(x)
-\]
 
-\begin{proposition}[Subsumption]\ \\
-  \label{prop:sub}
-  If $e \in E\,e\,\rho$, $d' \sqsubseteq d$,
-  and $\mathrm{FV}(e) \vdash \rho \sqsubseteq \rho'$,
-  then $d' \in E\,e\,\rho'$.
-\end{proposition}
 
 \subsection{Interpreter}
 
@@ -2329,7 +2331,7 @@ based on the notion of a closure, which pairs a $\lambda$ abstraction
 with its environment to ensure that the free variables get their
 definitions from the lexical scope.
 
-\begin{figure}
+\begin{figure}[tbp]
 \[
 \begin{array}{lrl}
  \text{values} & v \in \mathbb{V} ::= & n \mid \langle \LAM{x}e, \varrho \rangle \\
@@ -2368,7 +2370,7 @@ the values $v$ used by the interpreter.
                \text{ and } v'\in\mathcal{G}(d')
      \end{array} \right\}
 \end{align*}
-Similarly, we related semantic environments to the
+Similarly, we relate semantic environments to the
 interpreter's environments.
 \[
   \inference{}{\mathcal{G}(\emptyset,\emptyset)}
@@ -2390,12 +2392,25 @@ If $v \in \mathcal{G}(d)$ and $d' \sqsubseteq d$, then $v \in \mathcal{G}(d')$.
   then $\varrho(x) \in \mathcal{G}(\rho(x))$
 \end{lemma}
 
+\[
+X \vdash \rho \sqsubseteq \rho' \defeq
+  \forall x, x \in X \implies \rho(x) \sqsubseteq \rho'(x)
+\]
+
+\begin{proposition}[Subsumption]\ \\
+  \label{prop:sub}
+  If $e \in E\,e\,\rho$, $d' \sqsubseteq d$,
+  and $\mathrm{FV}(e) \vdash \rho \sqsubseteq \rho'$,
+  then $d' \in E\,e\,\rho'$.
+\end{proposition}
+
 \begin{lemma}
   If $d \in E\,e\,\rho$ and $\mathcal{G}(\rho,\varrho)$, then
   $I\,e\,\varrho = v$, $v \in \mathcal{G}(d)$ for some $v$.
 \end{lemma}
 
 \begin{theorem}[Adequacy]
+  \label{thm:E-adequacy}
 If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 \end{theorem}
 
@@ -2508,7 +2523,7 @@ for the $\lambda$-calculus.
 E\,e'\,\rho$.
 \end{proposition}
 
-\begin{theorem}[Completeness wrt. reduction]\ \\
+\begin{theorem}[Completeness wrt. reduction]\label{thm:E-complete-reduction}\ \\
 \noindent If $e \longrightarrow^{*} n$, then $E\,e\,\emptyset =
 E\,n\,\emptyset$.
 \end{theorem}
@@ -2661,17 +2676,17 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
   \end{align*}
 \item
   \begin{align*}
-    E'\,(\LAM{x}e)\,\rho' \cdot D^{*} &=
+    E'\,(\LAM{x}e)\,\rho' \cdot D &=
     \{ t \mid \exists \rho, \rho\models\rho',
-          \forall (d,d)\in t, d' \in E\,e\,\ext{x}{d}{\rho} \} \cdot D^{*} \\
+          \forall (d,d)\in t, d' \in E\,e\,\ext{x}{d}{\rho} \} \cdot D \\
    &= \{ d_3 \mid \exists d_2 d d' \rho,
                   \rho\models\rho',
                    d' \in E\,e\,\ext{x}{d}{\rho},
-                  d_2 \in D^{*}, d \sqsubseteq d_2, d_3 \sqsubseteq d' \} \\
-   &= \{ d \mid \exists \rho, d \in E\,e\,\rho, \rho \models \ext{x}{D^{*}}{\rho'}\} \\
-   & \qquad\text{because } \ext{x}{d}{\rho}\models\ext{x}{D^{*}}{\rho'},
+                  d_2 \in D, d \sqsubseteq d_2, d_3 \sqsubseteq d' \} \\
+   &= \{ d \mid \exists \rho, d \in E\,e\,\rho, \rho \models \ext{x}{D}{\rho'}\} \\
+   & \qquad\text{because } \ext{x}{d}{\rho}\models\ext{x}{D}{\rho'},
       d_3 \in E\,e\,\ext{x}{d}{\rho} \\
-   &= E'\,e\,\ext{x}{D^{*}}{\rho'}
+   &= E'\,e\,\ext{x}{D}{\rho'}
   \end{align*}
 \item TODO
 \item TODO
@@ -3078,9 +3093,8 @@ So instead of working with ideals, we work with filters.
 \newcommand{\EP}[0]{E_P}
 \newcommand{\PSEM}[1]{\EP\,#1\,}
 
-  Let $D$ range over finite sets of elements from $T_C$
-  and $D^{*}$ range over possibly infinite sets.
-  Figure~\ref{fig:t-c} defines the semantics.
+Let $D$ range over sets of elements from $T_C$ (finite or infinite).
+Figure~\ref{fig:t-c} defines the semantics.
   
 
 \begin{figure}[tbp]
@@ -3090,8 +3104,8 @@ So instead of working with ideals, we work with filters.
   \uplambda^P &: [T^{*}_C \to T^{*}_C] \to T^{*}_C \\
   \uplambda^P f &= \{ (D,D') \mid D' \subseteq f\,D \} \\
   - \cdot_P - &: T^{*}_C \to T^{*}_C \to T^{*}_C \\
-  D^{*}_1 \cdot_P D^{*}_2 &\defeq 
-     \bigcup\{ D'\mid \exists D, (D,D') \in D^{*}_1, D \subseteq D^{*}_2\}\\[1ex]
+  D_1 \cdot_P D_2 &\defeq 
+     \bigcup\{ D'\mid \exists D, (D,D') \in D_1, D \subseteq D_2\}\\[1ex]
 %% \PSEM{ n }\rho &= \{ n \} \\
 %% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
 %%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
@@ -3099,7 +3113,7 @@ So instead of working with ideals, we work with filters.
 \PSEM{ x }\rho &= \rho(x) \\
 %\PSEM{ (\LAM{x} e) }\rho &= 
 %  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
-\PSEM{ (\LAM{x} e) }\rho &= \uplambda^P (\uplambda D^{*}.\, \PSEM{e}[x\mapsto D^{*}]\rho) \\
+\PSEM{ (\LAM{x} e) }\rho &= \uplambda^P (\uplambda D.\, \PSEM{e}[x\mapsto D]\rho) \\
 \PSEM{ (e_1\,e_2) }\rho &= (\PSEM{ e_1 }\rho) \cdot_P (\PSEM{ e_2 }\rho)
 \end{align*}
 \caption{The $T^{*}_C$ model}
@@ -3115,10 +3129,9 @@ So instead of working with ideals, we work with filters.
 \newcommand{\ESEM}[1]{\EE\, #1 \,}
 
 
-  Let $d$ range over elements of $B_A$.
-  Let $D$ range over finite sets of elements from $B_A$ and $D^{*}$
-  range over possibly infinite sets.  Figure~\ref{fig:d-a} gives the
-  semantics, following the presentation of
+  Let $d$ range over elements of $B_A$.  Let $D$ range over sets of
+  elements from $B_A$ (finite or infinite).  Figure~\ref{fig:d-a}
+  gives the semantics, following the presentation of
   \citet{barendregt84:_lambda_calculus} (Section 5.4).
   
 
@@ -3129,10 +3142,10 @@ So instead of working with ideals, we work with filters.
    \uplambda^E &: [D_A \to D_A] \to D_A \\
    \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} \\
    - \cdot_E - &: D_A \to D_A \to D_A \\
-   D^{*}_1 \cdot_E D^{*}_2 &= \{ d' \mid \exists D, D \subseteq D^{*}_2 \land (D,d') \in D^{*}_1 \} \\[1ex]
+   D_1 \cdot_E D_2 &= \{ d' \mid \exists D, D \subseteq D_2 \land (D,d') \in D_1 \} \\[1ex]
 \EE &: \mathbb{E} \to (\VAR\pto D_A) \to D_A\\
 \ESEM{ x }\rho &= \rho(x) \\
-\ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D^{*}.\, \ESEM{e}[x\mapsto D^{*}]\rho)\\
+\ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D.\, \ESEM{e}[x\mapsto D]\rho)\\
 \ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot_E (\ESEM{ e_2 }\rho) 
 \end{align*}
 \caption{The $D_A$ model}
