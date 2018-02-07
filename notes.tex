@@ -217,8 +217,8 @@ Auxiliary Functions
       \epsilon 1  & \text{if } c = 1
    \end{cases}
    \\
-  \mathit{add}(b_1 d_1 , b_2 d_2, c) &=  b_3\,d_3
-  \text{ if } \mathit{bin}^2(d_1+ d_2+ c) = c' d_3,\\
+  \mathit{add}(b_1 d_1 , b_2 d_2, c) &=  b_3\,d_3 \\
+  & \quad \text{if } \mathit{bin}^2(d_1+ d_2+ c) = c' d_3,\\
   & \qquad  \mathit{add}(b_1, b_2, c') = b^n_3, \text{ and } n < 64 \\
 \mathit{add}(b_1 d_1 , \epsilon, c) &= 
   \mathit{add}(b_1 d_1 , \epsilon 0, c) \\
@@ -529,7 +529,7 @@ Figure~\ref{fig:imp-impl} in the main entry point for the abstract
 machine.
 
 
-\begin{figure*}
+\begin{figure*}[tbp]
 
 \hfill \fbox{$k, s \longrightarrow k', s'$}
 \begin{align*}
@@ -2323,13 +2323,14 @@ results into a set.
 
 
 
-\subsection{Interpreter}
+\subsection{Interpreter and Adequacy of Semantics}
 
 We turn to an implementation of the $\lambda$-calculus, the
-interpreter in Figure~\ref{fig:interp-lambda}. The interpreter is
-based on the notion of a closure, which pairs a $\lambda$ abstraction
-with its environment to ensure that the free variables get their
-definitions from the lexical scope.
+interpreter in Figure~\ref{fig:interp-lambda}. This interpreter can
+also be viewed as an operational semantics (i.e. a definitional
+interpreter).  The interpreter is based on the notion of a closure,
+which pairs a $\lambda$ abstraction with its environment to ensure
+that the free variables get their definitions from the lexical scope.
 
 \begin{figure}[tbp]
 \[
@@ -2353,11 +2354,18 @@ definitions from the lexical scope.
 \label{fig:interp-lambda}
 \end{figure}
 
-We prove the correctness of the interpreter in two steps.  First we
-show that if the semantics says the result of a program should be an
-number $n$, then the interpreter also produces $n$. The second part is
-to show that if the interpreter produces an answer $n$, then the
-semantics agrees that $n$ should be the answer.
+We are interested in proving the correctness of the interpreter with
+respect to the denotational semantics. That is, if the denotational
+semantics says the program produces a result, does the interpreter
+produce the same result? Alternatively, thinking of the interpreter as
+an operational semantics that defines the CBV $\lambda$-calculus, the
+same question becomes: is the denotational semantics adequate?
+
+We prove this in two steps.  First we show that if the denotational
+semantics says the result of a program should be an number $n$, then
+the interpreter also produces $n$. The second part is to show that if
+the interpreter produces an answer $n$, then the semantics agrees that
+$n$ should be the answer.
 
 For the first part, we need to relate denotations (elements $d$) to
 the values $v$ used by the interpreter.
@@ -2486,12 +2494,16 @@ If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 
 \subsection{Reduction Semantics}
 
+Figure~\ref{fig:lambda-reduce} defines the reduction semantics for the
+CBV $\lambda$-calculus. 
+
+
 
 \begin{figure}[tbp]
 \[
 \begin{array}{lccl}
   \text{values} & v &::=& n \mid \LAM{x}e \\
-  \text{eval. frames} & F &::=& \Box \oplus e \mid v \oplus \Box \mid (\Box \APP e) 
+  \text{evaluation frames} & F &::=& \Box \oplus e \mid v \oplus \Box \mid (\Box \APP e) 
      \mid (v \APP \Box)
 \end{array}
 \]
@@ -2509,8 +2521,6 @@ If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 \label{fig:lambda-reduce}
 \end{figure}
 
-Figure~\ref{fig:lambda-reduce} defines the reduction semantics
-for the $\lambda$-calculus.
 
 \begin{lemma}[Invariance under Substitution]
 \[
