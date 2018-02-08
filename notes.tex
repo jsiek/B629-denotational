@@ -2247,7 +2247,7 @@ Semantics
   E\, (e_1\,e_2)\,\rho &= (E\,e_1\,\rho) \cdot (E\,e_2\,\rho)
 \end{align*}
 \end{minipage}
-\caption{Semantics of the $\lambda$-calculus}
+\caption{Denotational semantics of the $\lambda$-calculus}
 \label{fig:lambda}
 \end{figure*}
 
@@ -2323,14 +2323,19 @@ results into a set.
 
 
 
-\subsection{Interpreter and Adequacy of Semantics}
+\subsection{Interpreter and Semantic Adequacy}
 
 We turn to an implementation of the $\lambda$-calculus, the
 interpreter in Figure~\ref{fig:interp-lambda}. This interpreter can
 also be viewed as an operational semantics (i.e. a definitional
-interpreter).  The interpreter is based on the notion of a closure,
-which pairs a $\lambda$ abstraction with its environment to ensure
-that the free variables get their definitions from the lexical scope.
+interpreter).  The interpreter is based on the notion of a closure
+$\langle \LAM{x}e,\varrho \rangle$, which pairs a $\lambda$
+abstraction with its environment to ensure that the free variables get
+their definitions from the lexical scope.  Function application $(e_1
+\APP e_2)$ is then implemented by evaluating $e_1$ to a closure
+$\langle \LAM{x}e,\varrho' \rangle$ and $e_2$ to a value $v$, then
+evaluating the body $e$ in the environment $\varrho'$ extended with
+the parameter $x$ bound to the argument $v$.
 
 \begin{figure}[tbp]
 \[
@@ -2355,17 +2360,23 @@ that the free variables get their definitions from the lexical scope.
 \end{figure}
 
 We are interested in proving the correctness of the interpreter with
-respect to the denotational semantics. That is, if the denotational
-semantics says the program produces a result, does the interpreter
-produce the same result? Alternatively, thinking of the interpreter as
-an operational semantics that defines the CBV $\lambda$-calculus, the
-same question becomes: is the denotational semantics adequate?
+respect to the denotational semantics. Dually, one might take this
+interpreter to be a \emph{definitional interpreter}, and wonder
+whether the denotational semantics is correct. Either way, we'd like
+to know whether these two artifacts agree with each other.
+More precisely, we'd like to know whether
+\[
+    n \in E\,e\,\emptyset \quad\text{iff}\quad I\,e\,\emptyset = n
+\]
+In this statement of correctness we focus on programs (no free
+variables) that produce numbers, but later we shall study alternative
+forms of correctness that relax these two restrictions.
 
-We prove this in two steps.  First we show that if the denotational
-semantics says the result of a program should be an number $n$, then
-the interpreter also produces $n$. The second part is to show that if
-the interpreter produces an answer $n$, then the semantics agrees that
-$n$ should be the answer.
+We prove each direction of the above if-and-only-if in two steps.
+First we show that if the denotational semantics says the result of a
+program should be an number $n$, then the interpreter also produces
+$n$. The second part is to show that if the interpreter produces an
+answer $n$, then the semantics agrees that $n$ should be the answer.
 
 For the first part, we need to relate denotations (elements $d$) to
 the values $v$ used by the interpreter.
@@ -2417,9 +2428,9 @@ X \vdash \rho \sqsubseteq \rho' \defeq
   $I\,e\,\varrho = v$, $v \in \mathcal{G}(d)$ for some $v$.
 \end{lemma}
 
-\begin{theorem}[Adequacy]
-  \label{thm:E-adequacy}
-If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
+\begin{theorem}
+  \label{thm:E-soundness}
+  If $n \in E\,e\,\emptyset$, then $I\,e\,\emptyset = n$.
 \end{theorem}
 
 
@@ -2533,7 +2544,7 @@ CBV $\lambda$-calculus.
 E\,e'\,\rho$.
 \end{proposition}
 
-\begin{theorem}[Completeness wrt. reduction]\label{thm:E-complete-reduction}\ \\
+\begin{theorem}\label{thm:E-complete-reduction}\ \\
 \noindent If $e \longrightarrow^{*} n$, then $E\,e\,\emptyset =
 E\,n\,\emptyset$.
 \end{theorem}
