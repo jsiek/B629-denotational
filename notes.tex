@@ -2366,7 +2366,7 @@ whether the denotational semantics is correct. Either way, we'd like
 to know whether these two artifacts agree with each other.
 More precisely, we'd like to know whether
 \[
-    n \in E\,e\,\emptyset \quad\text{iff}\quad I\,e\,\emptyset = n
+    E\,e\,\emptyset = E\,n\,\emptyset \quad\text{iff}\quad I\,e\,\emptyset = n
 \]
 In this statement of correctness we focus on programs (no free
 variables) that produce numbers, but later we shall study alternative
@@ -2375,8 +2375,9 @@ forms of correctness that relax these two restrictions.
 We prove each direction of the above if-and-only-if in two steps.
 First we show that if the denotational semantics says the result of a
 program should be an number $n$, then the interpreter also produces
-$n$. The second part is to show that if the interpreter produces an
-answer $n$, then the semantics agrees that $n$ should be the answer.
+$n$. This is called adequacy. The second part is to show that if the
+interpreter produces an answer $n$, then the denotational semantics
+agrees that $n$ should be the answer. 
 
 For the first part, we need to relate denotations (elements $d$) to
 the values $v$ used by the interpreter.
@@ -2398,7 +2399,7 @@ interpreter's environments.
             {\mathcal{G}([x\mapsto d] \rho, [x\mapsto v] \varrho}
 \]
 
-\noindent Leading up to the first theorem, we establish the following lemmas.
+\noindent We shall need the following lemmas.
 
 \begin{lemma}[$\mathcal{G}$ is downward closed]
 \label{lem:sub-good}
@@ -2411,26 +2412,40 @@ If $v \in \mathcal{G}(d)$ and $d' \sqsubseteq d$, then $v \in \mathcal{G}(d')$.
   then $\varrho(x) \in \mathcal{G}(\rho(x))$
 \end{lemma}
 
+The next property that we shall need is that if some element is in the
+meaning of an expression, then a less-informative element must also be
+in it. Similarly, we can think about changing the environment.  If an
+element is in the meaning of an expression under one environment, then
+it will also be in the meaning of the expression under a
+more-informative environment. The following defines the information
+ordering for environments.
 \[
-X \vdash \rho \sqsubseteq \rho' \defeq
+X \vdash \rho \sqsubseteq \rho' \quad\defeq\quad
   \forall x, x \in X \implies \rho(x) \sqsubseteq \rho'(x)
 \]
 
 \begin{proposition}[Subsumption]\ \\
   \label{prop:sub}
-  If $e \in E\,e\,\rho$, $d' \sqsubseteq d$,
+  If $d \in E\,e\,\rho$, $d' \sqsubseteq d$,
   and $\mathrm{FV}(e) \vdash \rho \sqsubseteq \rho'$,
   then $d' \in E\,e\,\rho'$.
 \end{proposition}
+
+The main event in the proof is the following lemma, whose premises and
+conclusions are strong enough so that it can be proved by induction on
+$e$.
 
 \begin{lemma}
   If $d \in E\,e\,\rho$ and $\mathcal{G}(\rho,\varrho)$, then
   $I\,e\,\varrho = v$, $v \in \mathcal{G}(d)$ for some $v$.
 \end{lemma}
 
-\begin{theorem}
-  \label{thm:E-soundness}
-  If $n \in E\,e\,\emptyset$, then $I\,e\,\emptyset = n$.
+We now complete the first step in proving correctness of the
+interpreter. Is a straightforward corollary of the above lemma.
+
+\begin{theorem}[Adequacy]
+  \label{thm:E-adequacy}
+  If $E\,e\,\emptyset = E\,n\,\emptyset$, then $I\,e\,\emptyset = n$.
 \end{theorem}
 
 
@@ -2544,7 +2559,7 @@ CBV $\lambda$-calculus.
 E\,e'\,\rho$.
 \end{proposition}
 
-\begin{theorem}\label{thm:E-complete-reduction}\ \\
+\begin{theorem}[Completeness wrt. reduction]\label{thm:E-complete-reduction}\ \\
 \noindent If $e \longrightarrow^{*} n$, then $E\,e\,\emptyset =
 E\,n\,\emptyset$.
 \end{theorem}
