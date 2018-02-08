@@ -2518,10 +2518,22 @@ interpreter. Is a straightforward corollary of the above lemma.
 %% \end{align*}
 
 
-\subsection{Reduction Semantics}
+\subsection{Reduction and Semantic Completeness}
+
+Next we are concerned with proving the second step of correctness.
+\[
+    I\,e\,\emptyset = n \implies E\,e\,\emptyset = E\,n\,\emptyset
+\]
+I currently do not have a direct proof of this, but I do have an
+indirect proof, thanks to prior work on the relation between
+intersection type systems and reduction semantics by
+\citet{Alessi:2006aa}. We shall prove that if $e$ reduces to $n$, then
+$E\,e\,\emptyset = E\,n\,\emptyset$.  The connectiion between
+reduction semantics and interpreters is standard, so we shall have our
+result.
 
 Figure~\ref{fig:lambda-reduce} defines the reduction semantics for the
-CBV $\lambda$-calculus. 
+CBV $\lambda$-calculus.
 
 
 
