@@ -1,0 +1,104 @@
+\documentclass{article}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}%[section]
+\newtheorem{conjecture}{Conjecture}%[section]
+\newtheorem{example}{Example}%[section]
+\newtheorem{remark}{Remark}
+
+\newcommand{\Reals}[0]{\mathbb{R}}
+
+\title{Notes on Topology}
+
+\author{Jeremy G. Siek}
+
+\begin{document}
+\maketitle
+
+\begin{definition}[Continuous]
+  A function $f : A \to \Reals$, with $A \subseteq \Reals$,
+  is continuous at $c \in A$ if for every $\epsilon > 0$,
+  there exists $\delta > 0$ such that
+  \[
+    |x - c| < \delta \land x \in A \implies |f(x) - f(c)| < \epsilon
+  \]
+  A function $f$ is continuous on a set $B \subseteq A$ if it is
+  continuous on every element in B.
+\end{definition}
+
+\begin{definition}[Ball]
+  $B_r(x) = (x-r,x+r)$
+\end{definition}
+
+\begin{definition}[Neighborhood]
+  A set $U \subseteq \Reals$ is a neighborhood of $x \in \Reals$
+  if there is a $\delta > 0$ such that $B_\delta(x) \subseteq U$.
+\end{definition}
+
+
+\begin{definition}[N-Continuous]
+  A function $f : A \to \Reals$, with $A \subseteq \Reals$,
+  is n-continuous at $c \in A$ if for every neighborhood
+  $V$ of $f(c)$ there exists a neighborhood $U$ of $c$
+  such that
+  \[
+    x \in A \cap U \implies f(x) \in V
+  \]
+\end{definition}
+
+\begin{proposition}
+  Continuous and n-continuous are equivalent.
+\end{proposition}
+\begin{proof}\ 
+   \begin{enumerate}
+   \item (continuous $\implies$ n-continuous)
+     Suppose $f$ is continuous at $c$.
+     Let $V$ be a neighborhood of $f(c)$.
+     So there exists a $\epsilon > 0$ s.t. 
+     \begin{equation} \label{eq:ball-V-1}
+     B_\epsilon(f(c)) \subseteq V
+     \end{equation}
+     Because $f : A \to \Reals$ is continuous at $c$, 
+     there exists $\delta > 0$ s.t.
+     \begin{equation} \label{eq:ed-cont-1}
+     |x - c| < \delta \land x \in A \implies |f(x) - f(c)| < \epsilon
+     \end{equation}
+     Choose $U=B_\delta(c)$. nts. 
+     \[
+     x \in A \cap U \implies f(x) \in V
+     \]
+     We assume $x \in A \cap U$. Then by \eqref{eq:ed-cont-1} we have
+     $|f(x) - f(c)| < \epsilon$. So $f(x) \in B_\epsilon(f(c))$
+     and so also $f(x) \in V$ by \eqref{eq:ball-V-1}.
+     Therefore $f$ is n-continuous.
+
+   \item (n-continuous $\implies$ continuous) Suppose $f$ is
+     n-continouous at $c$ and $\epsilon > 0$. Note that
+     $B_\epsilon(f(c))$ is a neighborhood of $f(c)$. Then because $f$
+     n-continuous there is a neighborhood $U$ of $c$ such that
+     \begin{equation}\label{eq:xU-fx-Be}
+       x \in A \cap U \implies f(x) \in B_\epsilon(f(c))
+     \end{equation}
+     Because $U$ is a neighborhood of $c$, there is a $\delta > 0$
+     such that $B_\delta(c) \subseteq U$. We need to show that
+     \[
+     |x - c| < \delta \land x \in A \implies |f(x) - f(c)| < \epsilon
+     \]
+     Assume $|x - c| < \delta$ and $x \in A$.
+     We have $x \in U$, then by \eqref{eq:xU-fx-Be} obtain
+     $f(x) \in B_\epsilon(f(c))$. From this we conclude that
+     $|f(x) - f(c)| < \epsilon$.
+
+   \end{enumerate}
+\end{proof}
+
+
+\end{document}
