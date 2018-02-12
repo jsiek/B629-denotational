@@ -23,8 +23,29 @@
 \begin{document}
 \maketitle
 
-We start by considering topological notions in the
-familiar setting of the real numbers $\Reals$.
+Question: what is the relationship between $\epsilon{-}\delta$
+continuity and continuity for complete partial orders.
+
+From Wikipedia:
+\begin{quote}
+``For example, in order theory, an order-preserving function $f: X \to
+  Y$ between particular types of partially ordered sets $X$ and $Y$ is
+  continuous if for each directed subset A of X, we have $\bigsqcup
+  f(A) = f(\bigsqcup A)$. Here $\bigsqcup$ is the least-upper bound
+  with respect to the orderings in $X$ and $Y$, respectively. This
+  notion of continuity is the same as topological continuity when the
+  partially ordered sets are given the Scott topology.''
+\end{quote}
+
+
+\section{Topology on $\Reals$}
+
+We consider topological notions in the familiar setting of the real
+numbers $\Reals$.
+
+\begin{definition}[Open Interval]
+  $\mathcal{I}_r(x) = (x-r,x+r)$
+\end{definition}
 
 \begin{definition}[Continuous]
   A function $f : A \to \Reals$, with $A \subseteq \Reals$,
@@ -32,6 +53,10 @@ familiar setting of the real numbers $\Reals$.
   there exists $\delta > 0$ such that
   \[
     |x - c| < \delta \land x \in A \implies |f(x) - f(c)| < \epsilon
+  \]
+  or equivalent, in terms of open intervals,
+  \[
+    x \in \mathcal{I}_\delta(c) \land x \in A \implies f(x) \in \mathcal{I}_\epsilon(f(c))
   \]
   A function $f$ is continuous on a set $B \subseteq A$ if it is
   continuous on every element in B.
@@ -66,13 +91,10 @@ $0$. And obviously, $|f(x)| = 1 \not < \frac{1}{2}$.
 \end{example}
 
 
-\begin{definition}[Open Interval]
-  $I_r(x) = (x-r,x+r)$
-\end{definition}
 
 \begin{definition}[Neighborhood]
   A set $U \subseteq \Reals$ is a neighborhood of $x \in \Reals$
-  if there is a $\delta > 0$ such that $I_\delta(x) \subseteq U$.
+  if there is a $\delta > 0$ such that $\mathcal{I}_\delta(x) \subseteq U$.
   (Munkres instead defines a neighborhood of $x$ to be
    an open set containing $x$.)
 \end{definition}
@@ -104,37 +126,37 @@ $0$. And obviously, $|f(x)| = 1 \not < \frac{1}{2}$.
      Let $V$ be a neighborhood of $f(c)$.
      By the definition of neighborhood there exists a $\epsilon > 0$ such that
      \begin{equation} \label{eq:ball-V-1}
-     I_\epsilon(f(c)) \subseteq V
+     \mathcal{I}_\epsilon(f(c)) \subseteq V
      \end{equation}
      Because $f : A \to \Reals$ is continuous at $c$, 
      there exists $\delta > 0$ such that
      \begin{equation} \label{eq:ed-cont-1}
      |x - c| < \delta \land x \in A \implies |f(x) - f(c)| < \epsilon
      \end{equation}
-     Choose $U=I_\delta(c)$. We need to show
+     Choose $U=\mathcal{I}_\delta(c)$. We need to show
      \[
      x \in A \cap U \implies f(x) \in V
      \]
      We assume $x \in A \cap U$. Then by \eqref{eq:ed-cont-1} we have
-     $|f(x) - f(c)| < \epsilon$. So $f(x) \in I_\epsilon(f(c))$
+     $|f(x) - f(c)| < \epsilon$. So $f(x) \in \mathcal{I}_\epsilon(f(c))$
      and then $f(x) \in V$ by \eqref{eq:ball-V-1}.
      Therefore $f$ is n-continuous.
 
    \item (n-continuous $\implies$ continuous) Suppose $f$ is
      n-continouous at $c$ and $\epsilon > 0$. Note that
-     $I_\epsilon(f(c))$ is a neighborhood of $f(c)$. Then because $f$
+     $\mathcal{I}_\epsilon(f(c))$ is a neighborhood of $f(c)$. Then because $f$
      n-continuous there is a neighborhood $U$ of $c$ such that
      \begin{equation}\label{eq:xU-fx-Be}
-       x \in A \cap U \implies f(x) \in I_\epsilon(f(c))
+       x \in A \cap U \implies f(x) \in \mathcal{I}_\epsilon(f(c))
      \end{equation}
      Because $U$ is a neighborhood of $c$, there is a $\delta > 0$
-     such that $I_\delta(c) \subseteq U$. We need to show that
+     such that $\mathcal{I}_\delta(c) \subseteq U$. We need to show that
      \[
      |x - c| < \delta \land x \in A \implies |f(x) - f(c)| < \epsilon
      \]
      Assume $|x - c| < \delta$ and $x \in A$.
      We have $x \in U$, then by \eqref{eq:xU-fx-Be} obtain
-     $f(x) \in I_\epsilon(f(c))$. From this we conclude that
+     $f(x) \in \mathcal{I}_\epsilon(f(c))$. From this we conclude that
      $|f(x) - f(c)| < \epsilon$. Therefore $f$ is continuous.
 
    \end{enumerate}
@@ -143,7 +165,7 @@ $0$. And obviously, $|f(x)| = 1 \not < \frac{1}{2}$.
 
 \begin{definition}[Open Set]
   A set $A$ is open in $\Reals$ if for every $x \in A$ there exists
-  $\delta > 0$ such that $I_\delta(x) \subseteq A$.
+  $\delta > 0$ such that $\mathcal{I}_\delta(x) \subseteq A$.
 \end{definition}
 
 \begin{definition}[O-Continuous]
@@ -166,38 +188,85 @@ $0$. And obviously, $|f(x)| = 1 \not < \frac{1}{2}$.
   We have $f(c) \in V$. Then because $V$ is open, there exists
   $\epsilon > 0$ such that
   \begin{equation}\label{eq:i-fc-v}
-  I_\epsilon(f(c)) \subseteq V
+  \mathcal{I}_\epsilon(f(c)) \subseteq V
   \end{equation}
   Then by the
   continuity of $f$, there is a $\delta > 0$ such that 
   \begin{equation}\label{eq:fx-iefc}
-    x \in I_\delta(c) \implies  f(x) \in I_\epsilon(f(c))
+    x \in \mathcal{I}_\delta(c) \implies  f(x) \in \mathcal{I}_\epsilon(f(c))
   \end{equation}
   Now that we have an appropriate $\delta$, we need to show
   \[
-  I_\delta(c) \subseteq f^{-1}(V) = \{ x \mid f(x) \in V \}
+  \mathcal{I}_\delta(c) \subseteq f^{-1}(V) = \{ x \mid f(x) \in V \}
   \]
-  Let $x$ be an arbitrary point in $I_\delta(c)$.  So by
-  \eqref{eq:fx-iefc} we have $f(x) \in I_\epsilon(f(c))$.  Then by
+  Let $x$ be an arbitrary point in $\mathcal{I}_\delta(c)$.  So by
+  \eqref{eq:fx-iefc} we have $f(x) \in \mathcal{I}_\epsilon(f(c))$.  Then by
   \eqref{eq:i-fc-v} we have $f(x) \in V$, therefore $x \in f^{-1}(V)$.
 
 
 \item (o-continuous $\implies$ continuous) Let $\epsilon > 0$. Observe
-  that $V=I_\epsilon(f(c))$ is an open set.  Then because $f$ is
+  that $V=\mathcal{I}_\epsilon(f(c))$ is an open set.  Then because $f$ is
   o-continuous, $f^{-1}(V)$ is an open set.  We know $c \in
   f^{-1}(V)$, so there exists a $\delta > 0$ such that
   \begin{equation}\label{eq:id-fv}
-    I_\delta(c) \subseteq f^{-1}(V)
+    \mathcal{I}_\delta(c) \subseteq f^{-1}(V)
   \end{equation}
   We need to show that
   \[
-  x \in I_\delta(c)  \implies f(x) \in V
+  x \in \mathcal{I}_\delta(c)  \implies f(x) \in V
   \]
-  We assume $x \in I_\delta(c)$, so also $x \in f^{-1}(V)$
+  We assume $x \in \mathcal{I}_\delta(c)$, so also $x \in f^{-1}(V)$
   by \eqref{eq:id-fv} and therefore $f(x) \in V$.
 
 \end{enumerate}
 \end{proof}
+
+
+\begin{definition}[Limit of Function]
+  Suppose $f : A \to \Reals$ and $A \subseteq \Reals$.
+  Suppose $c \in \Reals$ is an accumulation point of $A$.
+  Then
+  \[
+   \lim_{x\to c} f(x) = \ell
+  \]
+  if for every $\epsilon > 0$ there exists a $\delta > 0$
+  such that
+  \[
+  x \in \mathcal{I}_\delta(c) \implies f(x) \in \mathcal{I}_\epsilon(\ell)
+  \]
+\end{definition}
+
+\begin{definition}[L-Continuous]
+  Suppose $f : A \to \Reals$ and $A \subseteq \Reals$.
+  The function $f$ is l-continuous at $c$ if $\lim_{x\to c} f(x) = f(c)$.
+\end{definition}
+
+\begin{definition}[S-Continuous]
+  Suppose $f : A \to \Reals$ and $A \subseteq \Reals$.
+  Let $(x_n)_{n \in \mathbb{N}}$ be a sequence in $A$.
+  If $(x_n)$ converges to $c$, then $(f(x_n))$ converges to $f(c)$.
+  \[
+    \lim_{n\to\infty} x_n = c \implies
+    \lim_{n\to\infty} f(x_n) = f(c)
+  \]
+\end{definition}
+
+\section{Scott Topology}
+
+\begin{definition}
+A set $S \subseteq P$ of a poset $P$ is Scott-open if it is upward
+closed and if all directed sets $D$ with lub in $S$ have non-empty
+intersection with $S$.
+
+A partial order $P$ and all of its Scott-open subsets forms a
+topological space, the Scott-topology.
+\end{definition}
+
+\section{Miscelaneous}
+
+In a $T_0$ space on $X$ (aka. Kolmogorov space), for every pair of
+points in $X$, at least one of the points is in a neighborhood that
+does not contain the other point. (Wikipedia)
 
 
 \end{document}
