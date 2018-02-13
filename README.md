@@ -96,7 +96,7 @@ paper that the class has read.
 - [Notions of computation and monads](https://doi.org/10.1016/0890-5401(91)90052-4), Moggi 1991.
 - Full Abstraction
   - [Observable sequentiality and full abstraction](https://doi.org/10.1145/143165.143232),
-    Cartwright, Felleisen 1992.
+    Cartwright, Felleisen 1992. **Ryan Scott, April 11**
   - [Full abstraction for the second order subset of an Algol-like language](https://doi.org/10.1016/S0304-3975(96)00066-7).
     Kurt Sieber, 1996.
   - [Full Abstraction for PCF](https://arxiv.org/abs/1311.6125).
