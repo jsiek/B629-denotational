@@ -2436,6 +2436,7 @@ conclusions are strong enough so that it can be proved by induction on
 $e$.
 
 \begin{lemma}
+  \label{lem:E-sound-wrt-I}
   If $d \in E\,e\,\rho$ and $\mathcal{G}(\rho,\varrho)$, then
   $I\,e\,\varrho = v$, $v \in \mathcal{G}(d)$ for some $v$.
 \end{lemma}
@@ -2584,10 +2585,14 @@ E\,n\,\emptyset$.
 \end{definition}
 
 \begin{proposition}[Congruence]\ \\
+  \label{prop:congruence}
   If $\forall \rho, E\,e\,\rho = E\,e'\,\rho$, 
   then $\forall \rho, E\,C[e]\,\rho = E\,C[e']\,\rho$
   for any $C$.
 \end{proposition}
+\begin{proof}
+  The proof is by induction on $C$.
+\end{proof}
 
 We write $e\Downarrow$ to mean that $e$ terminates, i.e., it reaches a
 value or gets stuck after some number of reduction steps.
@@ -2597,14 +2602,28 @@ value or gets stuck after some number of reduction steps.
   then $C[e]\Downarrow$ iff $C[e']\Downarrow$ for any closing
   context $C$.
 \end{theorem}
+\begin{proof}
+  We discuss one direction of the iff, that $C[e]\Downarrow$ implies
+  $C[e']\Downarrow$. The other direction is similar.  From the
+  premise, congruence gives us $\SEM{C[e]} = \SEM{C[e']}$.  From
+  $C[e]\Downarrow$ we have $C[e] \longrightarrow^{*} v$ for some $v$.
+  Therefore we have $\SEM{C[e]}\emptyset = \SEM{v}\emptyset$ by
+  completeness (Theorem~\ref{thm:E-complete-reduction}).  Then we also
+  have $\SEM{C[e']}\emptyset = \SEM{v}$.  We have $d \in \SEM{v}$ for
+  some $d$ by case analysis on $v$, and therefore $d \in \SEM{C[e']}$.
+  We have $I\,(C[e'])\, \emptyset = w$ for some $w$ by
+  Lemma~\ref{lem:E-sound-wrt-I}, from which we conclude
+  that $C[e']\Downarrow$.
+\end{proof}
 
 
 \subsection{Equational Theory and Models}
 
-Figure~\ref{fig:lambda-eq} defines the equational theory of two
-variants of the $\lambda$-calculus, the full $\lambda$-calculus with
-the rule $\beta$, and the call-by-value calculus with the rule
-$\beta_v.$
+Figure~\ref{fig:lambda-eq} defines the equational theory of 
+the $\lambda$-calculus.
+%% , the full $\lambda$-calculus with
+%% the rule $\beta$, and the call-by-value calculus with the rule
+%% $\beta_v.$
 
 \begin{figure}
 \begin{gather*}
@@ -2617,8 +2636,8 @@ $\beta_v.$
                             {\vdash e_1 \APP e_2 = e_3 \APP e_4}
    \quad
   \text{($\xi$)}  \inference{\vdash e = e'}{\vdash \LAM{x}e = \LAM{x}e'} \\[2ex]
-  \text{($\beta$)}  \vdash (\LAM{x}e_1)\APP e_2 = [x\by e_2]e_1 \\[2ex]
-  \text{($\beta_v$)}  \vdash (\LAM{x}e)\APP v = [x\by v]e
+  \text{($\beta$)}  \vdash (\LAM{x}e_1)\APP e_2 = [x\by e_2]e_1
+%  \text{($\beta_v$)}  \vdash (\LAM{x}e)\APP v = [x\by v]e
 \end{gather*}
 \caption{Equational Theory of the $\lambda$-calculus}
 \label{fig:lambda-eq}
@@ -2632,21 +2651,22 @@ $\beta_v.$
 
 %\paragraph{Proof via $\lambda$-model}
 
-The following notion of $\lambda$-model is used in the literature that
-captures a set of conditions that are sufficient for a model to
-satisfy the equational theory of the $\lambda$-calculus.
+The following notion of $\lambda$-model is used in the literature to
+capture a set of conditions that are sufficient for a model to satisfy
+the equational theory of the $\lambda$-calculus.
 
 \begin{definition}[$\lambda$-models]
-  An \emph{$R$-model of the $\lambda$-calculus} is a triple $\langle
-  D, \cdot, \SEM{\ }\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D
-  \to D$, and $\SEM{\_} : \mathbb{E}\to(\VAR\pto D)\to D$, and the
-  following conditions hold.
+  A \emph{$\lambda$-model} is a triple $\langle D, \cdot,
+    \SEM{\ }\rangle$ such that $D$ is a set, $\_\cdot\_:D \times D \to
+    D$, and $\SEM{\_} : \mathbb{E}\to(\VAR\pto D)\to D$, and the
+    following conditions hold.
   \begin{enumerate}
   \item $\SEM{ x}\rho = \rho(x)$, \label{cond:var}
   \item $\SEM{e_1\APP e_2}\rho = \SEM{e_1}\rho \cdot \SEM{e_2}\rho$ \label{cond:app},
-  \item if $(\LAM{x}e) \APP e'$ is a $R$-redex, $\SEM{(\LAM{x}e)}\rho \cdot \SEM{e'}\rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$\label{cond:R}, \\
-        alternative: $\SEM{(\LAM{x}e)}\rho \cdot d = \SEM{e}\ext{x}{ d}{\rho}$ \label{cond:lam-app}
-  \item $\forall x \in \mathrm{FV}(e)$, if  $\rho(x) = \rho'(x)$,
+  \item  $\forall d \in D, \SEM{(\LAM{x}e)}\rho \cdot d = \SEM{e}\ext{x}{ d}{\rho}$ \label{cond:lam-app}
+%%         alternative:
+%% if $(\LAM{x}e) \APP e'$ is a $R$-redex, $\SEM{(\LAM{x}e)}\rho \cdot \SEM{e'}\rho = \SEM{e}\ext{x}{\SEM{e'}\rho}{\rho}$\label{cond:R}, \\
+  \item if $\forall x \in \mathrm{FV}(e), \rho(x) = \rho'(x)$,
        then $\SEM{e}\rho = \SEM{e}\rho'$. \label{cond:env}
   \item If $\forall d \in D, \SEM{e}\ext{x}{ d}{\rho} = \SEM{e'}\ext{x}{ d}{\rho}$,
        then $\SEM{\LAM{x} e}\rho = \SEM{\LAM{x} e'}\rho$. \label{cond:lam}
@@ -2684,8 +2704,19 @@ has the following type.
 \]
 
 \begin{lemma}
-$\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
-  the $\lambda$-calculus.
+  \label{lem:env-less-model}
+  If $\rho_1 \models \rho'$, $\rho_2 \models \rho'$,
+  then $\rho_1 \sqcup \rho_2 \models \rho'$.
+\end{lemma}
+%% \begin{proof}
+%%   TODO
+%%   This is where we probably use the requirements of
+%%   being closed under union (ideal), dual to filters.
+%% \end{proof}
+
+\begin{lemma}
+\label{lem:ID-lambda-model}
+$\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\lambda$-model.
 \end{lemma}
 \begin{proof}\ 
 \begin{enumerate}
@@ -2722,7 +2753,7 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
     \} \\
     &= (E'\,e_1\,\rho') \cdot (E'\,e_2\,\rho')
   \end{align*}
-\item
+\item Suppose $D \in \mathcal{I}(\mathbb{D})$.
   \begin{align*}
     E'\,(\LAM{x}e)\,\rho' \cdot D &=
     \{ t \mid \exists \rho, \rho\models\rho',
@@ -2732,29 +2763,30 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
                    d' \in E\,e\,\ext{x}{d}{\rho},
                   d_2 \in D, d \sqsubseteq d_2, d_3 \sqsubseteq d' \} \\
    &= \{ d \mid \exists \rho, d \in E\,e\,\rho, \rho \models \ext{x}{D}{\rho'}\} \\
-   & \qquad\text{because } \ext{x}{d}{\rho}\models\ext{x}{D}{\rho'},
+   & \qquad\text{because } \ext{x}{d}{\rho}\models\ext{x}{D}{\rho'}
+      \text{ and }
       d_3 \in E\,e\,\ext{x}{d}{\rho} \\
    &= E'\,e\,\ext{x}{D}{\rho'}
   \end{align*}
-\item TODO
-\item TODO
+\item Suppose $\forall x \in \mathrm{FV}(e), \rho(x) = \rho'(x)$.
+   So we have $\mathrm{FV}(e) \vdash \rho \sqsubseteq \rho'$
+   and $\mathrm{FV}(e) \vdash \rho' \sqsubseteq \rho$.
+   So by Proposition~\ref{prop:sub} we have $E\,e\,\rho = E\,e\,\rho'$.
+
+\item Suppose $D \in \mathcal{I}(\mathbb{D})$ and
+  $E\,e\,\ext{x}{d}{\rho} = E\,e'\,\ext{x}{d}{\rho}$. 
+  We can immediately conclude that
+  $E\,(\LAM{x}e)\,\rho = E\,(\LAM{x}e')\,\rho$
+  by congruence (Proposition~\ref{prop:congruence}).
+  
 \end{enumerate}
 \end{proof}
 
-\begin{lemma}
-  \label{lem:env-less-model}
-  If $\rho_1 \models \rho'$, $\rho_2 \models \rho'$,
-  then $\rho_1 \sqcup \rho_2 \models \rho'$.
-\end{lemma}
-\begin{proof}
-  TODO This is where we probably need the requirements of
-  being closed under union (ideal), dual to filters.
-\end{proof}
 
 \begin{lemma}[Replace Variable]
   \label{lem:change-var}
-  Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $R$-model of the
-  $\lambda$-calculus and $y \notin \mathrm{FV}(e)$.
+  Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $\lambda$-model
+  and $y \notin \mathrm{FV}(e)$.
   \[
     \SEM{e} \ext{x}{ d}{\rho}
     = 
@@ -2771,8 +2803,7 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
 
 \begin{lemma}[Substitution] (5.3.3 of \citet{barendregt84:_lambda_calculus} )
 \label{lem:subst-model}
-  Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $R$-model of the
-  $\lambda$-calculus. 
+  Suppose $\langle D,\cdot, \SEM{\ } \rangle$ is an $\lambda$-model.
   \begin{enumerate}
   \item If $z \notin \mathrm{FV}(e)$, then
       $\forall \rho, \SEM{ [x\by z]e } \rho = \SEM{e}\ext{x}{\SEM{z}\rho}{\rho}$.
@@ -2874,15 +2905,15 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
 \end{enumerate}
 \end{proof}
 
-\begin{lemma}[Soundess of R-models wrt. $\lambda$ theory]
-  Suppose $\langle D,\cdot,\SEM{\ }\rangle$ is an $R$-model of the
-  $\lambda$-calculus.
+\begin{lemma}[Soundess of $\lambda$-models wrt. $\lambda$ theory]
+  \label{lem:sound-model-theory}
+  Suppose $\langle D,\cdot,\SEM{\ }\rangle$ is a $\lambda$-model.
   \[
-  \text{if } R \vdash e = e', \text{ then } \forall \rho, \SEM{e}\rho = \SEM{e'}\rho
+  \text{if } \vdash e = e', \text{ then } \forall \rho, \SEM{e}\rho = \SEM{e'}\rho
   \]
 \end{lemma}
 \begin{proof}
-  The proof is by induction on $R \vdash e = e'$.
+  The proof is by induction on $\vdash e = e'$.
   \begin{itemize}
   \item[Case (refl):] We have $\forall \rho, \SEM{e}\rho = \SEM{e}\rho$
     because $\SEM{\ }$ is a function.
@@ -2912,7 +2943,7 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
     $\SEM{e}\ext{x}{d}{\rho} = \SEM{e'}\ext{x}{d}{\rho}$,
     and that follows from the IH.
 
-  \item[Case $R$:]
+  \item[Case $\beta$:]
     Let $\rho$ be an arbitrary environment.
     We need to show that
     $\SEM{(\LAM{x}e)\APP e'}\rho = \SEM{[x\by e']e}\rho$,
@@ -2920,7 +2951,7 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
     \begin{align*}
       \SEM{(\LAM{x}e)\APP e'}\rho &=
       \SEM{\LAM{x}e}\rho \cdot \SEM{e'}\rho & \text{condition \ref{cond:app}} \\
-      &= \SEM{e} \ext{x}{\SEM{e'}\rho}{\rho} & \text{condition \ref{cond:R}} \\
+      &= \SEM{e} \ext{x}{\SEM{e'}\rho}{\rho} & \text{condition \ref{cond:lam-app}} \\
       &= \SEM{[x\by e']e}\rho & \text{by Lemma~\ref{lem:subst-model}}
     \end{align*}
     
@@ -2929,14 +2960,18 @@ $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\beta_v$-model of
 
 
 \begin{theorem}
-$\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a model of the CBV
+$\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a model of the 
   $\lambda$-calculus. That is, 
   \[
-  \text{if } \beta_v \vdash e = e', 
+  \text{if } \vdash e = e', 
   \text{ then } \forall \rho, E'\,e\,\rho = E'\,e'\,\rho
   \]
 \end{theorem}
-
+\begin{proof}
+  By Lemma~\ref{lem:ID-lambda-model} we know that 
+  $\langle \mathcal{I}(\mathbb{D}), \cdot, E')$ is a $\lambda$-model.
+  The conclusion follows by Lemma~\ref{lem:sound-model-theory}.
+\end{proof}
 
 Resources:
 \begin{itemize}
@@ -2945,6 +2980,173 @@ Resources:
 \item \citet{Alessi:2006aa}
 \item \citet{Hindley:1980aa}
 \end{itemize}
+
+%===============================================================================
+\subsection{Graph models of $\lambda$-calculus $(T^{*}_C$, $D_A$, and $\mathcal{P}(\omega))$ }
+\label{sec:graph-models}
+
+
+
+%-------------------------------------------------------------------------------
+\paragraph{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
+\label{sec:t-c}
+
+
+\newcommand{\EP}[0]{E_P}
+\newcommand{\PSEM}[1]{\EP\,#1\,}
+
+Let $D$ range over sets of elements from $T_C$ (finite or infinite).
+Figure~\ref{fig:t-c} defines the semantics.
+  
+
+\begin{figure}[tbp]
+\begin{align*}
+  T_C &= C + \mathcal{P}_f(T_C) \times \mathcal{P}_f(T_C) \\
+  T^{*}_C &= \mathcal{P}(T_C) \\
+  \uplambda^P &: [T^{*}_C \to T^{*}_C] \to T^{*}_C \\
+  \uplambda^P f &= \{ (D,D') \mid D' \subseteq f\,D \} \\
+  - \cdot_P - &: T^{*}_C \to T^{*}_C \to T^{*}_C \\
+  D_1 \cdot_P D_2 &\defeq 
+     \bigcup\{ D'\mid \exists D, (D,D') \in D_1, D \subseteq D_2\}\\[1ex]
+%% \PSEM{ n }\rho &= \{ n \} \\
+%% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
+%%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
+\EP&: \mathbb{E} \to (\VAR\pto T^{*}_C) \to T^{*}_C\\
+\PSEM{ x }\rho &= \rho(x) \\
+%\PSEM{ (\LAM{x} e) }\rho &= 
+%  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
+\PSEM{ (\LAM{x} e) }\rho &= \uplambda^P (\uplambda D.\, \PSEM{e}[x\mapsto D]\rho) \\
+\PSEM{ (e_1\,e_2) }\rho &= (\PSEM{ e_1 }\rho) \cdot_P (\PSEM{ e_2 }\rho)
+\end{align*}
+\caption{The $T^{*}_C$ model}
+\label{fig:t-c}
+\end{figure}
+
+
+%-------------------------------------------------------------------------------
+\paragraph{The $D_A$ model of \citet{Engeler:1981aa}}
+\label{sec:d-a}
+
+\newcommand{\EE}[0]{E_E}
+\newcommand{\ESEM}[1]{\EE\, #1 \,}
+
+
+  Let $d$ range over elements of $B_A$.  Let $D$ range over sets of
+  elements from $B_A$ (finite or infinite).  Figure~\ref{fig:d-a}
+  gives the semantics, following the presentation of
+  \citet{barendregt84:_lambda_calculus} (Section 5.4).
+  
+
+\begin{figure}[tbp]
+\begin{align*}
+  B_A &= A + \mathcal{P}_f(B_A) \times B_A \\
+  D_A &= \mathcal{P}(B_A) \\[1ex]
+   \uplambda^E &: [D_A \to D_A] \to D_A \\
+   \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} \\[1ex]
+   - \cdot - &: D_A \to D_A \to D_A \\
+   D_1 \cdot D_2 &= \{ d' \mid \exists D, D \subseteq D_2 \land (D,d') \in D_1 \} \\[1ex]
+\EE &: \mathbb{E} \to (\VAR\pto D_A) \to D_A\\
+\ESEM{ x }\rho &= \rho(x) \\
+\ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D.\, \ESEM{e}[x\mapsto D]\rho)\\
+\ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot (\ESEM{ e_2 }\rho) 
+\end{align*}
+\caption{The $D_A$ model}
+\label{fig:d-a}
+\end{figure}
+
+
+$D_A$ ordered by set inclusion $\subseteq$ is a cpo.
+
+
+\begin{definition}
+  A cpo $D$ is \emph{reflexive} if $[D \to D]$ is a retract of $D$.
+  That is to say, there are continuous maps $F:D \to [D \to D]$ and
+  $G: [D \to D] \to D $ such that for any $f \in [D \to D]$,
+  \[
+    (F \circ G)\, f = f
+  \]
+\end{definition}
+
+\begin{lemma}
+  Suppose $D$ is a reflexive cpo via $F$ and $G$.
+  Define application using $F$ as follows.
+  \[
+    d_1 \cdot d_2 = F(d_1)(d_2)
+  \]
+  Expressions are interpreted as follows.
+  \begin{align*}
+      \SEM{x}\rho &= \rho(x) \\
+      \SEM{(e_1\APP e_2)}\rho &= \SEM{e_1}\rho \cdot \SEM{e_2}\rho \\
+      \SEM{\LAM{x} e}\rho &= G(\{ (d,d') \mid 
+           d' = \SEM{e}\ext{x}{d}{\rho} \})
+  \end{align*}
+  Then $(D, \cdot,\SEM{-})$ is a $\lambda$-model. 
+\end{lemma}
+
+\begin{lemma}
+  $D_A$ is a reflexive cpo by choosing $F = \uplambda x y.\, x \cdot
+  y$ and $G= \uplambda^E$. Therefore $D_A$ is a
+  $\lambda$-model.
+\end{lemma}
+\begin{proof}
+  We need to show that $(F \circ G)\,f = f$
+  for any $f \in [D_A \to D_A]$.
+  \begin{align*}
+    (F \circ G)\,f &= \uplambda x. (\uplambda^E f) \cdot x\\
+    &= \uplambda x. \{ d' \mid \exists D, D \subseteq x \land d' \in f\,D \}\\
+    &= \uplambda x. \bigcup \{ f\,D \mid D \subseteq x \} \\
+    &= \uplambda x.\, f\, x  & \text{by continuity of } f \\
+    &= f
+  \end{align*}
+\end{proof}
+
+
+\noindent Resources about $D_A$:
+\begin{itemize}
+\item \citet{barendregt84:_lambda_calculus} (Section 5.4),
+\item \citet{Gunter:1992aa} (Section 8.1), and
+\item \citet{Engeler:1981aa}.
+\end{itemize}
+
+
+%-------------------------------------------------------------------------------
+\paragraph{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
+\label{sec:p-omega}
+
+
+%% \marginnote{
+%% \begin{tabular}{ll}
+%% Reading: & \citet{barendregt84:_lambda_calculus} Sec. 18.1\\
+%%          & \citet{Scott:1976lq}
+%% \end{tabular}
+%% }
+
+Figure~\ref{fig:p-omega} defines a semantics for the
+$\lambda$-calculus using the $\mathcal{P}(\omega)$ model of
+\citet{Scott:1976lq}.  However, here we use the formulation of
+$\mathcal{P}(\omega)$ given by \citet{barendregt84:_lambda_calculus}.
+
+\newcommand{\EPo}[0]{E_S}
+\newcommand{\POSEM}[1]{\EPo{}\,#1\,}
+
+
+\begin{figure}
+\begin{align*}
+     & m,n \in \NAT \\
+\langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
+e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
+    k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
+\EPo{} & : \mathbb{E} \to (\VAR \pto \mathcal{P}(\NAT)) \to \mathcal{P}(\NAT) \\
+\POSEM{x}\rho &= \rho\,x \\  
+\POSEM{(\LAM{x}e)}\rho &= \{ \langle n, m \rangle \mid m \in \POSEM{e}[x\mapsto e_n]\rho \} \\
+\POSEM{(e_1\,e_2)}\rho &= \{ m \mid \exists e_n. \, 
+   \langle n,m \rangle \in \POSEM{e_1}\rho
+   \text{ and } e_n \subseteq \POSEM{e_2}\rho \}
+\end{align*}
+\caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
+\label{fig:p-omega}
+\end{figure}
+
 
 %===============================================================================
 
@@ -3126,159 +3328,6 @@ So instead of working with ideals, we work with filters.
   \text{ then } \forall \rho, F\,e\,\rho = F\,e'\,\rho
   \]
 \end{theorem}
-
-%===============================================================================
-\subsection{Graph models of $\lambda$-calculus $(T^{*}_C$, $D_A$, and $\mathcal{P}(\omega))$ }
-\label{sec:graph-models}
-
-
-
-%-------------------------------------------------------------------------------
-\paragraph{The $T^{*}_C$ model of \citet{Plotkin:1972aa}}
-\label{sec:t-c}
-
-
-\newcommand{\EP}[0]{E_P}
-\newcommand{\PSEM}[1]{\EP\,#1\,}
-
-Let $D$ range over sets of elements from $T_C$ (finite or infinite).
-Figure~\ref{fig:t-c} defines the semantics.
-  
-
-\begin{figure}[tbp]
-\begin{align*}
-  T_C &= C + \mathcal{P}_f(T_C) \times \mathcal{P}_f(T_C) \\
-  T^{*}_C &= \mathcal{P}(T_C) \\
-  \uplambda^P &: [T^{*}_C \to T^{*}_C] \to T^{*}_C \\
-  \uplambda^P f &= \{ (D,D') \mid D' \subseteq f\,D \} \\
-  - \cdot_P - &: T^{*}_C \to T^{*}_C \to T^{*}_C \\
-  D_1 \cdot_P D_2 &\defeq 
-     \bigcup\{ D'\mid \exists D, (D,D') \in D_1, D \subseteq D_2\}\\[1ex]
-%% \PSEM{ n }\rho &= \{ n \} \\
-%% \PSEM{ e_1 \oplus e_2 }\rho &= \{  n_1 \oplus n_2 \mid 
-%%    n_1 \in \PSEM{ e_1 }\rho \land n_2 \in \PSEM{ e_2 }\rho \} \\
-\EP&: \mathbb{E} \to (\VAR\pto T^{*}_C) \to T^{*}_C\\
-\PSEM{ x }\rho &= \rho(x) \\
-%\PSEM{ (\LAM{x} e) }\rho &= 
-%  \{ (D,D') \mid  D' \subseteq \PSEM{ e }[x\mapsto D]\rho \} \\
-\PSEM{ (\LAM{x} e) }\rho &= \uplambda^P (\uplambda D.\, \PSEM{e}[x\mapsto D]\rho) \\
-\PSEM{ (e_1\,e_2) }\rho &= (\PSEM{ e_1 }\rho) \cdot_P (\PSEM{ e_2 }\rho)
-\end{align*}
-\caption{The $T^{*}_C$ model}
-\label{fig:t-c}
-\end{figure}
-
-
-%-------------------------------------------------------------------------------
-\paragraph{The $D_A$ model of \citet{Engeler:1981aa}}
-\label{sec:d-a}
-
-\newcommand{\EE}[0]{E_E}
-\newcommand{\ESEM}[1]{\EE\, #1 \,}
-
-
-  Let $d$ range over elements of $B_A$.  Let $D$ range over sets of
-  elements from $B_A$ (finite or infinite).  Figure~\ref{fig:d-a}
-  gives the semantics, following the presentation of
-  \citet{barendregt84:_lambda_calculus} (Section 5.4).
-  
-
-\begin{figure}[tbp]
-\begin{align*}
-  B_A &= A + \mathcal{P}_f(B_A) \times B_A \\
-  D_A &= \mathcal{P}(B_A) \\
-   \uplambda^E &: [D_A \to D_A] \to D_A \\
-   \uplambda^E f &= \{ (D,d') \mid d' \in f\, D \} \\
-   - \cdot_E - &: D_A \to D_A \to D_A \\
-   D_1 \cdot_E D_2 &= \{ d' \mid \exists D, D \subseteq D_2 \land (D,d') \in D_1 \} \\[1ex]
-\EE &: \mathbb{E} \to (\VAR\pto D_A) \to D_A\\
-\ESEM{ x }\rho &= \rho(x) \\
-\ESEM{ (\LAM{x} e) }\rho &= \uplambda^E (\uplambda D.\, \ESEM{e}[x\mapsto D]\rho)\\
-\ESEM{ (e_1\,e_2) }\rho &= (\ESEM{ e_1 }\rho) \cdot_E (\ESEM{ e_2 }\rho) 
-\end{align*}
-\caption{The $D_A$ model}
-\label{fig:d-a}
-\end{figure}
-
-
-$D_A$ ordered by set inclusion $\subseteq$ is a cpo.
-
-
-\begin{definition}
-  A cpo $D$ is \emph{reflexive} if $[D \to D]$ is a retract of $D$.
-  That is to say, there are continuous maps $F:D \to [D \to D]$ and
-  $G: [D \to D] \to D $ such that for any $f \in [D \to D]$,
-  \[
-    (F \circ G)\, f = f
-  \]
-\end{definition}
-
-
-\begin{lemma}
-  $D_A$ is a reflexive cpo by choosing $F = \uplambda x y.\, x \cdot_E
-  y$ and $G= \uplambda^E$. Therefore $D_A$ is a
-  $\lambda$-model.
-\end{lemma}
-\begin{proof}
-  We need to show that $(F \circ G)\,f = f$
-  for any $f \in [D_A \to D_A]$.
-  \begin{align*}
-    (F \circ G)\,f &= \uplambda x. (\uplambda^E f) \cdot_E x\\
-    &= \uplambda x. \{ d' \mid \exists D, D \subseteq x \land d' \in f\,D \}\\
-    &= \uplambda x. \bigcup \{ f\,D \mid D \subseteq x \} \\
-    &= \uplambda x.\, f\, x  & \text{by continuity of } f \\
-    &= f
-  \end{align*}
-\end{proof}
-
-
-\noindent Resources about $D_A$:
-\begin{itemize}
-\item \citet{barendregt84:_lambda_calculus} (Section 5.4),
-\item \citet{Gunter:1992aa} (Section 8.1), and
-\item \citet{Engeler:1981aa}.
-\end{itemize}
-
-
-%-------------------------------------------------------------------------------
-\paragraph{The $\mathcal{P}(\omega)$ model of \citet{Scott:1976lq}}
-\label{sec:p-omega}
-
-
-%% \marginnote{
-%% \begin{tabular}{ll}
-%% Reading: & \citet{barendregt84:_lambda_calculus} Sec. 18.1\\
-%%          & \citet{Scott:1976lq}
-%% \end{tabular}
-%% }
-
-Figure~\ref{fig:p-omega} defines a semantics for the
-$\lambda$-calculus using the $\mathcal{P}(\omega)$ model of
-\citet{Scott:1976lq}.  However, here we use the formulation of
-$\mathcal{P}(\omega)$ given by \citet{barendregt84:_lambda_calculus}.
-
-\newcommand{\EPo}[0]{E_S}
-\newcommand{\POSEM}[1]{\EPo{}\,#1\,}
-
-
-\begin{figure}
-\begin{align*}
-     & m,n \in \NAT \\
-\langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
-e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
-    k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
-\EPo{} & : \mathbb{E} \to (\VAR \pto \mathcal{P}(\NAT)) \to \mathcal{P}(\NAT) \\
-\POSEM{x}\rho &= \rho\,x \\  
-\POSEM{(\LAM{x}e)}\rho &= \{ \langle n, m \rangle \mid m \in \POSEM{e}[x\mapsto e_n]\rho \} \\
-\POSEM{(e_1\,e_2)}\rho &= \{ m \mid \exists e_n. \, 
-   \langle n,m \rangle \in \POSEM{e_1}\rho
-   \text{ and } e_n \subseteq \POSEM{e_2}\rho \}
-\end{align*}
-\caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
-\label{fig:p-omega}
-\end{figure}
-
-
 
 %===============================================================================
 \subsection{Untyped as a uni-typed}
