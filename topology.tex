@@ -4,6 +4,7 @@
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{hyperref}
+\usepackage{xypic}
 
 \newtheorem{theorem}{Theorem}%[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -15,6 +16,7 @@
 \newtheorem{remark}{Remark}
 
 \newcommand{\Reals}[0]{\mathbb{R}}
+\newcommand{\Rats}[0]{\mathbb{Q}}
 
 \title{Notes on Topology}
 
@@ -23,8 +25,16 @@
 \begin{document}
 \maketitle
 
-Question: what is the relationship between $\epsilon{-}\delta$
-continuity and continuity for complete partial orders.
+Questions:
+\begin{itemize}
+\item What is the relationship between $\epsilon$-$\delta$ continuity
+  (i.e. limit-based continuity) on reals and continuity for complete
+  partial orders?
+\item How does the slogan: ``only finite input is needed to produce
+  finite output'' apply to continuous functions on the reals?
+\item How does this relate to the topology on $\mathcal{P}(\mathbb{N})$?
+\end{itemize}
+
 
 From Wikipedia:
 \begin{quote}
@@ -37,6 +47,20 @@ From Wikipedia:
   partially ordered sets are given the Scott topology.''
 \end{quote}
 
+From Davey and Priestley:
+\begin{quote}
+  ``In analysis, a function is continuous if it preserves limits.
+  In a context in which a computation is modelled as the join (= limit)
+  of a directed set, it is natural to consider a map as being continuous if it is compatible with
+  the formation of directed joins. Formally, we say $f : P \to Q$ is continuous if,
+  for every directed set $D$ in $P$, the subset $f(Q)$ of $Q$ is directed and
+  \[
+  f\left(\sqcup D\right) = \bigsqcup \{ f(x) \mid x \in D \}
+  \]
+  ... every continous map is order preserving. Where the order represents 'is less defined than'
+  or 'is a worse approximation then', an order-preserving map $f$ is one in which the
+  better the input $x$, the better the output $f(x)$.
+\end{quote}
 
 \section{Topology on $\Reals$}
 
@@ -47,17 +71,43 @@ numbers $\Reals$.
   $\mathcal{I}_r(x) = (x-r,x+r)$
 \end{definition}
 
+\begin{definition}[Accumulation Point]
+  A point $x \in \Reals$ is an accumulation point of $A \subseteq
+  \Reals$ if for every $\delta > 0$, there exists $z \in
+  \mathcal{I}_\delta(x) \cap A$ such that $z \neq x$.
+\end{definition}
+
+
+\begin{definition}[Limit of Function]
+  Suppose $f : A \to \Reals$ and $A \subseteq \Reals$.
+  Suppose $c \in \Reals$ is an accumulation point of $A$.
+  Then
+  \[
+   \lim_{x\to c} f(x) = \ell
+  \]
+  if for every $\epsilon > 0$ there exists a $\delta > 0$
+  such that
+  \[
+  x \in \mathcal{I}_\delta(c) \implies f(x) \in \mathcal{I}_\epsilon(\ell)
+  \]
+\end{definition}
+
 \begin{definition}[Continuous]
   A function $f : A \to \Reals$, with $A \subseteq \Reals$,
-  is continuous at $c \in A$ if for every $\epsilon > 0$,
-  there exists $\delta > 0$ such that
+  is continuous at $c \in A$ if $f$ preserves the limit at $c$:
+  \[
+    \lim_{x\to c} f(x) = f(c)
+  \]
+  or equivalently, expanding the definition of limit, for every
+  $\epsilon > 0$, there exists $\delta > 0$ such that
   \[
     |x - c| < \delta \land x \in A \implies |f(x) - f(c)| < \epsilon
   \]
-  or equivalent, in terms of open intervals,
+  or in terms of open intervals,
   \[
-    x \in \mathcal{I}_\delta(c) \land x \in A \implies f(x) \in \mathcal{I}_\epsilon(f(c))
+    x \in \mathcal{I}_\delta(c) \land x \in A \implies f(x) \in \mathcal{I}_\epsilon(f(c)).
   \]
+
   A function $f$ is continuous on a set $B \subseteq A$ if it is
   continuous on every element in B.
 \end{definition}
@@ -89,7 +139,6 @@ $\mathrm{sign}$ is not continuous at $0$. Consider $\epsilon = \frac{1}{2}$.
 We have $|f(x)| = 1$ for any $x \neq 0$, no matter how close $x$ is to
 $0$. And obviously, $|f(x)| = 1 \not < \frac{1}{2}$.
 \end{example}
-
 
 
 \begin{definition}[Neighborhood]
@@ -222,24 +271,8 @@ $0$. And obviously, $|f(x)| = 1 \not < \frac{1}{2}$.
 \end{proof}
 
 
-\begin{definition}[Limit of Function]
-  Suppose $f : A \to \Reals$ and $A \subseteq \Reals$.
-  Suppose $c \in \Reals$ is an accumulation point of $A$.
-  Then
-  \[
-   \lim_{x\to c} f(x) = \ell
-  \]
-  if for every $\epsilon > 0$ there exists a $\delta > 0$
-  such that
-  \[
-  x \in \mathcal{I}_\delta(c) \implies f(x) \in \mathcal{I}_\epsilon(\ell)
-  \]
-\end{definition}
 
-\begin{definition}[L-Continuous]
-  Suppose $f : A \to \Reals$ and $A \subseteq \Reals$.
-  The function $f$ is l-continuous at $c$ if $\lim_{x\to c} f(x) = f(c)$.
-\end{definition}
+
 
 \begin{definition}[S-Continuous]
   Suppose $f : A \to \Reals$ and $A \subseteq \Reals$.
@@ -250,6 +283,66 @@ $0$. And obviously, $|f(x)| = 1 \not < \frac{1}{2}$.
     \lim_{n\to\infty} f(x_n) = f(c)
   \]
 \end{definition}
+
+
+\paragraph{Rational (Finite) Approximations of Reals}
+
+Next we talk about using rational intervals to approximate real
+numbers. For $p,q \in \Rats$ with $p < q$, the pair $(p,q)$ represents
+the open interval between $p$ and $q$. Alternatively, one can consider
+an interval centered at $r$ with error bound $e$, but then we just
+have $p = r-e$ and $q = r+e$.  We form a partial order $\mathcal{R}$
+containing both the real numbers and the rational intervals.
+\[
+   \mathcal{R} = \Reals \cup \{ (p,q) \mid p,q \in \Rats \}
+\]
+Each rational interval can be viewed as a finite approximation for any
+real number $x$ within the interval.
+\[
+  (p,q)  \sqsubseteq x \qquad \text{iff } p < x < q
+\]
+An interval $(p_1,q_1)$ is a worse approximation than interval
+$(p_2,q_2)$ if the first interval contains the second, i.e.
+\[
+  (p_1,q_1) \sqsubseteq (p_2,q_2)
+  \qquad
+  \text{iff }
+  p_1 \leq p_2
+  \text{ and }
+  q_2 \leq q_1
+\]
+\[
+\xymatrix@=10pt{
+  p_1 \ar@{-}[rrr] & & & p_2 \ar@{-}[rr] & & q_2 \ar@{-}[r] & q_1
+}
+\]
+And of course, every real $x \in \Reals$ is an equally good
+approximation to itself.
+\[
+  x \sqsubseteq x  
+\]
+
+The join $\sqcup$ is induced by the $\sqsubseteq$ ordering, so $a
+\sqcup b$ is the least upper bound of $\{a,b\}$.  Similarly, the meet
+$a \sqcap b$ is greatest lower bound of $\{a,b\}$.  For example, the
+join $\sqcup$ of two intervals collects their common information, that
+is, it is the intersection of the two intervals.
+\[
+  (p_1,q_1) \sqcup (p_2,q_2) = (\max(p_1, p_2), \min(q_1, q_2))
+\]
+The meet $\sqcap$ of two intervals is the interval that contains both
+of them, i.e., that approximates both of them.
+\[
+  (p_1,q_1) \sqcap (p_2,q_2) = (\min(p_1, p_2), \max(q_1, q_2))
+\]
+
+
+
+
+
+\section{Topology on $\mathcal{P}(\mathbb{N})$}
+
+
 
 \section{Scott Topology}
 
