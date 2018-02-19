@@ -357,6 +357,7 @@ number as its least upper bound
   \bigsqcup \{ a_1,a_2,a_3,\ldots \} \in \Reals
 \]
 
+
 %% The meet $\sqcap$ of two intervals is the interval that contains both
 %% of them. (Or should we add collections of intervals to $\mathcal{R}$
 %% as in Vickers?)
@@ -367,12 +368,41 @@ number as its least upper bound
 %% $S$ is written $\bigsqcap S$.
 
 
-Now let us consider the relationship between rational intervals and
-continuous functions on the reals. Suppose $f : A \to \Reals$ with $A
-\subseteq \Reals$. 
+Now let us consider functions on real numbers, and how we might
+approximate them on rationals. Suppose $f \in A \to \Reals$ and $x \in
+A \subseteq \Reals$. We wish we could have the exact result $f(x)$ but
+will be satisfied if we are given a rational interval $\langle p', q'
+\rangle$ that contains $f(x)$ and that is small enough, i.e., $|p' -
+q'| < \epsilon$ for some choice of $\epsilon$.  If $f$ is continuous,
+then we know there is a $\delta$ such that
+\[
+  \forall y.\; |y-x| < \delta \implies |f(y) - f(x)| < \epsilon
+\]
+If we can find a rational number $p$ that is close enough to $x$, that
+is, $|p-x| < \delta$, then we'll know that $f(p)$ is close enough to
+$f(x)$, that is $|f(p) - f(x)| < \epsilon$. 
 
-We can lift $f$ to a function $f^\dagger : A' \to \mathcal{R}$ with
-$A' \subseteq \mathcal{R}$ as follows.
+Is there a sequence of rational intervals for every real number?  If
+so, then we can march through the sequence $\langle p_1,q_1 \rangle,
+\langle p_2,q_2 \rangle, \ldots$ until we get to an interval $\langle
+p_i,q_i \rangle$ that is small enough ($|p_i - q_i| < \delta$) and
+choose the middle $m=\frac{q_i - p_i}{2}$. So we have $|m - x| <
+\delta$ and therefore $|f(m) - f(x)| < \epsilon$, as desired.
+
+
+
+
+
+%% Now let us consider the relationship between rational intervals and
+%% continuous functions on the reals. Suppose $f : A \to \Reals$ with $A
+%% \subseteq \Reals$. 
+
+
+
+Hmm, how to relate the above to the following.
+
+We lift $f$ to a function $f^\dagger : A' \to \mathcal{R}$ with $A'
+\subseteq \mathcal{R}$ as follows.
 \begin{align*}
   f^\dagger(a) = 
   \begin{cases}
@@ -382,18 +412,18 @@ $A' \subseteq \mathcal{R}$ as follows.
   \end{cases}
 \end{align*}
 
-
-
 \begin{theorem}
-  If $f : A \to \Reals$ is continuous and $S \subseteq \mathcal{R}$, 
+  If $f : A \to \Reals$ is continuous and $S \subseteq \mathcal{R}$
+  with some conditions on $S$, 
   then 
   \[
   \bigsqcup \{ f^\dagger(a) \mid a \in S \} = f^\dagger\left(\bigsqcup S\right)
   \]
 \end{theorem}
 \begin{proof}
-
+UNDER CONSTRUCTION
 \end{proof}
+
 
 
 \section{Topology on $\mathcal{P}(\mathbb{N})$}

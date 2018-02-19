@@ -191,3 +191,15 @@ Stone duality
 
 * Koymans [1982] history of lambda models
 
+
+topology for P(N)
+
+  Def. A basis (basic set) is the upward closed set of set(n), for a given n.
+    That is, { S | set(n) ⊆ S }
+
+  Def. An open subset is a union of basic sets.
+
+  The finite sets, set(n), are dense in that every S ∈ P(N)
+  is the "limit" (lub) of its finite subsets
+     S = { set(n) | set(n) ⊆ S }
+  
