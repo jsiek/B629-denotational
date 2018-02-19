@@ -39,6 +39,7 @@ paper that the class has read.
 - [Homework 2](hw2.md) is due January 22.
 - [Homework 3](hw3.md) is due January 29.
 - [Homework 4](hw4.md) is due February 14.
+- [Homework 5](hw5.md) is due February 28.
 
 ## Week-by-week Schedule
 

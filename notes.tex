@@ -3134,14 +3134,14 @@ $\mathcal{P}(\omega)$ given by \citet{barendregt84:_lambda_calculus}.
 \begin{align*}
      & m,n \in \NAT \\
 \langle n,m \rangle &= \frac{1}{2}(n + m)(n+m+1) + m \\
-e_n &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
+\mathit{set}(n) &= \{ k_0, k_1, \ldots, k_{m-1} \} \quad \text{where }
     k_i < k_{i+1} \text{ and } n = \sum_{i<m} 2^{k_i}\\[2ex]
 \EPo{} & : \mathbb{E} \to (\VAR \pto \mathcal{P}(\NAT)) \to \mathcal{P}(\NAT) \\
 \POSEM{x}\rho &= \rho\,x \\  
-\POSEM{(\LAM{x}e)}\rho &= \{ \langle n, m \rangle \mid m \in \POSEM{e}[x\mapsto e_n]\rho \} \\
-\POSEM{(e_1\,e_2)}\rho &= \{ m \mid \exists e_n. \, 
+\POSEM{(\LAM{x}e)}\rho &= \{ \langle n, m \rangle \mid m \in \POSEM{e}[x\mapsto \mathit{set}(n)]\rho \} \\
+\POSEM{(e_1\,e_2)}\rho &= \{ m \mid \exists n. \, 
    \langle n,m \rangle \in \POSEM{e_1}\rho
-   \text{ and } e_n \subseteq \POSEM{e_2}\rho \}
+   \text{ and } \mathit{set}(n) \subseteq \POSEM{e_2}\rho \}
 \end{align*}
 \caption{$\lambda$-calculus in $\mathcal{P}(\omega)$}
 \label{fig:p-omega}
