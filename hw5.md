@@ -1,4 +1,4 @@
-- Read sections 1, 2, and 4 of [Data Types as Lattices](https://www.dropbox.com/s/ikfyrwkizooah3q/data_types_as_lattices.pdf?dl=1)
+- Read sections 1, 2, and 4 of [Data Types as Lattices](https://www.dropbox.com/s/ikfyrwkizooah3q/data_types_as_lattices.pdf?dl=1) Update: I obtained a better typeset version from Scott which is [here](./ScottDTL1976.pdf).
 - Look up the definitions of
   * topological space,
   * open set,
