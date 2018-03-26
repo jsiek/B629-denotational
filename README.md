@@ -91,6 +91,9 @@ paper that the class has read.
 - PCF
   - [A type-theoretic alternative to ISWIM, CUCH, OWHY](https://doi.org/10.1016/0304-3975(93)90095-B), Scott 1993.
   - [LCF considered as a programming language](https://doi.org/10.1016/0304-3975(77)90044-5), Plotkin 1977.
+- The D∞ model of the λ-calculus
+  - [Lecture notes](http://www.cs.cornell.edu/courses/cs6110/2011sp/lectures/lecture24.pdf) from Nate Foster's CS 6110 course
+  
 - [Fixed point constructions in order-enriched categories](https://doi.org/10.1016/0304-3975(79)90053-7). Wand 1979.
 - [The category-theoretic solution of recursive domain equations](http://homepages.inf.ed.ac.uk/gdp/publications/Category_Theoretic_Solution.pdf),
   Smyth and Plotkin, 1982.
