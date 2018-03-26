@@ -3597,24 +3597,43 @@ i$.
 
 \begin{align*}
  \mathit{down} &: [D_{\infty} \to D_{\infty}] \to D_{\infty}\\
- \mathit{down}(f) &= (d_0, d_1, \ldots) \\
+ \mathit{down}(f) &= (d_0, d_1, \ldots, d_n, \ldots) \\
  & \text{where } \\
- d_0 &= f(\bot) \\
- d_{n+1} &= \hat{p}_n \circ f \circ \hat{e}_n
+ & d_0 = f(\bot) \\
+ & d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
 \end{align*}
+
+Where the $\hat{p}_m$ and $\hat{e}_m$ operations project and embed
+between $D_\infty$ and $D_m$.  The $\hat{p}_m$ operation is simple, it
+just selects the $m$th element from the infinite tuple.
+\begin{align*}
+ \hat{p}_m &: D_\infty \to D_m \\
+ \hat{p}_m &= \pi_m
+\end{align*}
+The idea with $\hat{e}_m$ is that we take an element $d \in
+D_m$ and create an infinite number of duplicates to fill in the output
+tuple $(d_0, d_1, \ldots, d_n, \ldots)$. For $n \leq m$, we slide the
+duplicate ``down'' by applying the appropriate number of projections.
+For $n > m$, we slide the duplicate ``up'' by applying the appropriate
+number of embeddings.
 
 \begin{align*}
  \hat{e}_m &: D_m \to D_\infty \\
- \hat{e}_m(d) &= (d_0, d_1, \ldots) \\
+ \hat{e}_m(d) &= (d_0, d_1, \ldots, d_n, \ldots) \\
   & \text{where } d_n = 
   \begin{cases}
     (p_n \circ p_{n+1} \circ \cdots)(d) & \text{if } n \leq m \\
     (e_{n-1} \circ e_{n-2} \circ \cdots)(d) & \text{if } n > m
-  \end{cases} \\
- \hat{p}_m &: D_\infty \to D_m \\
- \hat{p}_m &= \pi_m
+  \end{cases}
 \end{align*}
 
+
+The semantics of the $\lambda$-calculus in the $D_\infty$ model:
+\begin{align*}
+  \SEM{x}\rho &= \rho(x) \\
+  \SEM{e_1 \APP e_2}\rho &= \mathit{up}(\SEM{e_1}\rho)(\SEM{e_2}\rho) \\
+  \SEM{\LAM{x} e}\rho &= \mathit{down}(\MLAM{d} \SEM{e}\rho(x:=d))
+\end{align*}
 
 
 \clearpage
