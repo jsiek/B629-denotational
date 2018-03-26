@@ -3487,7 +3487,7 @@ The proof is by induction on the derivation of $\vdash e = e'$.
 
 UNDER CONSTRUCTION
 
-Resources: \citet{Scott:1970dp,Scott:1971aa}, \citet{Stoy:1977aa}
+Resources: \citet{Scott:1971aa}, \citet{Stoy:1977aa}, \citet{Amadio:1998fk}
 
 The goal here is to construct a domain $D_\infty$ such that it is
 isomorphic to its space of continuous functions:
@@ -3496,10 +3496,50 @@ isomorphic to its space of continuous functions:
 \]
 The bijection will be witnessed by the following two functions.
 \begin{align*}
- up &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
- down &: [D_{\infty} \to D_{\infty}] \to D_{\infty}
+ \mathit{up} &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
+ \mathit{down} &: [D_{\infty} \to D_{\infty}] \to D_{\infty}
 \end{align*}
-But we have some work to do before we can define them.
+But we have some work to do in order to define them.
+
+The elements of $D_\infty$ are tuples of infinite length whose
+elements are drawn from a sequence of domains $D_0, D_1, D_2,
+\ldots$. That is
+\[
+  D_\infty = D_0 \times D_1 \times D_2 \times \cdots
+\]
+So $(d_0,d_1,\ldots) \in D_\infty$
+if $d_0 \in D_0$, $d_1 \in D_1$, etc.
+The $D_i$'s are defined inductively as follows,
+where $\to_c$ is the type of continuous functions.
+\begin{align*}
+  D_0 &= \{ \bot, * \} \\
+  D_{n+1} &= D_n \to_c D_n
+\end{align*}
+For example,
+\[
+D_1 =  \left\{
+\begin{array}{c}
+d_{12}=\{\bot \mapsto *, * \mapsto * \}, \\
+d_{11}=\{\bot \mapsto \bot, * \mapsto * \},\\
+d_{10}=\{\bot \mapsto \bot, * \mapsto \bot \}
+\end{array}
+\right\}
+\]
+(The function $\{ \bot \mapsto *, * \mapsto \bot \}$ is not
+continuous.)  The idea is that, as we go higher, the $D_i$'s provide
+better approximations to all the continuous functions.
+
+
+
+
+
+UNDER CONSTRUCTION
+
+
+
+
+
+
 
 Recall that a lattice $(D,\sqsubseteq)$ is a partial order with all
 meets and joins.
@@ -3519,10 +3559,6 @@ below $y$.
 \]
 
 Let $D_0$ be a continuous lattice with at least two elements.
-Then define
-\[
-D_{n+1} = [D_n \to D_n]
-\]
 As we go to higher $D_n$'s, we are able to construct better
 approximations of continuous functions.
 
@@ -3549,15 +3585,6 @@ that is embedding-projection pairs.
 
 \[
   D_0 = \{ \bot, *\}
-\]
-\[
-D_1 =  \left\{
-\begin{array}{c}
-d_{12}=\{* \mapsto *, * \mapsto * \}, \\
-d_{11}=\{\bot \mapsto \bot, * \mapsto * \},\\
-d_{10}=\{\bot \mapsto \bot, * \mapsto \bot \}
-\end{array}
-\right\}
 \]
 
 \begin{align*}
