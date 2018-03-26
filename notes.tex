@@ -3489,6 +3489,18 @@ UNDER CONSTRUCTION
 
 Resources: \citet{Scott:1970dp,Scott:1971aa}, \citet{Stoy:1977aa}
 
+The goal here is to construct a domain $D_\infty$ such that it is
+isomorphic to its space of continuous functions:
+\[
+  D_\infty \cong [D_{\infty} \to D_{\infty}]
+\]
+The bijection will be witnessed by the following two functions.
+\begin{align*}
+ up &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
+ down &: [D_{\infty} \to D_{\infty}] \to D_{\infty}
+\end{align*}
+But we have some work to do before we can define them.
+
 Recall that a lattice $(D,\sqsubseteq)$ is a partial order with all
 meets and joins.
 
@@ -3570,10 +3582,39 @@ each element of $D_{\infty}$ is an infinite tuple of functions.
   (d_1, d_2, d_3, \ldots )
 \]
 
+So we can now get back to defining the up and down functions.  We
+define $\mathit{up}(d)(x)$ to be the infinite tuple $y$ such that
+$y_i$ is the join of applying $d_{j+1}$ to $x_j$, for all $j \geq
+i$.
+
 \begin{align*}
- up &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
- down &: [D_{\infty} \to D_{\infty}] \to D_{\infty}
+ \mathit{up} &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
+ \mathit{up}(d)(x) &=  y \\
+  & \text{where } y_i = d_{i+1}(x_i) \sqcup p_i(d_{i+2}(x_{i+1})) \sqcup
+    (p_i\circ p_{i+1})(d_{i+3}(x_{i+2}))
+    \sqcup \cdots 
 \end{align*}
+
+\begin{align*}
+ \mathit{down} &: [D_{\infty} \to D_{\infty}] \to D_{\infty}\\
+ \mathit{down}(f) &= (d_0, d_1, \ldots) \\
+ & \text{where } \\
+ d_0 &= f(\bot) \\
+ d_{n+1} &= \hat{p}_n \circ f \circ \hat{e}_n
+\end{align*}
+
+\begin{align*}
+ \hat{e}_m &: D_m \to D_\infty \\
+ \hat{e}_m(d) &= (d_0, d_1, \ldots) \\
+  & \text{where } d_n = 
+  \begin{cases}
+    (p_n \circ p_{n+1} \circ \cdots)(d) & \text{if } n \leq m \\
+    (e_{n-1} \circ e_{n-2} \circ \cdots)(d) & \text{if } n > m
+  \end{cases} \\
+ \hat{p}_m &: D_\infty \to D_m \\
+ \hat{p}_m &= \pi_m
+\end{align*}
+
 
 
 \clearpage
