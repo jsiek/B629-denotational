@@ -15,6 +15,7 @@
 \usepackage[noanswer]{exercise}
 %\usepackage[answerdelayed]{exercise}
 \usepackage{upgreek}
+\usepackage{color}
 
 \renewcommand{\ExerciseHeader}{\noindent \textbf{
                 \ExerciseName\;\ExerciseHeaderNB\ExerciseHeaderTitle
@@ -3490,15 +3491,21 @@ UNDER CONSTRUCTION
 Resources: \citet{Scott:1971aa}, \citet{Stoy:1977aa}, \citet{Amadio:1998fk}
 
 The goal here is to construct a domain $D_\infty$ such that it is
-isomorphic to its space of continuous functions:
+isomorphic to its space of continuous functions ($\to_c$).
 \[
-  D_\infty \cong [D_{\infty} \to D_{\infty}]
+  D_\infty \cong D_{\infty} \to_c D_{\infty}
 \]
 The bijection will be witnessed by the following two functions.
-\begin{align*}
- \mathit{up} &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
- \mathit{down} &: [D_{\infty} \to D_{\infty}] \to D_{\infty}
-\end{align*}
+%% \begin{align*}
+%%  \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
+%%  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}
+%% \end{align*}
+\[
+\xymatrix{
+  D_\infty \ar@/^1pc/[r]^{\mathit{apply}}  &
+  D_{\infty} \to_c D_{\infty} \ar@/^1pc/[l]^{\mathit{abstr}}
+}
+\]
 But we have some work to do in order to define them.
 
 The elements of $D_\infty$ are tuples of infinite length whose
@@ -3507,10 +3514,10 @@ elements are drawn from a sequence of domains $D_0, D_1, D_2,
 \[
   D_\infty = D_0 \times D_1 \times D_2 \times \cdots
 \]
-So $(d_0,d_1,\ldots) \in D_\infty$
-if $d_0 \in D_0$, $d_1 \in D_1$, etc.
-The $D_i$'s are defined inductively as follows,
-where $\to_c$ is the type of continuous functions.
+So $(d_0,d_1,\ldots) \in D_\infty$ if $d_0 \in D_0$, $d_1 \in D_1$,
+etc.  The idea is that, as we go higher, each $d_i$ in the tuple
+provides a better approximation to a particular continuous function.
+The $D_i$'s are defined inductively as follows.
 \begin{align*}
   D_0 &= \{ \bot, * \} \\
   D_{n+1} &= D_n \to_c D_n
@@ -3526,67 +3533,64 @@ d_{10}=\{\bot \mapsto \bot, * \mapsto \bot \}
 \right\}
 \]
 (The function $\{ \bot \mapsto *, * \mapsto \bot \}$ is not
-continuous.)  The idea is that, as we go higher, the $D_i$'s provide
-better approximations to all the continuous functions.
+continuous.)  
 
-
-
-
-
-UNDER CONSTRUCTION
-
-
-
-
-
-
-
-Recall that a lattice $(D,\sqsubseteq)$ is a partial order with all
-meets and joins.
-
-A subset $Z$ of $D$ is \emph{directed} is every finite subset of $Z$
-has an upper bound in $Z$.
-
-An element $x\in D$ is \emph{well below} $y$ iff $y \sqsubseteq \sqcup
-Z$ implies $x \subseteq z$ for some $z \in Z$, where $Z$ is a directed
-subset of $D$.
-
-A continuous lattice is one in which every element $y$ is the lub of
-all its essential parts, that is, all of the elements that are well
-below $y$.
-\[
-   y = \sqcup \{ x \mid x \ll y \}
-\]
-
-Let $D_0$ be a continuous lattice with at least two elements.
-As we go to higher $D_n$'s, we are able to construct better
-approximations of continuous functions.
-
-We choose $D_0 = \{ \bot, *\}$. We shall define a family of
-functions that map back and forth between each $D_n$ to $D_{n+1}$,
-that is embedding-projection pairs.
-\begin{align*}
-  e_i &: [D_i \to D_{i+1}] \\
-  e_0 (d_0) &= \lambda y.\, d_0 \\
-  e_{n+1}(d_{n+1}) &= e_n \circ d_{n+1} \circ p_n \\
-  \\
-  p_i &: [D_{i+1} \to D_i]  \\
-  p_0(d_1) &= d_1(\bot) \\
-  p_{n+1} &: [D_{n+2} \to D_{n+1}]  \\
-  p_{n+1}(d_{n+2}) &= p_n \circ d_{n+2} \circ e_n
-\end{align*}
-
+To define $\mathit{apply}$ and $\mathit{abstr}$, we will need a way to
+map elements from $D_i$ to $D_{i+1}$ and vice versa. That is, we shall
+define an embedding-projection pair, $e_n$ and $p_n$, between each
+neighboring domain $D_n$ and $D_{n+1}$.
 \[
 \xymatrix{
- D_0 \ar[d]^{d_1} & D_1 \ar[d]^{d_2} \ar[l]^{p_0}& \cdots & D_n \ar[d]^{d_{n+1}} & D_{n+1} \ar[d]^{d_{n+2}} \ar[l]^{p_n} & D_{n+2} \ar[l]^{p_{n+1}}& \cdots \\
- D_0 \ar[r]^{e_0} & D_1 & \cdots & D_n \ar[r]^{e_n} & D_{n+1} \ar[r]^{e_{n+1}} & D_{n+2} & \cdots
+  D_0 \ar@/^/[r]^{e_0} & D_1 \ar@/^/[l]^{p_0} & \cdots &
+  D_n \ar@/^/[r]^{e_n} & D_{n+1} \ar@/^/[l]^{p_n} & \cdots
 }
 \]
+We define $e_i$ and $p_i$ by induction on $i$. The embedding function
+at $i > 0$, that is, $e_{n+1}$, maps a function $d : D_{n+1} = (D_n
+\to_c D_n)$ to a function at the next higher domain, i.e., $d' :
+D_{n+1} \to_c D_{n+1}$. This is accomplished by projecting from
+$D_{n+1}$ to $D_n$, applying $d$, and then embedding from $D_n$ to
+$D_{n+1}$, as shown in the diagram below.
 
-\[
-  D_0 = \{ \bot, *\}
-\]
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+\begin{align*}
+  e_i &: D_i \to_c D_{i+1} \\
+  e_0 (d) &= \MLAM{y} d \\
+  e_{n+1}(d) &= e_n \circ d \circ p_n \\
+\end{align*}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\xymatrix{
+ D_n \ar@{=>}[d]^{d} & D_{n+1} \ar[d]^{d'} \ar@{=>}[l]^{p_n} \\
+ D_n \ar@{=>}[r]^{e_n} & D_{n+1} 
+}
+\end{minipage} 
+\end{center}
 
+The projection function $p_{n+1}$ maps $d : D_{n+2} = (D_{n+1} \to_c
+D_{n+1})$ to a function $d' : D_{n+1} = (D_n \to_c D_n)$. This is
+accomplished by embedding from $D_n$ to $D_{n+1}$, applying $d$, and
+then projecting from $D_{n+1}$ to $D_n$, as shown in the diagram
+below.
+
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+\begin{align*}
+  p_i &: D_{i+1} \to_c D_i  \\
+  p_0(d) &= d(\bot) \\
+  p_{n+1}(d) &= p_n \circ d \circ e_n\\
+\end{align*}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\xymatrix{
+ D_n  & D_{n+1}  \ar@{=>}[l]^{p_n} \\
+ D_n \ar[u]^{d'} \ar@{=>}[r]^{e_n} & D_{n+1} \ar@{=>}[u]^{d}
+}
+\end{minipage} 
+\end{center}
+
+For example, here is $e_0$ and $p_0$.
 \begin{align*}
   e_0(\bot) &= \LAM{y} \bot = d_{10} \\
   e_0(*) &= \LAM{y} * = d_{12}\\
@@ -3596,70 +3600,128 @@ that is embedding-projection pairs.
   p_0(d_{12}) &= d_{12}(\bot) = *
 \end{align*}
 
-\[
-   p \circ e = id
-   \qquad
-   e \circ p \sqsubseteq id
-\]
+
+%% UNDER CONSTRUCTION
+
+%% Recall that a lattice $(D,\sqsubseteq)$ is a partial order with all
+%% meets and joins.
+
+%% A subset $Z$ of $D$ is \emph{directed} is every finite subset of $Z$
+%% has an upper bound in $Z$.
+
+%% An element $x\in D$ is \emph{well below} $y$ iff $y \sqsubseteq \sqcup
+%% Z$ implies $x \subseteq z$ for some $z \in Z$, where $Z$ is a directed
+%% subset of $D$.
+
+%% A continuous lattice is one in which every element $y$ is the lub of
+%% all its essential parts, that is, all of the elements that are well
+%% below $y$.
+%% \[
+%%    y = \sqcup \{ x \mid x \ll y \}
+%% \]
+
+%% Let $D_0$ be a continuous lattice with at least two elements.
+%% As we go to higher $D_n$'s, we are able to construct better
+%% approximations of continuous functions.
+
+%% We choose $D_0 = \{ \bot, *\}$. We shall define a family of
+%% functions that map back and forth between each $D_n$ to $D_{n+1}$,
+%% that is embedding-projection pairs.
+
+%% \[
+%% \xymatrix{
+%%  D_0 \ar[d]^{d_1} & D_1 \ar[d]^{d_2} \ar[l]^{p_0}& \cdots & D_n \ar[d]^{d_{n+1}} & D_{n+1} \ar[d]^{d_{n+2}} \ar[l]^{p_n} & D_{n+2} \ar[l]^{p_{n+1}}& \cdots \\
+%%  D_0 \ar[r]^{e_0} & D_1 & \cdots & D_n \ar[r]^{e_n} & D_{n+1} \ar[r]^{e_{n+1}} & D_{n+2} & \cdots
+%% }
+%% \]
+
+%% \[
+%%   D_0 = \{ \bot, *\}
+%% \]
 
 
-$D_{\infty}$ is the inverse limit of this sequence, which means that
-each element of $D_{\infty}$ is an infinite tuple of functions.
-\[
-  (d_1, d_2, d_3, \ldots )
-\]
+%% \[
+%%    p \circ e = id
+%%    \qquad
+%%    e \circ p \sqsubseteq id
+%% \]
 
-So we can now get back to defining the up and down functions.  We
-define $\mathit{up}(d)(x)$ to be the infinite tuple $y$ such that
-$y_i$ is the join of applying $d_{j+1}$ to $x_j$, for all $j \geq
+
+%% $D_{\infty}$ is the inverse limit of this sequence, which means that
+%% each element of $D_{\infty}$ is an infinite tuple of functions.
+%% \[
+%%   (d_1, d_2, d_3, \ldots )
+%% \]
+
+We now get back to defining the $\mathit{abstr}$ and $\mathit{apply}$
+and operations. The $\mathit{abstr}$ operation maps a function $f :
+D_{\infty} \to_c D_{\infty}$ to an element of $D_\infty$.  That is, we
+need to produce a tuple of infinite length, where each element
+$d_{n+1}$ approximates $f$ in the domain $D_n$.  We shall accomplish
+this by first mapping from $D_n$ to $D_\infty$, applying $f$, and then
+mapping back from $D_\infty$ to $D_n$. This mapping back and forth to
+$D_\infty$ will be handled by auxiliary functions $\hat{p}_n$ and
+$\hat{e}_n$.
+\begin{align*}
+ \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
+ \mathit{abstr}(f) &= (d_0, d_1, \ldots, d_n, \ldots)  \text{ where } \\
+ & \qquad d_0 = f(\bot) \\
+ & \qquad d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
+\end{align*}
+
+The $\hat{p}_n$ and $\hat{e}_n$ operations project and embed
+between $D_\infty$ and $D_n$.  The $\hat{p}_n$ operation is simple, it
+just selects the $n$th element from the tuple.
+\begin{align*}
+ \hat{p}_n &: D_\infty \to D_n \\
+ \hat{p}_n &= \pi_n
+\end{align*}
+The idea with $\hat{e}_n$ is that we take an element $d \in
+D_n$ and create an infinite number of duplicates to fill in the output
+tuple $(d_0, d_1, \ldots, d_i, \ldots)$. For $i \leq n$, we slide the
+duplicate ``down'' by applying the appropriate number of projections.
+For $i > n$, we slide the duplicate ``up'' by applying the appropriate
+number of embeddings.
+\begin{align*}
+ \hat{e}_n &: D_n \to D_\infty \\
+ \hat{e}_n(d) &= (d_0, d_1, \ldots, d_i, \ldots) \text{ where} \\
+  & \qquad d_i = 
+  \begin{cases}
+    (p_i \circ p_{i+1} \circ \cdots \circ p_{n-1})(d) & \text{if } i \leq n \\
+    (e_{i-1} \circ e_{i-2} \circ \cdots \circ e_n)(d) & \text{if } i > n
+  \end{cases}
+\end{align*}
+
+
+Next we define the $\mathit{apply}$ operator. It takes two parameters,
+a $d \in D_\infty$ and an $x\in D_\infty$, and needs to return an
+element of $D_\infty$ that represents the result of applying $d$ to
+$x$ (as in function application). But recall that $d$ and $x$ are
+infinite tuples of approximations and that the result should be some
+infinite tuple $y$.
+
+UNDER CONSTRUCTION
+
+
+$\mathit{apply}(d)(x)$ to be the infinite tuple $y$ such
+that $y_i$ is the join of applying $d_{j+1}$ to $x_j$, for all $j \geq
 i$.
 
 \begin{align*}
- \mathit{up} &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
- \mathit{up}(d)(x) &=  y \\
+ \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
+ \mathit{apply}(d)(x) &=  y \\
   & \text{where } y_i = d_{i+1}(x_i) \sqcup p_i(d_{i+2}(x_{i+1})) \sqcup
     (p_i\circ p_{i+1})(d_{i+3}(x_{i+2}))
     \sqcup \cdots 
 \end{align*}
 
-\begin{align*}
- \mathit{down} &: [D_{\infty} \to D_{\infty}] \to D_{\infty}\\
- \mathit{down}(f) &= (d_0, d_1, \ldots, d_n, \ldots) \\
- & \text{where } \\
- & d_0 = f(\bot) \\
- & d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
-\end{align*}
-
-Where the $\hat{p}_m$ and $\hat{e}_m$ operations project and embed
-between $D_\infty$ and $D_m$.  The $\hat{p}_m$ operation is simple, it
-just selects the $m$th element from the infinite tuple.
-\begin{align*}
- \hat{p}_m &: D_\infty \to D_m \\
- \hat{p}_m &= \pi_m
-\end{align*}
-The idea with $\hat{e}_m$ is that we take an element $d \in
-D_m$ and create an infinite number of duplicates to fill in the output
-tuple $(d_0, d_1, \ldots, d_n, \ldots)$. For $n \leq m$, we slide the
-duplicate ``down'' by applying the appropriate number of projections.
-For $n > m$, we slide the duplicate ``up'' by applying the appropriate
-number of embeddings.
-
-\begin{align*}
- \hat{e}_m &: D_m \to D_\infty \\
- \hat{e}_m(d) &= (d_0, d_1, \ldots, d_n, \ldots) \\
-  & \text{where } d_n = 
-  \begin{cases}
-    (p_n \circ p_{n+1} \circ \cdots)(d) & \text{if } n \leq m \\
-    (e_{n-1} \circ e_{n-2} \circ \cdots)(d) & \text{if } n > m
-  \end{cases}
-\end{align*}
 
 
 The semantics of the $\lambda$-calculus in the $D_\infty$ model:
 \begin{align*}
   \SEM{x}\rho &= \rho(x) \\
-  \SEM{e_1 \APP e_2}\rho &= \mathit{up}(\SEM{e_1}\rho)(\SEM{e_2}\rho) \\
-  \SEM{\LAM{x} e}\rho &= \mathit{down}(\MLAM{d} \SEM{e}\rho(x:=d))
+  \SEM{e_1 \APP e_2}\rho &= \mathit{apply}(\SEM{e_1}\rho)(\SEM{e_2}\rho) \\
+  \SEM{\LAM{x} e}\rho &= \mathit{abstr}(\MLAM{d} \SEM{e}\rho(x:=d))
 \end{align*}
 
 
