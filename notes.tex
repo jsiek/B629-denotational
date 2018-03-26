@@ -3503,24 +3503,77 @@ A continuous lattice is one in which every element $y$ is the lub of
 all its essential parts, that is, all of the elements that are well
 below $y$.
 \[
-   y = \sqcup \{ x \mid x << y \}
+   y = \sqcup \{ x \mid x \ll y \}
 \]
 
 Let $D_0$ be a continuous lattice with at least two elements.
 Then define
 \[
-D_{n+1} = D_n \to_c D_n
+D_{n+1} = [D_n \to D_n]
 \]
-We shall define a family of functions that map back and forth between
-each $D_n$ to $D_{n+1}$.
+As we go to higher $D_n$'s, we are able to construct better
+approximations of continuous functions.
+
+We choose $D_0 = \{ \bot, *\}$. We shall define a family of
+functions that map back and forth between each $D_n$ to $D_{n+1}$,
+that is embedding-projection pairs.
 \begin{align*}
-  \phi_i &: D_i \to D_{i+1} \\
-  \psi_i &: D_{i+1} \to D_i 
+  e_i &: [D_i \to D_{i+1}] \\
+  e_0 (d_0) &= \lambda y.\, d_0 \\
+  e_{n+1}(d_{n+1}) &= e_n \circ d_{n+1} \circ p_n \\
+  \\
+  p_i &: [D_{i+1} \to D_i]  \\
+  p_0(d_1) &= d_1(\bot) \\
+  p_{n+1} &: [D_{n+2} \to D_{n+1}]  \\
+  p_{n+1}(d_{n+2}) &= p_n \circ d_{n+2} \circ e_n
 \end{align*}
 
+\[
+\xymatrix{
+ D_0 \ar[d]^{d_1} & D_1 \ar[d]^{d_2} \ar[l]^{p_0}& \cdots & D_n \ar[d]^{d_{n+1}} & D_{n+1} \ar[d]^{d_{n+2}} \ar[l]^{p_n} & D_{n+2} \ar[l]^{p_{n+1}}& \cdots \\
+ D_0 \ar[r]^{e_0} & D_1 & \cdots & D_n \ar[r]^{e_n} & D_{n+1} \ar[r]^{e_{n+1}} & D_{n+2} & \cdots
+}
+\]
 
-Suppose $D_0 = \{ \bot, \top\}$.
+\[
+  D_0 = \{ \bot, *\}
+\]
+\[
+D_1 =  \left\{
+\begin{array}{c}
+d_{12}=\{* \mapsto *, * \mapsto * \}, \\
+d_{11}=\{\bot \mapsto \bot, * \mapsto * \},\\
+d_{10}=\{\bot \mapsto \bot, * \mapsto \bot \}
+\end{array}
+\right\}
+\]
 
+\begin{align*}
+  e_0(\bot) &= \LAM{y} \bot = d_{10} \\
+  e_0(*) &= \LAM{y} * = d_{12}\\
+  \\
+  p_0(d_{10}) &= d_{10}(\bot) = \bot \\
+  p_0(d_{11}) &= d_{11}(\bot) = \bot \\
+  p_0(d_{12}) &= d_{12}(\bot) = *
+\end{align*}
+
+\[
+   p \circ e = id
+   \qquad
+   e \circ p \sqsubseteq id
+\]
+
+
+$D_{\infty}$ is the inverse limit of this sequence, which means that
+each element of $D_{\infty}$ is an infinite tuple of functions.
+\[
+  (d_1, d_2, d_3, \ldots )
+\]
+
+\begin{align*}
+ up &: D_{\infty} \to [D_{\infty} \to D_{\infty}] \\
+ down &: [D_{\infty} \to D_{\infty}] \to D_{\infty}
+\end{align*}
 
 
 \clearpage
