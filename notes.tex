@@ -3487,6 +3487,40 @@ The proof is by induction on the derivation of $\vdash e = e'$.
 
 UNDER CONSTRUCTION
 
+Resources: \citet{Scott:1970dp,Scott:1971aa}, \citet{Stoy:1977aa}
+
+Recall that a lattice $(D,\sqsubseteq)$ is a partial order with all
+meets and joins.
+
+A subset $Z$ of $D$ is \emph{directed} is every finite subset of $Z$
+has an upper bound in $Z$.
+
+An element $x\in D$ is \emph{well below} $y$ iff $y \sqsubseteq \sqcup
+Z$ implies $x \subseteq z$ for some $z \in Z$, where $Z$ is a directed
+subset of $D$.
+
+A continuous lattice is one in which every element $y$ is the lub of
+all its essential parts, that is, all of the elements that are well
+below $y$.
+\[
+   y = \sqcup \{ x \mid x << y \}
+\]
+
+Let $D_0$ be a continuous lattice with at least two elements.
+Then define
+\[
+D_{n+1} = D_n \to_c D_n
+\]
+We shall define a family of functions that map back and forth between
+each $D_n$ to $D_{n+1}$.
+\begin{align*}
+  \phi_i &: D_i \to D_{i+1} \\
+  \psi_i &: D_{i+1} \to D_i 
+\end{align*}
+
+
+Suppose $D_0 = \{ \bot, \top\}$.
+
 
 
 \clearpage
