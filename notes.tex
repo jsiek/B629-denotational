@@ -3486,10 +3486,6 @@ The proof is by induction on the derivation of $\vdash e = e'$.
 \subsection{$D_\infty$ model of $\lambda$-calculus}
 \label{sec:D-infinity}
 
-UNDER CONSTRUCTION
-
-Resources: \citet{Scott:1971aa}, \citet{Stoy:1977aa}, \citet{Amadio:1998fk}
-
 The goal here is to construct a domain $D_\infty$ such that it is
 isomorphic to its space of continuous functions ($\to_c$).
 \[
@@ -3514,8 +3510,8 @@ elements are drawn from a sequence of domains $D_0, D_1, D_2,
 \[
   D_\infty = D_0 \times D_1 \times D_2 \times \cdots
 \]
-So $(d_0,d_1,\ldots) \in D_\infty$ if $d_0 \in D_0$, $d_1 \in D_1$,
-etc.  The idea is that, as we go higher, each $d_i$ in the tuple
+So if $(d_0,d_1,\ldots) \in D_\infty$, we have $d_0 \in D_0$, $d_1 \in
+D_1$, etc.  The idea is that, as we go higher, each $d_i$ in the tuple
 provides a better approximation to a particular continuous function.
 The $D_i$'s are defined inductively as follows.
 \begin{align*}
@@ -3648,21 +3644,23 @@ For example, here is $e_0$ and $p_0$.
 %% \]
 
 
-%% $D_{\infty}$ is the inverse limit of this sequence, which means that
-%% each element of $D_{\infty}$ is an infinite tuple of functions.
-%% \[
-%%   (d_1, d_2, d_3, \ldots )
-%% \]
+The domain $D_{\infty}$ is the inverse limit of the sequence
+$(D_i,p_i)_{n=0}^\infty$, which means that each element of
+$D_{\infty}$ is an infinite tuple:
+\[
+   (d_0,d_1, d_2, \ldots )
+\]
+where $d_i \in D_i$ and $p_i(d_{i+1}) = d_i$.
 
 We now get back to defining the $\mathit{abstr}$ and $\mathit{apply}$
 and operations. The $\mathit{abstr}$ operation maps a function $f :
 D_{\infty} \to_c D_{\infty}$ to an element of $D_\infty$.  That is, we
 need to produce a tuple of infinite length, where each element
 $d_{n+1}$ approximates $f$ in the domain $D_n$.  We shall accomplish
-this by first mapping from $D_n$ to $D_\infty$, applying $f$, and then
-mapping back from $D_\infty$ to $D_n$. This mapping back and forth to
-$D_\infty$ will be handled by auxiliary functions $\hat{p}_n$ and
-$\hat{e}_n$.
+this by first mapping an input argument from $D_n$ to $D_\infty$,
+applying $f$, and then mapping back from $D_\infty$ to $D_n$ to
+produce a result. This mapping back and forth to $D_\infty$ is handled
+by auxiliary functions $\hat{p}_n$ and $\hat{e}_n$.
 \begin{align*}
  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
  \mathit{abstr}(f) &= (d_0, d_1, d_2, \ldots)  \text{ where } \\
@@ -3708,6 +3706,7 @@ needed to get $d_{j+1}(x_j)$ into $D_i$.
    \text{ where } y_i = 
   \bigsqcup_{j\geq i} \{ (p_i\circ \cdots \circ p_{j-1}) (d_{j+1}(x_{j})) \}
 \end{align*}
+% to do: explain join and the order structure -Jeremy
 
 The semantics of the $\lambda$-calculus in the $D_\infty$ model can
 now be simply stated in terms of the $\mathit{apply}$ and
@@ -3718,6 +3717,12 @@ $\mathit{abstr}$ operators.
   \SEM{\LAM{x} e}\rho &= \mathit{abstr}(\MLAM{d} \SEM{e}\rho(x\by d))
 \end{align*}
 
+
+Resources:
+\begin{itemize}
+\item \citet{Scott:1971aa}
+\item \citet{Amadio:1998fk}
+\end{itemize}
 
 \clearpage
 \pagebreak
