@@ -3541,7 +3541,8 @@ define an embedding-projection pair, $e_n$ and $p_n$, between each
 neighboring domain $D_n$ and $D_{n+1}$.
 \[
 \xymatrix{
-  D_0 \ar@/^/[r]^{e_0} & D_1 \ar@/^/[l]^{p_0} & \cdots &
+  D_0 \ar@/^/[r]^{e_0} & D_1 \ar@/^/[l]^{p_0} \ar@/^/[r]^{e_1} 
+      & D_2 \ar@/^/[l]^{p_1} & \cdots &
   D_n \ar@/^/[r]^{e_n} & D_{n+1} \ar@/^/[l]^{p_n} & \cdots
 }
 \]
@@ -3664,7 +3665,7 @@ $D_\infty$ will be handled by auxiliary functions $\hat{p}_n$ and
 $\hat{e}_n$.
 \begin{align*}
  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
- \mathit{abstr}(f) &= (d_0, d_1, \ldots, d_n, \ldots)  \text{ where } \\
+ \mathit{abstr}(f) &= (d_0, d_1, d_2, \ldots)  \text{ where } \\
  & \qquad d_0 = f(\bot) \\
  & \qquad d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
 \end{align*}
@@ -3694,34 +3695,27 @@ number of embeddings.
 
 
 Next we define the $\mathit{apply}$ operator. It takes two parameters,
-a $d \in D_\infty$ and an $x\in D_\infty$, and needs to return an
-element of $D_\infty$ that represents the result of applying $d$ to
-$x$ (as in function application). But recall that $d$ and $x$ are
-infinite tuples of approximations and that the result should be some
-infinite tuple $y$.
-
-UNDER CONSTRUCTION
-
-
-$\mathit{apply}(d)(x)$ to be the infinite tuple $y$ such
-that $y_i$ is the join of applying $d_{j+1}$ to $x_j$, for all $j \geq
-i$.
-
+$d \in D_\infty$ and an $x\in D_\infty$, and returns an element of
+$D_\infty$ that represents the result of applying $d$ to $x$ (as in
+function application). But recall that $d$ and $x$ are infinite tuples
+of approximations and that the result should be some infinite tuple
+$y$. We form each $y_i \in D_i$ by taking the join of applying
+$d_{j+1}$ to $x_j$, for all $j \geq i$. Note that projections are
+needed to get $d_{j+1}(x_j)$ into $D_i$.
 \begin{align*}
  \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
- \mathit{apply}(d)(x) &=  y \\
-  & \text{where } y_i = d_{i+1}(x_i) \sqcup p_i(d_{i+2}(x_{i+1})) \sqcup
-    (p_i\circ p_{i+1})(d_{i+3}(x_{i+2}))
-    \sqcup \cdots 
+ \mathit{apply}(d)(x) &=  y 
+   \text{ where } y_i = 
+  \bigsqcup_{j\geq i} \{ (p_i\circ \cdots \circ p_{j-1}) (d_{j+1}(x_{j})) \}
 \end{align*}
 
-
-
-The semantics of the $\lambda$-calculus in the $D_\infty$ model:
+The semantics of the $\lambda$-calculus in the $D_\infty$ model can
+now be simply stated in terms of the $\mathit{apply}$ and
+$\mathit{abstr}$ operators.
 \begin{align*}
   \SEM{x}\rho &= \rho(x) \\
   \SEM{e_1 \APP e_2}\rho &= \mathit{apply}(\SEM{e_1}\rho)(\SEM{e_2}\rho) \\
-  \SEM{\LAM{x} e}\rho &= \mathit{abstr}(\MLAM{d} \SEM{e}\rho(x:=d))
+  \SEM{\LAM{x} e}\rho &= \mathit{abstr}(\MLAM{d} \SEM{e}\rho(x\by d))
 \end{align*}
 
 
