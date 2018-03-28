@@ -11,8 +11,8 @@
 \usepackage{wrapfig}
 \usepackage{xypic}
 \usepackage{marginfix}
-%\usepackage{exercise}
-\usepackage[noanswer]{exercise}
+\usepackage{exercise}
+%\usepackage[noanswer]{exercise}
 %\usepackage[answerdelayed]{exercise}
 \usepackage{upgreek}
 \usepackage{color}
@@ -3487,7 +3487,7 @@ The proof is by induction on the derivation of $\vdash e = e'$.
 \label{sec:D-infinity}
 
 The goal here is to construct a domain $D_\infty$ such that it is
-isomorphic to its space of continuous functions ($\to_c$).
+isomorphic to its space of continuous functions $D_\infty \to_c D_\infty$.
 \[
   D_\infty \cong D_{\infty} \to_c D_{\infty}
 \]
@@ -3518,18 +3518,42 @@ The $D_i$'s are defined inductively as follows.
   D_0 &= \{ \bot, * \} \\
   D_{n+1} &= D_n \to_c D_n
 \end{align*}
-For example,
-\[
-D_1 =  \left\{
-\begin{array}{c}
-d_{12}=\{\bot \mapsto *, * \mapsto * \}, \\
-d_{11}=\{\bot \mapsto \bot, * \mapsto * \},\\
-d_{10}=\{\bot \mapsto \bot, * \mapsto \bot \}
-\end{array}
-\right\}
-\]
-(The function $\{ \bot \mapsto *, * \mapsto \bot \}$ is not
-continuous.)  
+For $D_0$, we have $\bot \sqsubseteq *$.  For the functions in
+$D_{n+1}$, we use the point-wise ordering.  Figure~\ref{fig:d0-d1-d2}
+depicts $D_0$, $D_1$, and $D_2$.  Note that some functions that you
+might expect are not present because they are not continuous.  For
+example, the function $\{ \bot \mapsto *, * \mapsto \bot \}$ is not
+continuous, and therefore not in $D_1$.
+
+\begin{figure}
+  \begin{minipage}{0.5\textwidth}
+  \begin{tabular}{p{0.5in}p{0.5in}c}
+    $D_0$ & $D_1$ & $D_2$\\
+   \xymatrix@=10pt{
+     \text{*} \ar@{-}[d] \\
+     \bot
+   }
+   &
+    \xymatrix@=10pt{
+      d_2 \ar@{-}[d] \\
+      d_1 \ar@{-}[d] \\
+      d_0
+    }
+    &
+    \xymatrix@=10pt{
+          & d_{222} \ar@{-}[d]\\
+          & d_{122} \ar@{-}[dl] \ar@{-}[dr]\\
+      d_{022} \ar@{-}[dr]&     & d_{112} \ar@{-}[dl] \ar@{-}[dr]\\
+          & d_{012} \ar@{-}[dl]\ar@{-}[dr]&      & d_{111} \ar@{-}[dl]\\
+      d_{002} \ar@{-}[dr]&     & d_{011} \ar@{-}[dl]\\
+          & d_{001} \ar@{-}[d]\\
+          & d_{000} 
+    } 
+  \end{tabular} 
+  \end{minipage}
+  \caption{$D_0$, $D_1$, and $D_2$}
+\label{fig:d0-d1-d2}
+\end{figure}
 
 To define $\mathit{apply}$ and $\mathit{abstr}$, we will need a way to
 map elements from $D_i$ to $D_{i+1}$ and vice versa. That is, we shall
@@ -3717,6 +3741,36 @@ $\mathit{abstr}$ operators.
   \SEM{\LAM{x} e}\rho &= \mathit{abstr}(\MLAM{d} \SEM{e}\rho(x\by d))
 \end{align*}
 
+\begin{Exercise}
+  Compute the first three items in the tuple ($D_0 \times D_1 \times
+  D_2 \times \cdots$) for the meaning of:
+  \begin{itemize}
+  \item $\LAM{x}x$
+  \item $\LAM{x}\LAM{y}x$
+  \end{itemize}
+\end{Exercise}
+\begin{Answer}
+  \begin{itemize}
+  \item $\LAM{x}x$ 
+    \begin{align*}
+      \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
+      &= \mathit{abstr}(\MLAM{d} d) \\
+      &= (\bot, d_1, d_{012}, \ldots) 
+    \end{align*}
+    Also, we check that projection maps each element to its predecessor.
+    \begin{align*}
+      p_0(d_1) &= d_1(\bot) = \bot \\
+      p_1(d_{012}) &= p_0 \circ d_{012} \circ e_0 = ??? = d_1 
+    \end{align*}
+
+    \[
+    p_0(d_{012} (e_0(x))) =
+    p_0(d_{012} (\MLAM{y}x))
+    \]
+
+    
+  \end{itemize}
+\end{Answer}
 
 Resources:
 \begin{itemize}
