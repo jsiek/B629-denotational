@@ -11,8 +11,8 @@
 \usepackage{wrapfig}
 \usepackage{xypic}
 \usepackage{marginfix}
-%\usepackage{exercise}
-\usepackage[noanswer]{exercise}
+\usepackage{exercise}
+%\usepackage[noanswer]{exercise}
 %\usepackage[answerdelayed]{exercise}
 \usepackage{upgreek}
 \usepackage{color}
@@ -3600,8 +3600,8 @@ below.
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \xymatrix{
- D_n \ar@{=>}[d]^{d} & D_{n+1} \ar[d]^{d'} \ar@{=>}[l]^{p_n} \\
- D_n \ar@{=>}[r]^{e_n} & D_{n+1} 
+ D_n \ar@{->}[d]^{d} & D_{n+1} \ar@{-->}[d]^{d'} \ar@{->}[l]^{p_n} \\
+ D_n \ar@{->}[r]^{e_n} & D_{n+1} 
 }
 \end{minipage} 
 \end{center}
@@ -3622,8 +3622,8 @@ below.
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
 \xymatrix{
- D_n  & D_{n+1}  \ar@{=>}[l]^{p_n} \\
- D_n \ar[u]^{d'} \ar@{=>}[r]^{e_n} & D_{n+1} \ar@{=>}[u]^{d}
+ D_n  & D_{n+1}  \ar@{->}[l]^{p_n} \\
+ D_n \ar@{-->}[u]^{d'} \ar@{->}[r]^{e_n} & D_{n+1} \ar@{->}[u]^{d}
 }
 \end{minipage} 
 \end{center}
@@ -3641,6 +3641,21 @@ For example, here is $e_0$ and $e_1$.
      && & &    & d_{000} 
     } 
 \]
+To check the embedding for $d_1$, we have
+\[
+  e_1(d_1) = e_0 \circ d_1 \circ p_0
+\]
+And then we can tabulate what this function does:
+\[
+\begin{array}{cc}
+  \text{input} & \text{output} \\
+  d_0 & e_0(d_1(p_0(d_0))) = e_0(\bot) = d_0 \\
+  d_1 & e_0(d_1(p_0(d_1))) = e_0(\bot) = d_0 \\
+  d_2 & e_0(d_1(p_0(d_2))) = e_0(\top) = d_2
+\end{array}
+\]
+So indeed, we have $e_1(d_1) = d_{002}$.
+
 
 
 %% UNDER CONSTRUCTION
@@ -3690,45 +3705,55 @@ For example, here is $e_0$ and $e_1$.
 
 
 The domain $D_{\infty}$ is the inverse limit of the sequence
-$(D_i,p_i)_{n=0}^\infty$, which means that each element of
-$D_{\infty}$ is an infinite tuple:
+$(D_i,p_i)_{n=0}^\infty$, which is to say that each element 
+$d \in D_{\infty}$ is an infinite tuple:
 \[
-   (d_0,d_1, d_2, \ldots )
+   d=(d_0,d_1, d_2, \ldots )
 \]
-where $d_i \in D_i$ and $p_i(d_{i+1}) = d_i$.
+where $d_i \in D_i$ and $p_i(d_{i+1}) = d_i$.  $D_\infty$ is a poset
+with the elementwise ordering: $d \sqsubseteq d'$ iff $\forall i, d_i
+\sqsubseteq d'_i$.  The join of a directed subset $X \subseteq
+D_\infty$ is also defined elementwise.
+\[
+   \bigsqcup X = \left( \bigsqcup \{ x_i \mid x \in X \} \right)^\infty_{i=0}
+\]
 
 We now get back to defining the $\mathit{abstr}$ and $\mathit{apply}$
 and operations. The $\mathit{abstr}$ operation maps a function $f :
 D_{\infty} \to_c D_{\infty}$ to an element of $D_\infty$.  That is, we
 need to produce a tuple of infinite length, where each element
-$d_{n+1}$ approximates $f$ in the domain $D_n$.
+$d_{n+1}$ approximates the action of $f$ from $D_n$ to $D_n$.
 %
 We shall accomplish this by first mapping an input argument from $D_n$
 to $D_\infty$, applying $f$, and then mapping back from $D_\infty$ to
 $D_n$ to produce a result. This mapping back and forth to $D_\infty$
-is handled by auxiliary functions $\hat{p}_n$ and $\hat{e}_n$.
-(Here's the version from Nate's lecture notes.)
+is handled by auxiliary functions $\hat{p}_n$ and $\hat{e}_n$ (defined
+below).  We do this for all $n$, in each case embedding the result
+into $D_\infty$ with $\hat{e}_{n+1}$, and then take join of all these
+results~\citep{Scott:1971aa,barendregt84:_lambda_calculus}.
+%% (Here's the version from Nate's lecture notes.)
+%% \begin{align*}
+%%  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
+%%  \mathit{abstr}(f) &= (d_0, d_1, d_2, \ldots)  \text{ where } \\
+%%  & \qquad d_0 = \bot \\
+%%  & \qquad d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
+%% \end{align*}
+%% (Here's the version from \citet{Scott:1971aa}.)
 \begin{align*}
  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
- \mathit{abstr}(f) &= (d_0, d_1, d_2, \ldots)  \text{ where } \\
- & \qquad d_0 = \bot \\
- & \qquad d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
+ \mathit{abstr}(f) &= \bigsqcup_{n=0}^{\infty} \hat{e}_{n+1}(\hat{p}_n \circ f \circ \hat{e}_n)
 \end{align*}
-(Here's the version from \citet{Scott:1971aa}.)
-\[
- \mathit{abstr}(f) = \bigsqcup_{n=0}^{\infty} \hat{e}_{n+1}(\hat{p}_n \circ f \circ \hat{e}_n)
-\]
 
-The $\hat{p}_n$ and $\hat{e}_n$ operations project and embed
-between $D_\infty$ and $D_n$.  The $\hat{p}_n$ operation is simple, it
-just selects the $n$th element from the tuple.
+The $\hat{p}_n$ and $\hat{e}_n$ operations project and embed between
+$D_\infty$ and $D_n$.  The $\hat{p}_n$ operation is simple, it just
+selects the $n$th element.
 \begin{align*}
  \hat{p}_n &: D_\infty \to D_n \\
  \hat{p}_n &= \pi_n
 \end{align*}
-The idea with $\hat{e}_n$ is that we take an element $d \in
-D_n$ and create an infinite number of duplicates to fill in the output
-tuple $(d_0, d_1, \ldots, d_i, \ldots)$. For $i \leq n$, we slide the
+The idea with $\hat{e}_n$ is that we take an element $d \in D_n$ and
+creates an infinite number of duplicates to fill in the output tuple
+$(d_0, d_1, \ldots, d_i, \ldots)$. For $i \leq n$, we slide the
 duplicate ``down'' by applying the appropriate number of projections.
 For $i > n$, we slide the duplicate ``up'' by applying the appropriate
 number of embeddings.
@@ -3748,18 +3773,21 @@ Next we define the $\mathit{apply}$ operator. It takes two parameters,
 $d \in D_\infty$ and an $x\in D_\infty$, and returns an element of
 $D_\infty$ that represents the result of applying $d$ to $x$ (as in
 function application). But recall that $d$ and $x$ are infinite tuples
-of approximations and that the result should be some infinite tuple
-$y$. We form each $y_i \in D_i$ by taking the join of applying
-$d_{j+1}$ to $x_j$, for all $j \geq i$. Note that projections are
-needed to get $d_{j+1}(x_j)$ into $D_i$.
-(Here's the version from Nate's lecture notes.)
-\begin{align*}
- \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
- \mathit{apply}(d)(x) &=  y 
-   \text{ where } y_i = 
-  \bigsqcup_{j\geq i} \{ (p_i\circ \cdots \circ p_{j-1}) (d_{j+1}(x_{j})) \}
-\end{align*}
-(Here's the version from \citet{Scott:1971aa}.)
+of approximations and that the result should be an infinite tuple.
+%% We form each $y_i \in D_i$ by taking the join of applying
+%% $d_{j+1}$ to $x_j$, for all $j \geq i$. Note that projections are
+%% needed to get $d_{j+1}(x_j)$ into $D_i$.
+%% (Here's the version from Nate's lecture notes.)
+%% \begin{align*}
+%%  \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
+%%  \mathit{apply}(d)(x) &=  y 
+%%    \text{ where } y_i = 
+%%   \bigsqcup_{j\geq i} \{ (p_i\circ \cdots \circ p_{j-1}) (d_{j+1}(x_{j})) \}
+%% \end{align*}
+%% (Here's the version from \citet{Scott:1971aa}.)
+We apply each $d_{n+1}$ to the corresponding $x_n$ and embed the
+result into $D_\infty$ with $\hat{e}_n$, and take the join of all
+these results~\citep{Scott:1971aa,barendregt84:_lambda_calculus}.
 \[
    \mathit{apply}(d)(x) =  \bigsqcup_{n=0}^{\infty} \hat{e}_n(d_{n+1}(x_n))
 \]
@@ -3788,27 +3816,25 @@ $\mathit{abstr}$ operators.
 \begin{Answer}
   \begin{enumerate}
   \item $\LAM{x}x$ 
-    
-    Using Nate's definition of $\mathit{abstr}$
-    \begin{align*}
-      \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
-      &= \mathit{abstr}(\mathit{id}) \\
-      &= (\bot, \hat{p}_0 \circ \mathit{id} \circ \hat{e}_0, \hat{p}_1 \circ \mathit{id} \circ \hat{e}_1, \ldots)\\
-      &= (\bot, \mathit{id}, \mathit{id}, \ldots)\\
-      &= (\bot, d_1, d_{012}, \ldots) 
-    \end{align*}
-    Let's check that projection maps each element to its predecessor.
-    \begin{align*}
-      p_0(d_1) &= d_1(\bot) = \bot \\
-      p_1(d_{012}) &= p_0 \circ d_{012} \circ e_0 = d_1 
-    \end{align*}
-    To check the last step above we compute the following:
-    \begin{align*}
-    p_0(d_{012} (e_0(\bot))) &= \bot \\
-    p_0(d_{012} (e_0(\top))) &= \top
-    \end{align*}
-
-    Using Scott's definition of $\mathit{abstr}$
+    %% Using Nate's definition of $\mathit{abstr}$
+    %% \begin{align*}
+    %%   \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
+    %%   &= \mathit{abstr}(\mathit{id}) \\
+    %%   &= (\bot, \hat{p}_0 \circ \mathit{id} \circ \hat{e}_0, \hat{p}_1 \circ \mathit{id} \circ \hat{e}_1, \ldots)\\
+    %%   &= (\bot, \mathit{id}, \mathit{id}, \ldots)\\
+    %%   &= (\bot, d_1, d_{012}, \ldots) 
+    %% \end{align*}
+    %% Let's check that projection maps each element to its predecessor.
+    %% \begin{align*}
+    %%   p_0(d_1) &= d_1(\bot) = \bot \\
+    %%   p_1(d_{012}) &= p_0 \circ d_{012} \circ e_0 = d_1 
+    %% \end{align*}
+    %% To check the last step above we compute the following:
+    %% \begin{align*}
+    %% p_0(d_{012} (e_0(\bot))) &= \bot \\
+    %% p_0(d_{012} (e_0(\top))) &= \top
+    %% \end{align*}
+    %% Using Scott's definition of $\mathit{abstr}$
     \begin{align*}
       \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
       &= \mathit{abstr}(\mathit{id}) \\
@@ -3824,8 +3850,14 @@ $\mathit{abstr}$ operators.
       &= (\bot, d_1, d_{012}, \ldots) \sqcup \cdots
     \end{align*}
 
-  \item $\LAM{x}\LAM{y}y$ TODO
-
+  \item $\LAM{x}\LAM{y}y$
+    \begin{align*}
+      \SEM{\LAM{x}\LAM{y}y} &=
+      \mathit{abstr}(\MLAM{d}\SEM{\LAM{y}y}\{x\mapsto d\}) \\
+      &= \mathit{abstr}(\MLAM{d} \mathit{abstr}(\mathit{id})) \\
+      &= \mathit{abstr}(\MLAM{d} \bigsqcup_n \hat{e}_{n+1}(\hat{p}_n\circ \mathit{id} \circ \hat{e}_n)) \\
+      &= \mathit{abstr}(\MLAM{d} ) \\
+    \end{align*}
 
   \item $\LAM{x}\LAM{y}x$
     \begin{align*}
@@ -3848,9 +3880,8 @@ f = (\MLAM{d} \hat{e}_{1}(\hat{p}_0 \circ (\MLAM{d'}d) \circ \hat{e}_0)  \sqcup 
 
 Resources:
 \begin{itemize}
-\item \citet{Scott:1971aa}, hmm, there's a difference between
-  Scott's definition of abstr and apply and the ones given
-  in Nate's lecture notes. Should check Barendregt and Winskel.
+\item \citet{Scott:1971aa}
+\item \citet{barendregt84:_lambda_calculus} (Chapter 18, Section 2)
 \item \citet{Amadio:1998fk}
 \end{itemize}
 
