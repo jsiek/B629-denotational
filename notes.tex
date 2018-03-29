@@ -3556,9 +3556,9 @@ continuous, and therefore not in $D_1$.
 \end{figure}
 
 To define $\mathit{apply}$ and $\mathit{abstr}$, we will need a way to
-map elements from $D_i$ to $D_{i+1}$ and vice versa. That is, we shall
-define an embedding-projection pair, $e_n$ and $p_n$, between each
-neighboring domain $D_n$ and $D_{n+1}$.
+map elements between neighboring domains. We shall define an
+embedding-projection pair, $e_n$ and $p_n$, between each domain $D_n$
+and $D_{n+1}$.
 \[
 \xymatrix{
   D_0 \ar@/^/[r]^{e_0} & D_1 \ar@/^/[l]^{p_0} \ar@/^/[r]^{e_1} 
@@ -3566,12 +3566,29 @@ neighboring domain $D_n$ and $D_{n+1}$.
   D_n \ar@/^/[r]^{e_n} & D_{n+1} \ar@/^/[l]^{p_n} & \cdots
 }
 \]
+The embedding-projection pair must agree with each other in
+that
+\[
+\text{for all } n, d, \qquad 
+p_n(e_n(d)) = d \quad\text{and}\quad
+e_n(p_n(d)) \sqsubseteq d.
+\]
+Together with the requirement that they must be continuous, this means
+that the projections are uniquely determined by the embeddings.  The
+projection $p_n$ of an element $d$ can be obtained by taking the least
+upper bound of the inverse image of $e_n$ over the elements equal to
+or below $d$.
+\[
+   p_n(d) = \bigsqcup e^{-1}_n(\{ d' \mid d' \sqsubseteq d \})
+\]
+
 We define $e_i$ and $p_i$ by induction on $i$. The embedding function
-at $i > 0$, that is, $e_{n+1}$, maps a function $d : D_{n+1} = (D_n
-\to_c D_n)$ to a function at the next higher domain, i.e., $d' :
-D_{n+1} \to_c D_{n+1}$. This is accomplished by projecting from
-$D_{n+1}$ to $D_n$, applying $d$, and then embedding from $D_n$ to
-$D_{n+1}$, as shown in the diagram below.
+$e_i$ maps an element of $D_i$ to $D_{i+1}$. For $i > 0$ (so $i=n+1$
+for some $n$), the element $d$ is a function $D_n \to_c D_n$ and
+$e_{n+1}$ maps it to a function $d' \in D_{n+1} \to_c D_{n+1}$. This
+is accomplished by projecting from $D_{n+1}$ to $D_n$, applying $d$,
+and then embedding from $D_n$ to $D_{n+1}$, as shown in the diagram
+below.
 
 \begin{center}
 \begin{minipage}{0.5\textwidth}
@@ -3589,8 +3606,8 @@ $D_{n+1}$, as shown in the diagram below.
 \end{minipage} 
 \end{center}
 
-The projection function $p_{n+1}$ maps $d : D_{n+2} = (D_{n+1} \to_c
-D_{n+1})$ to a function $d' : D_{n+1} = (D_n \to_c D_n)$. This is
+The projection function $p_{n+1}$ maps $d \in D_{n+2} = (D_{n+1} \to_c
+D_{n+1})$ to a function $d' \in D_{n+1} = (D_n \to_c D_n)$. This is
 accomplished by embedding from $D_n$ to $D_{n+1}$, applying $d$, and
 then projecting from $D_{n+1}$ to $D_n$, as shown in the diagram
 below.
@@ -3611,15 +3628,19 @@ below.
 \end{minipage} 
 \end{center}
 
-For example, here is $e_0$ and $p_0$.
-\begin{align*}
-  e_0(\bot) &= \LAM{y} \bot = d_{10} \\
-  e_0(\top) &= \LAM{y} \top = d_{12}\\
-  \\
-  p_0(d_{10}) &= d_{10}(\bot) = \bot \\
-  p_0(d_{11}) &= d_{11}(\bot) = \bot \\
-  p_0(d_{12}) &= d_{12}(\bot) = \top
-\end{align*}
+For example, here is $e_0$ and $e_1$.
+\[
+\xymatrix@=10pt{
+  D_0 \ar[rr]^{e_0}&& D_1 \ar[rrr]^{e_1}& & & D_2 \\
+     \top \ar@{-}[d] \ar[rr]&& d_2 \ar@{-}[d] \ar[rrr] &&     & d_{222} \ar@{-}[d]\\
+     \bot \ar[drr]&& d_1 \ar@{-}[d] \ar[rrddd] &  &   & d_{122} \ar@{-}[dl] \ar@{-}[dr]\\
+     && d_0 \ar@/_/[rrrdddd] && d_{022} \ar@{-}[dr]&     & d_{112} \ar@{-}[dl] \ar@{-}[dr]\\
+     && &  &   & d_{012} \ar@{-}[dl]\ar@{-}[dr]&      & d_{111} \ar@{-}[dl]\\
+     && & &d_{002} \ar@{-}[dr]&     & d_{011} \ar@{-}[dl]\\
+     && & &    & d_{001} \ar@{-}[d]\\
+     && & &    & d_{000} 
+    } 
+\]
 
 
 %% UNDER CONSTRUCTION
@@ -3680,11 +3701,12 @@ We now get back to defining the $\mathit{abstr}$ and $\mathit{apply}$
 and operations. The $\mathit{abstr}$ operation maps a function $f :
 D_{\infty} \to_c D_{\infty}$ to an element of $D_\infty$.  That is, we
 need to produce a tuple of infinite length, where each element
-$d_{n+1}$ approximates $f$ in the domain $D_n$.  We shall accomplish
-this by first mapping an input argument from $D_n$ to $D_\infty$,
-applying $f$, and then mapping back from $D_\infty$ to $D_n$ to
-produce a result. This mapping back and forth to $D_\infty$ is handled
-by auxiliary functions $\hat{p}_n$ and $\hat{e}_n$.
+$d_{n+1}$ approximates $f$ in the domain $D_n$.
+%
+We shall accomplish this by first mapping an input argument from $D_n$
+to $D_\infty$, applying $f$, and then mapping back from $D_\infty$ to
+$D_n$ to produce a result. This mapping back and forth to $D_\infty$
+is handled by auxiliary functions $\hat{p}_n$ and $\hat{e}_n$.
 (Here's the version from Nate's lecture notes.)
 \begin{align*}
  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
@@ -3758,6 +3780,7 @@ $\mathit{abstr}$ operators.
   $D_2$) for the meaning of:
   \begin{enumerate}
   \item $\LAM{x}x$
+  \item $\LAM{x}\LAM{y}y$
   \item $\LAM{x}\LAM{y}x$
   \item $(\LAM{x}x) \APP (\LAM{x}x)$
   \end{enumerate}
@@ -3782,7 +3805,7 @@ $\mathit{abstr}$ operators.
     To check the last step above we compute the following:
     \begin{align*}
     p_0(d_{012} (e_0(\bot))) &= \bot \\
-    p_0(d_{012} (e_0(*))) &= * 
+    p_0(d_{012} (e_0(\top))) &= \top
     \end{align*}
 
     Using Scott's definition of $\mathit{abstr}$
@@ -3801,6 +3824,9 @@ $\mathit{abstr}$ operators.
       &= (\bot, d_1, d_{012}, \ldots) \sqcup \cdots
     \end{align*}
 
+  \item $\LAM{x}\LAM{y}y$ TODO
+
+
   \item $\LAM{x}\LAM{y}x$
     \begin{align*}
       \SEM{\LAM{x}\LAM{y}x} &= \mathit{abstr}(\MLAM{d} \SEM{\LAM{y}x}\{x\mapsto d\}) \\
@@ -3814,6 +3840,7 @@ f = (\MLAM{d} \hat{e}_{1}(\hat{p}_0 \circ (\MLAM{d'}d) \circ \hat{e}_0)  \sqcup 
         \sqcup \hat{e}_{2}(\hat{p}_1 \circ f \circ \hat{e}_1)
         \sqcup \cdots
     \end{align*}
+    UNDER CONSTRUCTION
     
 
   \end{enumerate}
