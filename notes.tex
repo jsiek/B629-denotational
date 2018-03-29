@@ -11,8 +11,8 @@
 \usepackage{wrapfig}
 \usepackage{xypic}
 \usepackage{marginfix}
-\usepackage{exercise}
-%\usepackage[noanswer]{exercise}
+%\usepackage{exercise}
+\usepackage[noanswer]{exercise}
 %\usepackage[answerdelayed]{exercise}
 \usepackage{upgreek}
 \usepackage{color}
@@ -3806,7 +3806,13 @@ $\mathit{abstr}$ operators.
       \SEM{\LAM{x}\LAM{y}x} &= \mathit{abstr}(\MLAM{d} \SEM{\LAM{y}x}\{x\mapsto d\}) \\
       &= \mathit{abstr}(\MLAM{d} \mathit{abstr}(\MLAM{d'}\SEM{x}\{x\mapsto d,y\mapsto d'\})) \\
       &= \mathit{abstr}(\MLAM{d} \mathit{abstr}(\MLAM{d'}d)) \\
-
+      &= \mathit{abstr}(\MLAM{d} \bigsqcup_{n=0}^\infty \hat{e}_{n+1}(\hat{p}_n \circ (\MLAM{d'}d) \circ \hat{e}_n)) \\
+      &= \mathit{abstr}(f)  \qquad \text{where }
+f = (\MLAM{d} \hat{e}_{1}(\hat{p}_0 \circ (\MLAM{d'}d) \circ \hat{e}_0)  \sqcup \hat{e}_{2}(\hat{p}_1 \circ (\MLAM{d'}d) \circ \hat{e}_1) \sqcup \cdots )\\
+      &= \bigsqcup_{m=0}^\infty \hat{e}_{m+1}(\hat{p}_m \circ f \circ \hat{e}_m)\\
+      &= \hat{e}_{1}(\hat{p}_0 \circ f \circ \hat{e}_0)
+        \sqcup \hat{e}_{2}(\hat{p}_1 \circ f \circ \hat{e}_1)
+        \sqcup \cdots
     \end{align*}
     
 
