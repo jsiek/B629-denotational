@@ -3492,10 +3492,6 @@ isomorphic to its space of continuous functions $D_\infty \to_c D_\infty$.
   D_\infty \cong D_{\infty} \to_c D_{\infty}
 \]
 The bijection will be witnessed by the following two functions.
-%% \begin{align*}
-%%  \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
-%%  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}
-%% \end{align*}
 \[
 \xymatrix{
   D_\infty \ar@/^1pc/[r]^{\mathit{apply}}  &
@@ -3578,18 +3574,18 @@ that the projections are uniquely determined by the embeddings.  The
 projection $p_n$ of an element $d$ can be obtained by taking the least
 upper bound of the inverse image of $e_n$ over the elements equal to
 or below $d$.
-\[
+\begin{equation}
    p_n(d) = \bigsqcup e^{-1}_n(\{ d' \mid d' \sqsubseteq d \})
-\]
+   \label{eq:pn}
+\end{equation}
 
 We define $e_i$ and $p_i$ by induction on $i$. The embedding function
-$e_i$ maps an element of $D_i$ to $D_{i+1}$. For $i > 0$ (so $i=n+1$
-for some $n$), the element $d$ is a function $D_n \to_c D_n$ and
-$e_{n+1}$ maps it to a function $d' \in D_{n+1} \to_c D_{n+1}$. This
-is accomplished by projecting from $D_{n+1}$ to $D_n$, applying $d$,
-and then embedding from $D_n$ to $D_{n+1}$, as shown in the diagram
-below.
-
+$e_i$ maps an element $d \in D_i$ to $D_{i+1}$.  For $i=0$, we map $d$
+to the constant function $(\MLAM{y}d)$.  For $i > 0$ (so $i=n+1$ for
+some $n$), the element $d$ is a function $D_n \to_c D_n$ and $e_{n+1}$
+maps it to a function $d' \in D_{n+1} \to_c D_{n+1}$. This is
+accomplished by projecting from $D_{n+1}$ to $D_n$, applying $d$, and
+then embedding from $D_n$ to $D_{n+1}$, as shown in the diagram below.
 \begin{center}
 \begin{minipage}{0.5\textwidth}
 \begin{align*}
@@ -3606,12 +3602,13 @@ below.
 \end{minipage} 
 \end{center}
 
-The projection function $p_{n+1}$ maps $d \in D_{n+2} = (D_{n+1} \to_c
-D_{n+1})$ to a function $d' \in D_{n+1} = (D_n \to_c D_n)$. This is
-accomplished by embedding from $D_n$ to $D_{n+1}$, applying $d$, and
-then projecting from $D_{n+1}$ to $D_n$, as shown in the diagram
-below.
-
+The projection function $p_i$ maps an element $d \in D_{i+1}$ to
+$D_{i}$.  For $i=0$, $p_0$ maps $d$ to $d(\bot)$.  For $i > 0$ (so
+$i=n+1$ for some $n$), the projection function $p_{n+1}$ maps $d \in
+D_{n+2} = (D_{n+1} \to_c D_{n+1})$ to a function $d' \in D_{n+1} =
+(D_n \to_c D_n)$. This is accomplished by embedding from $D_n$ to
+$D_{n+1}$, applying $d$, and then projecting from $D_{n+1}$ to $D_n$,
+as shown in the diagram below.
 \begin{center}
 \begin{minipage}{0.5\textwidth}
 \begin{align*}
@@ -3628,7 +3625,9 @@ below.
 \end{minipage} 
 \end{center}
 
-For example, here is $e_0$ and $e_1$.
+The following shows $D_0$, $D_1$, and $D_2$ with the embeddings $e_0$
+and $e_1$. The projections $p_0$ and $p_1$ can be inferred from the
+embeddings via equation \eqref{eq:pn}.
 \[
 \xymatrix@=10pt{
   D_0 \ar[rr]^{e_0}&& D_1 \ar[rrr]^{e_1}& & & D_2 \\
@@ -3719,7 +3718,7 @@ D_\infty$ is also defined elementwise.
 \]
 
 We now get back to defining the $\mathit{abstr}$ and $\mathit{apply}$
-and operations. The $\mathit{abstr}$ operation maps a function $f :
+operations. The $\mathit{abstr}$ operation maps a function $f :
 D_{\infty} \to_c D_{\infty}$ to an element of $D_\infty$.  That is, we
 need to produce a tuple of infinite length, where each element
 $d_{n+1}$ approximates the action of $f$ from $D_n$ to $D_n$.
@@ -3729,16 +3728,8 @@ to $D_\infty$, applying $f$, and then mapping back from $D_\infty$ to
 $D_n$ to produce a result. This mapping back and forth to $D_\infty$
 is handled by auxiliary functions $\hat{p}_n$ and $\hat{e}_n$ (defined
 below).  We do this for all $n$, in each case embedding the result
-into $D_\infty$ with $\hat{e}_{n+1}$, and then take join of all these
-results~\citep{Scott:1971aa,barendregt84:_lambda_calculus}.
-%% (Here's the version from Nate's lecture notes.)
-%% \begin{align*}
-%%  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
-%%  \mathit{abstr}(f) &= (d_0, d_1, d_2, \ldots)  \text{ where } \\
-%%  & \qquad d_0 = \bot \\
-%%  & \qquad d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
-%% \end{align*}
-%% (Here's the version from \citet{Scott:1971aa}.)
+into $D_\infty$ with $\hat{e}_{n+1}$, and finally take the join of all
+the results~\citep{Scott:1971aa,barendregt84:_lambda_calculus}.
 \begin{align*}
  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
  \mathit{abstr}(f) &= \bigsqcup_{n=0}^{\infty} \hat{e}_{n+1}(\hat{p}_n \circ f \circ \hat{e}_n)
@@ -3774,25 +3765,12 @@ $d \in D_\infty$ and an $x\in D_\infty$, and returns an element of
 $D_\infty$ that represents the result of applying $d$ to $x$ (as in
 function application). But recall that $d$ and $x$ are infinite tuples
 of approximations and that the result should be an infinite tuple.
-%% We form each $y_i \in D_i$ by taking the join of applying
-%% $d_{j+1}$ to $x_j$, for all $j \geq i$. Note that projections are
-%% needed to get $d_{j+1}(x_j)$ into $D_i$.
-%% (Here's the version from Nate's lecture notes.)
-%% \begin{align*}
-%%  \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
-%%  \mathit{apply}(d)(x) &=  y 
-%%    \text{ where } y_i = 
-%%   \bigsqcup_{j\geq i} \{ (p_i\circ \cdots \circ p_{j-1}) (d_{j+1}(x_{j})) \}
-%% \end{align*}
-%% (Here's the version from \citet{Scott:1971aa}.)
 We apply each $d_{n+1}$ to the corresponding $x_n$ and embed the
 result into $D_\infty$ with $\hat{e}_n$, and take the join of all
 these results~\citep{Scott:1971aa,barendregt84:_lambda_calculus}.
 \[
    \mathit{apply}(d)(x) =  \bigsqcup_{n=0}^{\infty} \hat{e}_n(d_{n+1}(x_n))
 \]
-
-% to do: explain join and the order structure -Jeremy
 
 The semantics of the $\lambda$-calculus in the $D_\infty$ model can
 now be simply stated in terms of the $\mathit{apply}$ and
@@ -3816,25 +3794,6 @@ $\mathit{abstr}$ operators.
 \begin{Answer}
   \begin{enumerate}
   \item $\LAM{x}x$ 
-    %% Using Nate's definition of $\mathit{abstr}$
-    %% \begin{align*}
-    %%   \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
-    %%   &= \mathit{abstr}(\mathit{id}) \\
-    %%   &= (\bot, \hat{p}_0 \circ \mathit{id} \circ \hat{e}_0, \hat{p}_1 \circ \mathit{id} \circ \hat{e}_1, \ldots)\\
-    %%   &= (\bot, \mathit{id}, \mathit{id}, \ldots)\\
-    %%   &= (\bot, d_1, d_{012}, \ldots) 
-    %% \end{align*}
-    %% Let's check that projection maps each element to its predecessor.
-    %% \begin{align*}
-    %%   p_0(d_1) &= d_1(\bot) = \bot \\
-    %%   p_1(d_{012}) &= p_0 \circ d_{012} \circ e_0 = d_1 
-    %% \end{align*}
-    %% To check the last step above we compute the following:
-    %% \begin{align*}
-    %% p_0(d_{012} (e_0(\bot))) &= \bot \\
-    %% p_0(d_{012} (e_0(\top))) &= \top
-    %% \end{align*}
-    %% Using Scott's definition of $\mathit{abstr}$
     \begin{align*}
       \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
       &= \mathit{abstr}(\mathit{id}) \\
@@ -3855,8 +3814,22 @@ $\mathit{abstr}$ operators.
       \SEM{\LAM{x}\LAM{y}y} &=
       \mathit{abstr}(\MLAM{d}\SEM{\LAM{y}y}\{x\mapsto d\}) \\
       &= \mathit{abstr}(\MLAM{d} \mathit{abstr}(\mathit{id})) \\
-      &= \mathit{abstr}(\MLAM{d} \bigsqcup_n \hat{e}_{n+1}(\hat{p}_n\circ \mathit{id} \circ \hat{e}_n)) \\
-      &= \mathit{abstr}(\MLAM{d} ) \\
+      &= \mathit{abstr}(f) 
+        \qquad \text{where } f=(\MLAM{d} (\bot, d_1, d_{012}, \ldots) \sqcup \cdots) \\
+      &= \bigsqcup_n \hat{e}_{n+1}(\hat{p}_n \circ f \circ \hat{e}_n) \\
+      &= \hat{e}_{1}(\hat{p}_0 \circ f \circ \hat{e}_0)
+          \sqcup 
+          \hat{e}_{2}(\hat{p}_1 \circ f \circ \hat{e}_1)
+          \sqcup \cdots \\
+      &= \hat{e}_{1}(d_0)
+          \sqcup 
+          \hat{e}_{2}(d_{111})
+          \sqcup \cdots \\
+      &= (\bot,d_0, d_{000}, \ldots)
+         \sqcup
+         (\bot, d_0, d_{111}, \ldots)
+         \sqcup \cdots \\
+      &= (\bot, d_0, d_{111}, \ldots) \sqcup \cdots
     \end{align*}
 
   \item $\LAM{x}\LAM{y}x$
@@ -3870,10 +3843,32 @@ f = (\MLAM{d} \hat{e}_{1}(\hat{p}_0 \circ (\MLAM{d'}d) \circ \hat{e}_0)  \sqcup 
       &= \bigsqcup_{m=0}^\infty \hat{e}_{m+1}(\hat{p}_m \circ f \circ \hat{e}_m)\\
       &= \hat{e}_{1}(\hat{p}_0 \circ f \circ \hat{e}_0)
         \sqcup \hat{e}_{2}(\hat{p}_1 \circ f \circ \hat{e}_1)
-        \sqcup \cdots
+        \sqcup \cdots \\
+      &= \hat{e}_{1}(d_1)
+        \sqcup \hat{e}_{2}(d_{002})
+        \sqcup \cdots \\
+      &= (\bot, d_1, d_{002}, \ldots)
+        \sqcup (\bot, d_1, d_{002}, \ldots)
+        \sqcup \cdots \\ 
+      &= (\bot, d_1, d_{002}, \ldots) \sqcup \cdots
     \end{align*}
-    UNDER CONSTRUCTION
-    
+
+  \item $(\LAM{x}x) \APP (\LAM{x}x)$
+    \begin{align*}
+      \SEM{(\LAM{x}x) \APP (\LAM{x}x)} 
+      &= \mathit{apply}(\SEM{\LAM{x}x})(\SEM{\LAM{x}x}) \\
+      &= \mathit{apply}((\bot,d_1,d_{012},\ldots))((\bot,d_1,d_{012},\ldots)) \\
+      &= \hat{e}_0(d_1(\bot))
+      \sqcup \hat{e}_1(d_{012}(d_1))
+      \sqcup \cdots \\
+      &= (\bot, d_0, d_{000}, \ldots)
+      \sqcup (\bot, d_1, d_{002}, \ldots)
+      \sqcup \cdots \\
+      &= (\bot, d_1, d_{002}, \ldots) \sqcup \cdots 
+    \end{align*}
+    (Hmm, is it troubling that the answer does not yet look the
+    same as $\SEM{\LAM{x}x}$? Or perhaps we would need to go further
+    out to get the right result?)
 
   \end{enumerate}
 \end{Answer}
