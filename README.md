@@ -41,7 +41,7 @@ paper that the class has read.
 - [Homework 4](hw4.md) is due February 14.
 - [Homework 5](hw5.md) is due February 28.
 - [Homework 6](hw6.md) is due March 26.
-- [Homework 7](hw7.md) is due April TBD.
+- [Homework 7](hw7.md) is due April 11.
 
 ## Week-by-week Schedule
 

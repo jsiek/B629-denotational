@@ -11,8 +11,8 @@
 \usepackage{wrapfig}
 \usepackage{xypic}
 \usepackage{marginfix}
-%\usepackage{exercise}
-\usepackage[noanswer]{exercise}
+\usepackage{exercise}
+%\usepackage[noanswer]{exercise}
 %\usepackage[answerdelayed]{exercise}
 \usepackage{upgreek}
 \usepackage{color}
@@ -3515,14 +3515,14 @@ D_1$, etc.  The idea is that, as we go higher, each $d_i$ in the tuple
 provides a better approximation to a particular continuous function.
 The $D_i$'s are defined inductively as follows.
 \begin{align*}
-  D_0 &= \{ \bot, * \} \\
+  D_0 &= \{ \bot, \top \} \\
   D_{n+1} &= D_n \to_c D_n
 \end{align*}
-For $D_0$, we have $\bot \sqsubseteq *$.  For the functions in
+For $D_0$, we have $\bot \sqsubseteq \top$.  For the functions in
 $D_{n+1}$, we use the point-wise ordering.  Figure~\ref{fig:d0-d1-d2}
 depicts $D_0$, $D_1$, and $D_2$.  Note that some functions that you
 might expect are not present because they are not continuous.  For
-example, the function $\{ \bot \mapsto *, * \mapsto \bot \}$ is not
+example, the function $\{ \bot \mapsto \top, \top \mapsto \bot \}$ is not
 continuous, and therefore not in $D_1$.
 
 \begin{figure}
@@ -3530,7 +3530,7 @@ continuous, and therefore not in $D_1$.
   \begin{tabular}{p{0.5in}p{0.5in}c}
     $D_0$ & $D_1$ & $D_2$\\
    \xymatrix@=10pt{
-     \text{*} \ar@{-}[d] \\
+     \top \ar@{-}[d] \\
      \bot
    }
    &
@@ -3614,11 +3614,11 @@ below.
 For example, here is $e_0$ and $p_0$.
 \begin{align*}
   e_0(\bot) &= \LAM{y} \bot = d_{10} \\
-  e_0(*) &= \LAM{y} * = d_{12}\\
+  e_0(\top) &= \LAM{y} \top = d_{12}\\
   \\
   p_0(d_{10}) &= d_{10}(\bot) = \bot \\
   p_0(d_{11}) &= d_{11}(\bot) = \bot \\
-  p_0(d_{12}) &= d_{12}(\bot) = *
+  p_0(d_{12}) &= d_{12}(\bot) = \top
 \end{align*}
 
 
@@ -3685,12 +3685,17 @@ this by first mapping an input argument from $D_n$ to $D_\infty$,
 applying $f$, and then mapping back from $D_\infty$ to $D_n$ to
 produce a result. This mapping back and forth to $D_\infty$ is handled
 by auxiliary functions $\hat{p}_n$ and $\hat{e}_n$.
+(Here's the version from Nate's lecture notes.)
 \begin{align*}
  \mathit{abstr} &: (D_{\infty} \to_c D_{\infty}) \to D_{\infty}\\
  \mathit{abstr}(f) &= (d_0, d_1, d_2, \ldots)  \text{ where } \\
- & \qquad d_0 = f(\bot) \\
+ & \qquad d_0 = \bot \\
  & \qquad d_{n+1} = \hat{p}_n \circ f \circ \hat{e}_n
 \end{align*}
+(Here's the version from \citet{Scott:1971aa}.)
+\[
+ \mathit{abstr}(f) = \bigsqcup_{n=0}^{\infty} \hat{e}_{n+1}(\hat{p}_n \circ f \circ \hat{e}_n)
+\]
 
 The $\hat{p}_n$ and $\hat{e}_n$ operations project and embed
 between $D_\infty$ and $D_n$.  The $\hat{p}_n$ operation is simple, it
@@ -3710,7 +3715,8 @@ number of embeddings.
  \hat{e}_n(d) &= (d_0, d_1, \ldots, d_i, \ldots) \text{ where} \\
   & \qquad d_i = 
   \begin{cases}
-    (p_i \circ p_{i+1} \circ \cdots \circ p_{n-1})(d) & \text{if } i \leq n \\
+    (p_i \circ p_{i+1} \circ \cdots \circ p_{n-1})(d) & \text{if } i < n \\
+    d & \text{if } i = n \\
     (e_{i-1} \circ e_{i-2} \circ \cdots \circ e_n)(d) & \text{if } i > n
   \end{cases}
 \end{align*}
@@ -3724,12 +3730,18 @@ of approximations and that the result should be some infinite tuple
 $y$. We form each $y_i \in D_i$ by taking the join of applying
 $d_{j+1}$ to $x_j$, for all $j \geq i$. Note that projections are
 needed to get $d_{j+1}(x_j)$ into $D_i$.
+(Here's the version from Nate's lecture notes.)
 \begin{align*}
  \mathit{apply} &: D_{\infty} \to (D_{\infty} \to_c D_{\infty}) \\
  \mathit{apply}(d)(x) &=  y 
    \text{ where } y_i = 
   \bigsqcup_{j\geq i} \{ (p_i\circ \cdots \circ p_{j-1}) (d_{j+1}(x_{j})) \}
 \end{align*}
+(Here's the version from \citet{Scott:1971aa}.)
+\[
+   \mathit{apply}(d)(x) =  \bigsqcup_{n=0}^{\infty} \hat{e}_n(d_{n+1}(x_n))
+\]
+
 % to do: explain join and the order structure -Jeremy
 
 The semantics of the $\lambda$-calculus in the $D_\infty$ model can
@@ -3742,39 +3754,70 @@ $\mathit{abstr}$ operators.
 \end{align*}
 
 \begin{Exercise}
-  Compute the first three items in the tuple ($D_0 \times D_1 \times
-  D_2 \times \cdots$) for the meaning of:
-  \begin{itemize}
+  Compute the first three items in the tuple (in $D_0$, $D_1$, and
+  $D_2$) for the meaning of:
+  \begin{enumerate}
   \item $\LAM{x}x$
   \item $\LAM{x}\LAM{y}x$
-  \end{itemize}
+  \item $(\LAM{x}x) \APP (\LAM{x}x)$
+  \end{enumerate}
 \end{Exercise}
 \begin{Answer}
-  \begin{itemize}
+  \begin{enumerate}
   \item $\LAM{x}x$ 
+    
+    Using Nate's definition of $\mathit{abstr}$
     \begin{align*}
       \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
-      &= \mathit{abstr}(\MLAM{d} d) \\
+      &= \mathit{abstr}(\mathit{id}) \\
+      &= (\bot, \hat{p}_0 \circ \mathit{id} \circ \hat{e}_0, \hat{p}_1 \circ \mathit{id} \circ \hat{e}_1, \ldots)\\
+      &= (\bot, \mathit{id}, \mathit{id}, \ldots)\\
       &= (\bot, d_1, d_{012}, \ldots) 
     \end{align*}
-    Also, we check that projection maps each element to its predecessor.
+    Let's check that projection maps each element to its predecessor.
     \begin{align*}
       p_0(d_1) &= d_1(\bot) = \bot \\
-      p_1(d_{012}) &= p_0 \circ d_{012} \circ e_0 = ??? = d_1 
+      p_1(d_{012}) &= p_0 \circ d_{012} \circ e_0 = d_1 
+    \end{align*}
+    To check the last step above we compute the following:
+    \begin{align*}
+    p_0(d_{012} (e_0(\bot))) &= \bot \\
+    p_0(d_{012} (e_0(*))) &= * 
     \end{align*}
 
-    \[
-    p_0(d_{012} (e_0(x))) =
-    p_0(d_{012} (\MLAM{y}x))
-    \]
+    Using Scott's definition of $\mathit{abstr}$
+    \begin{align*}
+      \SEM{\LAM{x} x}\emptyset &= \mathit{abstr}(\MLAM{d} \SEM{x}\{x\mapsto d\}) \\
+      &= \mathit{abstr}(\mathit{id}) \\
+      &= \bigsqcup_{n=0}^{\infty} \hat{e}_{n+1}(\hat{p}_n\circ \mathit{id} \circ \hat{e}_n) \\
+      &= \bigsqcup_{n=0}^{\infty} \hat{e}_{n+1}(\mathit{id}) \\
+      &= \hat{e}_1(d_1) \sqcup \hat{e}_2 (d_{012}) 
+      \sqcup \hat{e}_3 (\mathit{id}) 
+      \sqcup \cdots \\
+      &= (p_0(d_1), d_1, e_1(d_1), \ldots) \sqcup 
+         (p_0(p_1(d_{012})), p_1(d_{012}), d_{012}, \ldots) \sqcup \cdots\\
+      &= (\bot, d_1, d_{002}, \ldots) \sqcup 
+         (\bot, d_1, d_{012}, \ldots) \sqcup \cdots\\
+      &= (\bot, d_1, d_{012}, \ldots) \sqcup \cdots
+    \end{align*}
 
+  \item $\LAM{x}\LAM{y}x$
+    \begin{align*}
+      \SEM{\LAM{x}\LAM{y}x} &= \mathit{abstr}(\MLAM{d} \SEM{\LAM{y}x}\{x\mapsto d\}) \\
+      &= \mathit{abstr}(\MLAM{d} \mathit{abstr}(\MLAM{d'}\SEM{x}\{x\mapsto d,y\mapsto d'\})) \\
+      &= \mathit{abstr}(\MLAM{d} \mathit{abstr}(\MLAM{d'}d)) \\
+
+    \end{align*}
     
-  \end{itemize}
+
+  \end{enumerate}
 \end{Answer}
 
 Resources:
 \begin{itemize}
-\item \citet{Scott:1971aa}
+\item \citet{Scott:1971aa}, hmm, there's a difference between
+  Scott's definition of abstr and apply and the ones given
+  in Nate's lecture notes. Should check Barendregt and Winskel.
 \item \citet{Amadio:1998fk}
 \end{itemize}
 
