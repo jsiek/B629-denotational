@@ -42,6 +42,7 @@ paper that the class has read.
 - [Homework 5](hw5.md) is due February 28.
 - [Homework 6](hw6.md) is due March 26.
 - [Homework 7](hw7.md) is due April 11.
+- [Homework 8](hw8.md) is due TBD.
 
 ## Week-by-week Schedule
 
@@ -71,7 +72,7 @@ paper that the class has read.
 - Simply Typed Lambda Calculus
   - Chapter 2 of Semantics of Programming Languages: Structures and Techniques. 
     Gunter 1992.
-  - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742). Chlipala 2007. **Chaitanya Koparkar, April 2**
+  - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742). Chlipala 2007. **Chaitanya Koparkar, April 11**
   - [Cartesian closed categories and typed λ-calculi](https://doi.org/10.1007/3-540-17184-3_44). J. Lambek 1985. **Jiawei Tang, February 28**
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
 - [Lambda-Calculus And Combinators In The 20th Century](https://doi.org/10.1016/S1874-5857(09)70018-4). Cardone and Hindley, 2009.
