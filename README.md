@@ -72,10 +72,10 @@ paper that the class has read.
 - Simply Typed Lambda Calculus
   - Chapter 2 of Semantics of Programming Languages: Structures and Techniques. 
     Gunter 1992.
-  - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742). Chlipala 2007. **Chaitanya Koparkar, April 11**
+  - [A Certified Type-Preserving Compiler from Lambda Calculus to Assembly Language](https://doi.org/10.1145/1273442.1250742). Chlipala 2007. **Chaitanya Koparkar, April 16**
   - [Cartesian closed categories and typed λ-calculi](https://doi.org/10.1007/3-540-17184-3_44). J. Lambek 1985. **Jiawei Tang, February 28**
 - The Lambda Calculus: its Syntax and Semantics, Barendregt 1984.
-- [Lambda-Calculus And Combinators In The 20th Century](https://doi.org/10.1016/S1874-5857(09)70018-4). Cardone and Hindley, 2009.
+- [Lambda-Calculus And Combinators In The 20th Century](https://doi.org/10.1016/S1874-5857(09)70018-4). Cardone and Hindley, 2009. **Yuquan Fu, April 23**
   (aka. History of Lambda-calculus and Combinatory Logic, 2006)
 - Graph Models of the Lambda Calculus
   - [Data Types as Lattices](https://www.dropbox.com/s/ikfyrwkizooah3q/data_types_as_lattices.pdf?dl=1), Scott 1976.
